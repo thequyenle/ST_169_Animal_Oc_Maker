@@ -63,7 +63,6 @@ class StrokeTextView : AppCompatTextView {
     }
 
     override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
         val restoreColor = this.currentTextColor
         if (strokeColor != null) {
             val paint = this.paint
@@ -76,6 +75,7 @@ class StrokeTextView : AppCompatTextView {
             paint.style = Paint.Style.FILL
             this.setTextColor(restoreColor)
         }
+        super.onDraw(canvas)
     }
 
 }

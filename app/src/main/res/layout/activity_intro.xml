@@ -41,7 +41,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="132dp"
+        android:layout_marginBottom="122dp"
         android:fontFamily="@font/nunito_medium"
         android:padding="10dp"
         android:text="@string/next"

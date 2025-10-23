@@ -10,8 +10,8 @@
 
     <ImageView
         android:id="@+id/btnSetting"
-        android:layout_width="38dp"
-        android:layout_height="38dp"
+        android:layout_width="39dp"
+        android:layout_height="39dp"
         android:layout_marginTop="52dp"
         android:layout_marginEnd="16dp"
         android:src="@drawable/ic_settings"
@@ -58,18 +58,20 @@
 
                     android:src="@drawable/img_frame_home_1" />
 
-                <TextView
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtCreate"
-                    android:layout_width="wrap_content"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginStart="0dp"
                     android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/creepstercaps_regular"
+                    android:fontFamily="@font/coiny_regular"
                     android:gravity="center"
+                    app:strokeWidth="4dp"
+                    app:strokeColor="#FFA600"
                     android:text="@string/create_maker"
                     android:textColor="@color/white"
-                    android:textSize="48sp" />
+                    android:textSize="20sp" />
 
                 <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtCreate1"
@@ -78,11 +80,13 @@
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginStart="0dp"
                     android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/creepstercaps_regular"
+                    android:fontFamily="@font/coiny_regular"
                     android:gravity="center"
                     android:text="@string/create_maker"
+                    app:strokeWidth="2dp"
+                    app:strokeColor="#FFA600"
                     android:textColor="@color/tranf"
-                    android:textSize="48sp"
+                    android:textSize="20sp"
                     android:visibility="gone" />
 
 
@@ -101,18 +105,20 @@
 
                     android:src="@drawable/img_frame_home_2" />
 
-                <TextView
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtSticker"
-                    android:layout_width="wrap_content"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
                     android:layout_marginStart="36dp"
                     android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/creepstercaps_regular"
+                    android:fontFamily="@font/coiny_regular"
                     android:gravity="center"
-                    android:text="@string/sticker"
+                    android:text="@string/creation"
+                    app:strokeWidth="4dp"
+                    app:strokeColor="#FFA600"
                     android:textColor="@color/white"
-                    android:textSize="48sp" />
+                    android:textSize="20sp" />
 
                 <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtSticker1"
@@ -123,7 +129,7 @@
                     android:layout_marginEnd="20dp"
                     android:fontFamily="@font/creepstercaps_regular"
                     android:gravity="center"
-                    android:text="@string/sticker"
+                    android:text="@string/suggestion"
                     android:textColor="@color/tranf"
                     android:textSize="48sp"
                     android:visibility="gone" />
@@ -143,18 +149,20 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/img_frame_home_3" />
 
-                <TextView
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtCreation"
-                    android:layout_width="wrap_content"
+                    android:layout_width="250dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/creepstercaps_regular"
+                    android:fontFamily="@font/coiny_regular"
                     android:gravity="center"
-                    android:text="@string/creation"
+                    android:text="@string/suggestion"
                     android:textColor="@color/white"
-                    android:textSize="48sp" />
+                    app:strokeWidth="4dp"
+                    app:strokeColor="#FFA600"
+                    android:textSize="20sp" />
 
                 <com.example.st181_halloween_maker.core.custom.StrokeTextView
                     android:id="@+id/txtCreation1"
