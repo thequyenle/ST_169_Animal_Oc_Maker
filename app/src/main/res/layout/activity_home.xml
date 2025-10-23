@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_bg_app"
+    tools:context=".ui.home.HomeActivity">
+
+    <ImageView
+        android:id="@+id/btnSetting"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="52dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_settings"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/txtTitleHome"
+        android:layout_width="360dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="-30dp"
+        android:scaleType="fitXY"
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/img_title_app"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnSetting" />
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="10dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitleHome"
+        android:layout_marginBottom="16dp"
+        >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/btnCreate"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+
+                app:layout_constraintTop_toBottomOf="@+id/title_home">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:src="@drawable/img_frame_home_1" />
+
+                <TextView
+                    android:id="@+id/txtCreate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="30dp"
+                    android:fontFamily="@font/creepstercaps_regular"
+                    android:gravity="center"
+                    android:text="@string/create_maker"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
+                    android:id="@+id/txtCreate1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/creepstercaps_regular"
+                    android:gravity="center"
+                    android:text="@string/create_maker"
+                    android:textColor="@color/tranf"
+                    android:textSize="48sp"
+                    android:visibility="gone" />
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/btnSticker"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@+id/title_home">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+
+                    android:src="@drawable/img_frame_home_2" />
+
+                <TextView
+                    android:id="@+id/txtSticker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="36dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/creepstercaps_regular"
+                    android:gravity="center"
+                    android:text="@string/sticker"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
+                    android:id="@+id/txtSticker1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/creepstercaps_regular"
+                    android:gravity="center"
+                    android:text="@string/sticker"
+                    android:textColor="@color/tranf"
+                    android:textSize="48sp"
+                    android:visibility="gone" />
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/btnMyCreation"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="12dp"
+                app:layout_constraintTop_toBottomOf="@+id/title_home">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/img_frame_home_3" />
+
+                <TextView
+                    android:id="@+id/txtCreation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/creepstercaps_regular"
+                    android:gravity="center"
+                    android:text="@string/creation"
+                    android:textColor="@color/white"
+                    android:textSize="48sp" />
+
+                <com.example.st181_halloween_maker.core.custom.StrokeTextView
+                    android:id="@+id/txtCreation1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|start"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:fontFamily="@font/londrina_solid_regular"
+                    android:gravity="center"
+                    android:text="@string/creation"
+                    android:textColor="@color/tranf"
+                    android:textSize="48sp"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

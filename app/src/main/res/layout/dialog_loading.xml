@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80545454"
+        android:gravity="center">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="40dp">
+
+            <FrameLayout
+                android:id="@+id/bg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_loading_cus"
+                android:layout_margin="2dp">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp">
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/txtDescription"
+                            style="@style/custom_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="16dp"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="-30dp"
+                            android:text="@string/loading"
+                            android:textColor="@color/black"
+                            android:textSize="16sp"
+                           app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+                        <TextView
+                            android:id="@+id/txtDescription2"
+                            style="@style/custom_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="16dp"
+                            android:fontFamily="@font/montserrat_medium"
+                            android:gravity="center"
+                            android:layout_marginBottom="-30dp"
+                            android:text="@string/it_only_takes_a_few_seconds"
+                            android:textColor="#999999"
+                            android:textSize="16sp"
+                            app:layout_constraintTop_toBottomOf="@+id/txtDescription"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent" />
+
+                        <FrameLayout
+                            android:id="@+id/layoutLoading"
+                            android:layout_width="250dp"
+                            android:layout_height="100dp"
+                            android:layout_marginTop="10dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent">
+
+                            <com.airbnb.lottie.LottieAnimationView
+                                android:id="@+id/lottie_typing"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@color/tranf"
+                                app:lottie_autoPlay="true"
+                                app:lottie_loop="true"
+                                app:lottie_rawRes="@raw/lottie"
+                                app:lottie_repeatMode="restart" />
+                        </FrameLayout>
+
+
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </FrameLayout>
+            </FrameLayout>
+
+
+        </FrameLayout>
+    </LinearLayout>
+</layout>

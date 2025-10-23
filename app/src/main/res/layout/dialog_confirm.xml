@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80545454"
+        android:gravity="center">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:background="@drawable/bg_loading_cus">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="1dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/txtTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:gravity="center"
+                            android:text="@string/delete"
+                            android:textColor="#642A0D"
+                            android:textSize="18sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/txtDescription"
+                            style="@style/custom_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginHorizontal="16dp"
+                            android:layout_marginTop="10dp"
+                            android:fontFamily="@font/fredoka_regular"
+                            android:gravity="center"
+                            android:ellipsize="none"
+                            android:singleLine="false"
+                            android:text="@string/do_you_want_to_delete"
+                            android:textColor="#9A373737"
+                            android:textSize="16sp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:paddingVertical="14dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginHorizontal="19dp"
+                            android:gravity="center_vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/txtDescription">
+
+                            <FrameLayout
+                                android:id="@+id/btnYes"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_item_yes"
+                                android:layout_weight="1">
+                                <TextView
+                                    android:id="@+id/txtYes"
+                                    style="@style/custom_text"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center"
+                                    android:fontFamily="@font/montserrat_bold"
+                                    android:text="@string/yes"
+                                    android:textColor="@color/orange"
+                                    android:textSize="16sp" />
+                            </FrameLayout>
+
+
+
+                            <Space
+                                android:layout_width="12dp"
+                                android:layout_height="0dp" />
+
+                            <FrameLayout
+                                android:id="@+id/btnNo"
+                                android:layout_width="0dp"
+                                android:layout_height="44dp"
+                                android:background="@drawable/bg_item_confirm"
+                                android:layout_weight="1">
+                                <FrameLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:layout_margin="1dp">
+                                    <TextView
+                                        android:id="@+id/txtNo"
+                                        style="@style/custom_text"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:fontFamily="@font/montserrat_bold"
+                                        android:textColor="@color/white"
+                                        android:textSize="16sp"
+                                        android:text="@string/no"/>
+                                </FrameLayout>
+                            </FrameLayout>
+
+                        </LinearLayout>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </FrameLayout>
+            </FrameLayout>
+
+
+        </FrameLayout>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StrokeTextView">
+        <attr name="strokeWidth" format="dimension" />
+        <attr name="strokeColor" format="color" />
+        <attr name="strokeMiter" format="dimension" />
+        <attr name="strokeJoinStyle">
+            <enum name="miter" value="0" />
+            <enum name="bevel" value="1" />
+            <enum name="round" value="2" />
+        </attr>
+        <attr name="gradientStartColor" format="color" />
+        <attr name="gradientEndColor" format="color" />
+        <attr name="useGradient" format="boolean" />
+        <attr name="gradientOrientation">
+            <enum name="leftToRight" value="0" />
+            <enum name="topToBottom" value="1" />
+            <enum name="diagonal" value="2" />
+        </attr>
+    </declare-styleable>
+</resources>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80545454"
+        android:gravity="bottom">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_loading_cus"
+           >
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    >
+
+                    <ImageView
+                        android:id="@+id/btnExit"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginVertical="20dp"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/ic_exit"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </FrameLayout>
+
+
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+
+
+
+                    <FrameLayout
+                        android:id="@+id/txtDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <ImageView
+                            android:layout_width="256dp"
+                            android:layout_height="256dp"
+                            android:background="#E6E6E6"
+                            android:gravity="center"
+                            android:layout_gravity="center"
+                            android:src="@drawable/img_no_image"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+                    </FrameLayout>
+
+
+                    <FrameLayout
+                            android:id="@+id/btnDownLoad"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginHorizontal="20dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="12dp"
+                            app:layout_constraintBottom_toTopOf="@+id/btnOk1"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/txtDescription"
+                            android:background="@drawable/bg_item_yes_1">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="120dp"
+                                android:src="@drawable/download_ic"/>
+
+                            <TextView
+                                android:id="@+id/txtDownLoad"
+                                style="@style/custom_text"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center|center_vertical"
+                                android:fontFamily="@font/londrina_solid_regular"
+                                android:text="@string/download"
+                                android:gravity="center"
+                                android:layout_marginStart="14dp"
+                                android:textColor="@color/orange"
+                                android:textSize="20sp" />
+                        </FrameLayout>
+
+
+                    <FrameLayout
+                        android:id="@+id/btnShare"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginHorizontal="20dp"
+                        android:layout_marginTop="0dp"
+                        android:layout_marginBottom="24dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnOk"
+                        android:background="@drawable/bg_item_yes_1">
+
+                        <ImageView
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_gravity="center_vertical|start"
+                            android:layout_marginStart="120dp"
+                            android:src="@drawable/share_ic"/>
+
+                        <TextView
+                            android:id="@+id/txtShare"
+                            style="@style/custom_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center|center_vertical"
+                            android:fontFamily="@font/londrina_solid_regular"
+                            android:text="@string/share"
+                            android:gravity="center"
+                            android:layout_marginStart="14dp"
+                            android:textColor="@color/orange"
+                            android:textSize="20sp" />
+                    </FrameLayout>
+
+
+
+                </LinearLayout>
+            </FrameLayout>
+
+
+        </LinearLayout>
+    </LinearLayout>
+</layout>
