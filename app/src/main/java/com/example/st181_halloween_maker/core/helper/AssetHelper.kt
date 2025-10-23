@@ -21,14 +21,16 @@ object AssetHelper {
     fun getSubfoldersAsset(context: Context, path: String): ArrayList<String> {
         val allData = context.assets.list(path)
         val sortedData =
-            MediaHelper.sortAsset(allData)?.map { "${AssetsKey.ASSET_MANAGER}/$path/$it" }?.toCollection(ArrayList())
+            MediaHelper.sortAsset(allData)?.map { "${AssetsKey.ASSET_MANAGER}/$path/$it" }
+                ?.toCollection(ArrayList())
         return sortedData ?: arrayListOf()
     }
 
     // Read sub folder
     fun getSubfoldersNotDomainAsset(context: Context, path: String): ArrayList<String> {
         val allData = context.assets.list(path)
-        val sortedData = MediaHelper.sortAsset(allData)?.map { "${AssetsKey.DATA}/$it" }?.toCollection(ArrayList())
+        val sortedData = MediaHelper.sortAsset(allData)?.map { "${AssetsKey.DATA}/$it" }
+            ?.toCollection(ArrayList())
         return sortedData ?: arrayListOf()
     }
 
@@ -92,7 +94,7 @@ object AssetHelper {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
 
-    fun getDataFromAsset(context: Context) : ArrayList<CustomizeModel> {
+    fun getDataFromAsset(context: Context): ArrayList<CustomizeModel> {
         val start = System.currentTimeMillis()
         val customList = ArrayList<CustomizeModel>()
         val assetManager = context.assets
@@ -100,26 +102,36 @@ object AssetHelper {
         // "character_1, character_2,..."
         val characterList = assetManager.list(AssetsKey.DATA)
         val sortedCharacter = MediaHelper.sortAsset(characterList)
-        Log.d("nbhieu", "----------------------------------------------------------------------------------")
+        Log.d(
+            "nbhieu",
+            "----------------------------------------------------------------------------------"
+        )
 
         sortedCharacter!!.forEach {
             Log.d("nbhieu", "sortedCharacter: $it")
         }
 
-        Log.d("nbhieu", "----------------------------------------------------------------------------------")
+        Log.d(
+            "nbhieu",
+            "----------------------------------------------------------------------------------"
+        )
 
         sortedCharacter.forEachIndexed { indexCharacter, character ->
             val layerListModelList = ArrayList<LayerListModel>()
             Log.d("nbhieu", "indexCharacter: $indexCharacter")
             // "1.30, 2.4, 3.1, 4.22,..."
             val layer = assetManager.list("${AssetsKey.DATA}/${character}")
-            val sortedLayer = MediaHelper.sortAsset(layer)?.toCollection(ArrayList()) ?: arrayListOf()
+            val sortedLayer =
+                MediaHelper.sortAsset(layer)?.toCollection(ArrayList()) ?: arrayListOf()
 
             val avatar = "${AssetsKey.DATA_ASSET}${character}/${sortedLayer.last()}"
             sortedLayer.removeAt(sortedLayer.size - 1)
             Log.d("nbhieu", "avatar: $avatar")
 
-            Log.d("nbhieu", "----------------------------------------------------------------------------------")
+            Log.d(
+                "nbhieu",
+                "----------------------------------------------------------------------------------"
+            )
 
             for (i in 0 until sortedLayer.size) {
                 // Tách 1 và 30 (1.30)
@@ -129,25 +141,43 @@ object AssetHelper {
 
                 // Lấy folder màu hoặc lấy ảnh nếu không có màu, lấy ảnh navigation
                 // data/character_1/1.30
-                val folderOrImageList = assetManager.list("${AssetsKey.DATA}/${character}/${sortedLayer[i]}")
+                val folderOrImageList =
+                    assetManager.list("${AssetsKey.DATA}/${character}/${sortedLayer[i]}")
                 val folderOrImageSortedList =
-                    MediaHelper.sortAsset(folderOrImageList)?.toCollection(ArrayList()) ?: arrayListOf()
+                    MediaHelper.sortAsset(folderOrImageList)?.toCollection(ArrayList())
+                        ?: arrayListOf()
+
+
+                // ← THÊM LOG NÀY
+                Log.d("nbhieu", "==============================================")
+                Log.d("nbhieu", "Character: $character")
+                Log.d("nbhieu", "Layer folder: ${sortedLayer[i]}")
+                Log.d("nbhieu", "Items inside: ${folderOrImageSortedList.joinToString()}")
+                Log.d("nbhieu", "First item: ${folderOrImageSortedList.firstOrNull()}")
                 //Lấy navigation
                 val navigationImage =
                     "${AssetsKey.DATA_ASSET}${character}/${sortedLayer[i]}/${folderOrImageSortedList.last()}"
                 folderOrImageSortedList.removeAt(folderOrImageSortedList.size - 1)
                 // Nếu không có folder -> không có màu
                 val layer = if (AssetsKey.FIRST_IMAGE.any { it in folderOrImageSortedList[0] }) {
+                    Log.d("nbhieu", "→ Detected: NO COLOR")
+
                     getDataNoColor(character, folderOrImageSortedList, sortedLayer[i])
                 } else {
+                    Log.d("nbhieu", "→ Detected: HAS COLOR")
+
                     getDataColor(assetManager, character, folderOrImageSortedList, sortedLayer[i])
                 }
-                val layerListModel = LayerListModel(positionCustom, positionNavigation, navigationImage, layer)
+                val layerListModel =
+                    LayerListModel(positionCustom, positionNavigation, navigationImage, layer)
                 layerListModelList.add(layerListModel)
             }
             layerListModelList.sortBy { it.positionNavigation }
             customList.add(CustomizeModel(character, avatar, layerListModelList))
-            Log.d("nbhieu", "----------------------------------------------------------------------------------")
+            Log.d(
+                "nbhieu",
+                "----------------------------------------------------------------------------------"
+            )
         }
         MediaHelper.writeListToFile(context, ValueKey.DATA_FILE_INTERNAL, customList)
         customList.forEach {
@@ -157,7 +187,11 @@ object AssetHelper {
         return customList
     }
 
-    private fun getDataNoColor(character: String, filesList: List<String>, folder: String): ArrayList<LayerModel> {
+    private fun getDataNoColor(
+        character: String,
+        filesList: List<String>,
+        folder: String
+    ): ArrayList<LayerModel> {
         val layerPath = ArrayList<LayerModel>()
         for (fileName in filesList) {
             // file:///android_asset/nuggts/ + nuggts1 + body + 1.png
@@ -175,24 +209,58 @@ object AssetHelper {
     private fun getDataColor(
         assetManager: AssetManager, character: String, folderList: List<String>, folder: String
     ): ArrayList<LayerModel> {
-        val colorNames = folderList.map { "#$it" }
-        val fileList = folderList.map { colorFolder ->
-            assetManager.list("${AssetsKey.DATA}/$character/$folder/$colorFolder")?.let {
-                MediaHelper.sortAsset(
-                    it
-                )
-            }?.map { "${AssetsKey.DATA_ASSET}$character/$folder/$colorFolder/$it" } ?: emptyList()
-        }
+        try {
+            val colorNames = folderList.map { "#$it" }
+            val fileList = folderList.map { colorFolder ->
+                assetManager.list("${AssetsKey.DATA}/$character/$folder/$colorFolder")
+                    ?.let { MediaHelper.sortAsset(it) }
+                    ?.map { "${AssetsKey.DATA_ASSET}$character/$folder/$colorFolder/$it" }
+                    ?: emptyList()
+            }
 
-        // Khởi tạo danh sách màu và ghép danh sách file theo index
-        val colorList = Array(fileList.first().size) { index ->
-            Array(folderList.size) { folderIndex ->
-                ColorModel(color = colorNames[folderIndex], path = fileList[folderIndex][index])
+            // ✅ FIX: Kiểm tra xem có folder màu nào rỗng không
+            if (fileList.any { it.isEmpty() }) {
+                Log.e("nbhieu", "❌ Error: $character/$folder có folder màu rỗng!")
+                return arrayListOf()
+            }
+
+            // ✅ FIX: Lấy số file ít nhất để tránh IndexOutOfBoundsException
+            val minFileCount = fileList.minOfOrNull { it.size } ?: 0
+
+            if (minFileCount == 0) {
+                Log.e("nbhieu", "❌ Error: $character/$folder - Tất cả folder màu đều rỗng!")
+                return arrayListOf()
+            }
+
+            // ✅ Log cảnh báo nếu số file không đồng nhất
+            fileList.forEachIndexed { index, list ->
+                if (list.size != minFileCount) {
+                    Log.w("nbhieu", "⚠️ Warning: $character/$folder - Folder màu '${folderList[index]}' có ${list.size} files, khác với min $minFileCount files")
+                }
+            }
+
+            // ✅ Chỉ loop đến minFileCount để tránh crash
+            val colorList = Array(minFileCount) { index ->
+                Array(folderList.size) { folderIndex ->
+                    ColorModel(
+                        color = colorNames[folderIndex],
+                        path = fileList[folderIndex][index]
+                    )
+                }.toCollection(ArrayList())
             }.toCollection(ArrayList())
-        }.toCollection(ArrayList())
 
-        return fileList.first().mapIndexed { index, file ->
-            LayerModel(image = file, isMoreColors = true, listColor = colorList[index])
-        }.toCollection(ArrayList())
+            return (0 until minFileCount).map { index ->
+                LayerModel(
+                    image = fileList[0][index],
+                    isMoreColors = true,
+                    listColor = colorList[index]
+                )
+            }.toCollection(ArrayList())
+
+        } catch (e: Exception) {
+            Log.e("nbhieu", "❌ Exception in getDataColor: $character/$folder - ${e.message}")
+            e.printStackTrace()
+            return arrayListOf()
+        }
     }
 }
