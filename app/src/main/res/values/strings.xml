@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ST181_Halloween_Maker</string>
+    <string name="app_name">Animal Oc Maker</string>
     <string name="go_to_setting_title">Permission settings</string>
     <string name="go_to_setting_message">The app needs this permission</string>
     <string name="ok">OK</string>
@@ -10,9 +10,9 @@
     <string name="not_select_lang">Please select a language</string>
     <string name="next">Next</string>
     <string name="language">Language</string>
-    <string name="title_1">Create your own avatar however you like</string>
-    <string name="title_2">Diverse Unique Categories</string>
-    <string name="title_3">Great Variety Of Items</string>
+    <string name="title_1">Make Character</string>
+    <string name="title_2">Character Diversity</string>
+    <string name="title_3">Variety Items</string>
 
     <string name="permission">Permission</string>
     <string name="storage">Storage</string>

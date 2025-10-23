@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.extensions.select
 import com.example.st181_halloween_maker.databinding.ItemIntroBinding
 import com.girlmaker.create.avatar.creator.model.IntroModel
@@ -19,6 +21,7 @@ class IntroAdapter(val context: Context, private val items: List<IntroModel>) :
             binding.apply {
                 imvImage.setImageResource(item.image)
                 txtContent.text = ContextCompat.getString(context, item.content)
+                txtContent.typeface = ResourcesCompat.getFont(context, R.font.coiny_regular)
                 txtContent.select()
 
             }

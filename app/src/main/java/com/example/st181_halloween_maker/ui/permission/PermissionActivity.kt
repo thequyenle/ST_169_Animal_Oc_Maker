@@ -96,16 +96,16 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
 
     override fun initText() {
         binding.apply {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (true) {
                 txtPer.text = TextUtils.concat(
                     changeColor(
-                        this@PermissionActivity, resources.getString(R.string.allow), R.color.brown, R.font.londrina_solid_regular
+                        this@PermissionActivity, resources.getString(R.string.allow), R.color.pink, R.font.josefin_sans_medium
                     ), " ", changeColor(
-                        this@PermissionActivity, resources.getString(R.string.app_name), R.color.brown, R.font.londrina_solid_regular
+                        this@PermissionActivity, resources.getString(R.string.app_name), R.color.pink, R.font.josefin_sans_medium
                     ), " ",
 
                     changeColor(
-                        this@PermissionActivity, resources.getString(R.string.to_access_13), R.color.brown, R.font.londrina_solid_regular
+                        this@PermissionActivity, resources.getString(R.string.to_access_13), R.color.pink, R.font.josefin_sans_medium
                     )
                 )
             } else {

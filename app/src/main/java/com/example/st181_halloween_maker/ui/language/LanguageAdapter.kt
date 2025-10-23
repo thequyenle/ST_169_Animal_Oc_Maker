@@ -36,13 +36,13 @@ class LanguageAdapter(val context: Context): RecyclerView.Adapter<LanguageAdapte
                 imvFlag.setImageResource(item.flag)
                 txtLang.text = item.name
                 if (item.activate) {
-                    rdbLang.setImageResource(R.drawable.ic_tick_lang)
-                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.orange))
-                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_tick_lang)
+                    rdbLang.setImageResource(R.drawable.ic_tick_lang_white)
+                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_selected)
                 } else {
-                    rdbLang.setImageResource(R.drawable.ic_not_tick_lang)
-                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.orange))
-                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_tick_lang)
+                    rdbLang.setImageResource(R.drawable.ic_not_tick_lang_pink)
+                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_unselected)
 
                 }
                 itemLang.setOnClickListener {
