@@ -10,7 +10,7 @@ object AssetsKey {
     const val NONE_LAYER = "NONE_LAYER"
     const val SPLIT_LAYER = "-"
 
-    const val FIRST_PNG = "1.png"
+    const val FIRST_PNG = "avatar.png"
     const val FIRST_JPG = "1.jpg"
     const val FIRST_WEBP = "1.webp"
 

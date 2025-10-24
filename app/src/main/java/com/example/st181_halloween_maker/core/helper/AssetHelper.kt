@@ -194,7 +194,7 @@ object AssetHelper {
     ): ArrayList<LayerModel> {
         val layerPath = ArrayList<LayerModel>()
         for (fileName in filesList) {
-            // file:///android_asset/nuggts/ + nuggts1 + body + 1.png
+            // file:///android_asset/nuggts/ + nuggts1 + body + avatar.png
             layerPath.add(
                 LayerModel(
                     image = "${AssetsKey.DATA_ASSET}$character/$folder/$fileName",

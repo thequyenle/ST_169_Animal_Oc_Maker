@@ -175,7 +175,7 @@ object KeyApp {
 
     const val HALLOWEEN = "data"
 
-    const val HALLOWEEN_FIRST_PNG = "1.png"
+    const val HALLOWEEN_FIRST_PNG = "avatar.png"
     const val HALLOWEEN_FIRST_JPG = "1.jpg"
     const val HALLOWEEN_FIRST_WEBP = "4.webp"
 
