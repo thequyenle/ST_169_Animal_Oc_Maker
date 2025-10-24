@@ -12,7 +12,7 @@ import com.example.st181_halloween_maker.core.extensions.show
 import com.girlmaker.create.avatar.creator.model.BackGroundModel
 import com.example.st181_halloween_maker.core.utils.KeyApp.BODY
 import com.example.st181_halloween_maker.core.utils.SystemUtils.shimmerDrawable
-import com.example.st181_halloween_maker.databinding.ItemBackgorundBinding
+import com.example.st181_halloween_maker.databinding.ItemBackgroundBinding
 import kotlin.apply
 import kotlin.text.contains
 
@@ -21,47 +21,45 @@ class BackgroundAdapter(private val context: Context) : RecyclerView.Adapter<Bac
     var onItemClick: ((BackGroundModel, Int) -> Unit)? = null
     var onNoneClick: ((Int) -> Unit)? = null
 
-    inner class BackgroundViewHolder(val binding: ItemBackgorundBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class BackgroundViewHolder(private val binding: ItemBackgroundBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: BackGroundModel, position: Int) {
-            binding.apply {
-                val isBody = item.path.contains("/$BODY/")
-                when (position) {
-                    0 -> {
-                        if (isBody) {
-                            btnNone.gone()
-                            imvImage.gone()
-                        } else {
-                            btnNone.show()
-                            imvImage.gone()
-                        }
-                    }
-
-                    else -> {
-                        btnNone.gone()
-                        imvImage.show()
-                        Glide.with(root).load(item.path).placeholder(shimmerDrawable).error(shimmerDrawable).into(imvImage)
+            val isBody = item.path.contains("/$BODY/")
+            when (position) {
+                0 -> {
+                    if (isBody) {
+                        binding.btnNone.gone()
+                        binding.imvImage.gone()
+                    } else {
+                        binding.btnNone.show()
+                        binding.imvImage.gone()
                     }
                 }
 
-                if (item.isSelected) {
-                   binding.layoutFocus1.show()
-                } else {
-                    binding.layoutFocus1.gone()
+                else -> {
+                    binding.btnNone.gone()
+                    binding.imvImage.show()
+                    Glide.with(binding.root).load(item.path).placeholder(shimmerDrawable).error(shimmerDrawable).into(binding.imvImage)
                 }
+            }
 
-                imvImage.setOnClickListener {
-                    onItemClick?.invoke(item, position)
-                }
+            if (item.isSelected) {
+               binding.layoutFocus1.show()
+            } else {
+                binding.layoutFocus1.gone()
+            }
 
-                btnNone.setOnClickListener {
-                    onNoneClick?.invoke(position)
-                }
+            binding.imvImage.setOnClickListener {
+                onItemClick?.invoke(item, position)
+            }
+
+            binding.btnNone.setOnClickListener {
+                onNoneClick?.invoke(position)
             }
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BackgroundViewHolder {
-        return BackgroundViewHolder(ItemBackgorundBinding.inflate(LayoutInflater.from(parent.context), parent, false))
+        return BackgroundViewHolder(ItemBackgroundBinding.inflate(LayoutInflater.from(parent.context), parent, false))
     }
 
     override fun onBindViewHolder(holder: BackgroundViewHolder, position: Int) {

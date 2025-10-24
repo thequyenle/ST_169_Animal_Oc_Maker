@@ -45,11 +45,37 @@ class DataViewModel : ViewModel() {
             val list = withContext(Dispatchers.IO) {
                 // Lần đầu vào app -> Load data Asset -> Lưu file internal
                 if (!MediaHelper.checkFileInternal(context, ValueKey.DATA_FILE_INTERNAL)) {
-                    AssetHelper.getDataFromAsset(context)
+                    val assetData = AssetHelper.getDataFromAsset(context)
+
+                    // ✅ Check if asset data loaded successfully
+                    if (assetData.isEmpty()) {
+                        Log.e("nbhieu", "❌ CRITICAL ERROR: Asset data is empty! Cannot load app data.")
+                        Log.e("nbhieu", "Please check asset folder structure and logcat for detailed errors.")
+                        return@withContext arrayListOf<CustomizeModel>()
+                    }
                 }
 
                 val totalData = MediaHelper.readListFromFile<CustomizeModel>(context, ValueKey.DATA_FILE_INTERNAL)
                     .toCollection(ArrayList())
+
+                // ✅ Double-check totalData is not empty
+                if (totalData.isEmpty()) {
+                    Log.e("nbhieu", "❌ CRITICAL ERROR: totalData is empty after reading from internal file!")
+                    Log.e("nbhieu", "Deleting corrupted file and retrying asset load...")
+
+                    // Delete corrupted file
+                    val file = File(context.filesDir, ValueKey.DATA_FILE_INTERNAL)
+                    if (file.exists()) file.delete()
+
+                    // Retry loading from assets
+                    val retryData = AssetHelper.getDataFromAsset(context)
+                    if (retryData.isEmpty()) {
+                        Log.e("nbhieu", "❌ CRITICAL ERROR: Retry failed! Asset data is still empty!")
+                        return@withContext arrayListOf<CustomizeModel>()
+                    }
+                    totalData.addAll(retryData)
+                }
+
                 var dataApi = MediaHelper.readListFromFile<CustomizeModel>(context, ValueKey.DATA_FILE_API_INTERNAL)
                     ?: arrayListOf()
                 if (dataApi.isEmpty() && InternetHelper.checkInternet(context)) {

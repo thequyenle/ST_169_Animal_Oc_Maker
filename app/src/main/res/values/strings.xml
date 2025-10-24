@@ -96,4 +96,5 @@
     <string name="save_failed_please_try_again">Save failed! Please try again.</string>
     <string name="reset_your_customize">Reset your customize</string>
     <string name="change_your_whole_design_are_you_sure">Change your whole design, are you sure?</string>
+    <string name="view">View</string>
 </resources>

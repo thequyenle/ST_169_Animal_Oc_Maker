@@ -102,7 +102,7 @@
             android:paddingTop="6dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="4"
-            tools:listitem="@layout/item_backgorund" />
+            tools:listitem="@layout/item_background" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

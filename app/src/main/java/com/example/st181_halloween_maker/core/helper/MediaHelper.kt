@@ -175,7 +175,7 @@ object MediaHelper {
 
     fun checkFileInternal(context: Context, fileName: String): Boolean {
         val file = File(context.filesDir, fileName)
-        return file.exists() || file.length() > 0
+        return file.exists() && file.length() > 0
     }
 
     suspend fun downloadVideoToCache(context: Context, videoUrl: String): File? =

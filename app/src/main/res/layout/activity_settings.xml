@@ -41,12 +41,12 @@
                 android:layout_height="wrap_content"
                 android:layout_toStartOf="@+id/btnSettings"
                 android:layout_toEndOf="@+id/btnBack"
-                android:textColor="@color/white"
+                android:textColor="@color/pink"
                 android:layout_marginTop="5dp"
-                android:fontFamily="@font/creepstercaps_regular"
+                android:fontFamily="@font/coiny_regular"
                 android:gravity="center"
                 android:text="@string/settings"
-                android:textSize="32sp" />
+                android:textSize="24sp" />
 
 
             <ImageView
@@ -109,10 +109,10 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
                         android:layout_weight="8"
-                        android:fontFamily="@font/londrina_solid_regular"
+                        android:fontFamily="@font/josefin_sans_regular"
                         android:gravity="center_vertical"
                         android:text="@string/language"
-                        android:textColor="@color/orange"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -164,10 +164,10 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
                         android:layout_weight="8"
-                        android:fontFamily="@font/londrina_solid_regular"
+                        android:fontFamily="@font/josefin_sans_regular"
                         android:gravity="center_vertical"
                         android:text="@string/rate_us"
-                        android:textColor="@color/orange"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -220,10 +220,10 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
                         android:layout_weight="8"
-                        android:fontFamily="@font/londrina_solid_regular"
+                        android:fontFamily="@font/josefin_sans_regular"
                         android:gravity="center_vertical"
                         android:text="@string/share_app"
-                        android:textColor="@color/orange"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <FrameLayout
@@ -277,10 +277,10 @@
                         android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
                         android:layout_weight="8"
-                        android:fontFamily="@font/londrina_solid_regular"
+                        android:fontFamily="@font/josefin_sans_regular"
                         android:gravity="center_vertical"
                         android:text="@string/privacy_policy"
-                        android:textColor="@color/orange"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <FrameLayout

@@ -76,16 +76,7 @@
                 android:layout_marginEnd="60dp"
                 android:background="?attr/selectableItemBackgroundBorderless" />
 
-            <ImageView
-                android:id="@+id/btnDeleteTick"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:visibility="gone"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_delete" />
+
             <ImageView
                 android:id="@+id/btn1"
                 android:layout_width="32dp"

@@ -20,6 +20,10 @@ object AssetHelper {
     // Read sub folder
     fun getSubfoldersAsset(context: Context, path: String): ArrayList<String> {
         val allData = context.assets.list(path)
+        if (allData == null || allData.isEmpty()) {
+            Log.e("nbhieu", "❌ Error: Cannot read asset path: $path")
+            return arrayListOf()
+        }
         val sortedData =
             MediaHelper.sortAsset(allData)?.map { "${AssetsKey.ASSET_MANAGER}/$path/$it" }
                 ?.toCollection(ArrayList())
@@ -29,6 +33,10 @@ object AssetHelper {
     // Read sub folder
     fun getSubfoldersNotDomainAsset(context: Context, path: String): ArrayList<String> {
         val allData = context.assets.list(path)
+        if (allData == null || allData.isEmpty()) {
+            Log.e("nbhieu", "❌ Error: Cannot read asset path: $path")
+            return arrayListOf()
+        }
         val sortedData = MediaHelper.sortAsset(allData)?.map { "${AssetsKey.DATA}/$it" }
             ?.toCollection(ArrayList())
         return sortedData ?: arrayListOf()
@@ -101,13 +109,23 @@ object AssetHelper {
 
         // "character_1, character_2,..."
         val characterList = assetManager.list(AssetsKey.DATA)
+        if (characterList == null || characterList.isEmpty()) {
+            Log.e("nbhieu", "❌ Error: Cannot read asset data folder - characterList is null or empty!")
+            return arrayListOf()
+        }
+
         val sortedCharacter = MediaHelper.sortAsset(characterList)
+        if (sortedCharacter.isNullOrEmpty()) {
+            Log.e("nbhieu", "❌ Error: sortedCharacter is null or empty!")
+            return arrayListOf()
+        }
+
         Log.d(
             "nbhieu",
             "----------------------------------------------------------------------------------"
         )
 
-        sortedCharacter!!.forEach {
+        sortedCharacter.forEach {
             Log.d("nbhieu", "sortedCharacter: $it")
         }
 
@@ -121,8 +139,18 @@ object AssetHelper {
             Log.d("nbhieu", "indexCharacter: $indexCharacter")
             // "1.30, 2.4, 3.1, 4.22,..."
             val layer = assetManager.list("${AssetsKey.DATA}/${character}")
+            if (layer == null || layer.isEmpty()) {
+                Log.e("nbhieu", "❌ Error: Cannot read layers for character: $character")
+                return arrayListOf()
+            }
+
             val sortedLayer =
                 MediaHelper.sortAsset(layer)?.toCollection(ArrayList()) ?: arrayListOf()
+
+            if (sortedLayer.isEmpty()) {
+                Log.e("nbhieu", "❌ Error: sortedLayer is empty for character: $character")
+                return arrayListOf()
+            }
 
             val avatar = "${AssetsKey.DATA_ASSET}${character}/${sortedLayer.last()}"
             sortedLayer.removeAt(sortedLayer.size - 1)
@@ -143,10 +171,20 @@ object AssetHelper {
                 // data/character_1/1.30
                 val folderOrImageList =
                     assetManager.list("${AssetsKey.DATA}/${character}/${sortedLayer[i]}")
+
+                if (folderOrImageList == null || folderOrImageList.isEmpty()) {
+                    Log.e("nbhieu", "❌ Error: Cannot read folder contents for ${character}/${sortedLayer[i]}")
+                    continue
+                }
+
                 val folderOrImageSortedList =
                     MediaHelper.sortAsset(folderOrImageList)?.toCollection(ArrayList())
                         ?: arrayListOf()
 
+                if (folderOrImageSortedList.isEmpty()) {
+                    Log.e("nbhieu", "❌ Error: folderOrImageSortedList is empty for ${character}/${sortedLayer[i]}")
+                    continue
+                }
 
                 // ← THÊM LOG NÀY
                 Log.d("nbhieu", "==============================================")
@@ -154,10 +192,24 @@ object AssetHelper {
                 Log.d("nbhieu", "Layer folder: ${sortedLayer[i]}")
                 Log.d("nbhieu", "Items inside: ${folderOrImageSortedList.joinToString()}")
                 Log.d("nbhieu", "First item: ${folderOrImageSortedList.firstOrNull()}")
+
+                // ✅ Verify nav.png exists (should be last item after sorting)
+                val lastItem = folderOrImageSortedList.last()
+                if (lastItem != AssetsKey.NAVIGATION_IMAGE_PNG) {
+                    Log.w("nbhieu", "⚠️ Warning: Expected nav.png but found '$lastItem' in ${character}/${sortedLayer[i]}")
+                }
+
                 //Lấy navigation
                 val navigationImage =
-                    "${AssetsKey.DATA_ASSET}${character}/${sortedLayer[i]}/${folderOrImageSortedList.last()}"
+                    "${AssetsKey.DATA_ASSET}${character}/${sortedLayer[i]}/${lastItem}"
                 folderOrImageSortedList.removeAt(folderOrImageSortedList.size - 1)
+
+                // Check if list is empty after removing nav.png
+                if (folderOrImageSortedList.isEmpty()) {
+                    Log.e("nbhieu", "❌ Error: No files left after removing nav.png for ${character}/${sortedLayer[i]}")
+                    continue
+                }
+
                 // Nếu không có folder -> không có màu
                 val layer = if (AssetsKey.FIRST_IMAGE.any { it in folderOrImageSortedList[0] }) {
                     Log.d("nbhieu", "→ Detected: NO COLOR")
@@ -179,10 +231,19 @@ object AssetHelper {
                 "----------------------------------------------------------------------------------"
             )
         }
-        MediaHelper.writeListToFile(context, ValueKey.DATA_FILE_INTERNAL, customList)
-        customList.forEach {
-            Log.d("nbhieu", "customList: ${it}")
+
+        // ✅ Only save to file if customList is not empty
+        if (customList.isEmpty()) {
+            Log.e("nbhieu", "❌ CRITICAL ERROR: customList is empty! Not saving to internal storage.")
+            Log.e("nbhieu", "This means asset loading completely failed. Check errors above.")
+        } else {
+            MediaHelper.writeListToFile(context, ValueKey.DATA_FILE_INTERNAL, customList)
+            customList.forEach {
+                Log.d("nbhieu", "customList: ${it}")
+            }
+            Log.d("nbhieu", "✅ Successfully loaded ${customList.size} character(s) from assets")
         }
+
         Log.d("nbhieu", "count time: ${System.currentTimeMillis() - start}")
         return customList
     }
