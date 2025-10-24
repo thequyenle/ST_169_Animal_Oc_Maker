@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_list_sticker"
+    android:background="@drawable/img_bg_app"
     tools:context=".ui.mycreation.MycreationActivity">
 
     <RelativeLayout
@@ -59,9 +59,9 @@
                 android:layout_toStartOf="@+id/btn1"
                 android:layout_marginTop="5dp"
                 android:layout_toEndOf="@+id/btn"
-                android:fontFamily="@font/londrina_solid_regular"
+                android:fontFamily="@font/coiny_regular"
                 android:gravity="center"
-                android:textColor="@color/white"
+                android:textColor="@color/pink"
                 android:text="@string/my_creation"
                 android:textSize="24sp" />
 
@@ -96,26 +96,25 @@
     <!-- RCV-->
 
 
+    <!-- Bot-->
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingVertical="2dp"
-        android:paddingHorizontal="15dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="66dp"
         android:layout_marginBottom="5dp"
+        android:paddingHorizontal="15dp"
+        android:paddingVertical="2dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/actionBar"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintVertical_bias="0.0"
         app:spanCount="2"
         tools:listitem="@layout/item_my_creation" />
-
-
-
-
-    <!-- Bot-->
 
     <FrameLayout
         android:id="@+id/layoutBot"

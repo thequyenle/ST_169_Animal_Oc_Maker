@@ -93,7 +93,7 @@
             </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/btnSticker"
+                android:id="@+id/btnMyCreation"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginTop="12dp"
@@ -138,7 +138,7 @@
             </FrameLayout>
 
             <FrameLayout
-                android:id="@+id/btnMyCreation"
+                android:id="@+id/btnSuggestion"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:layout_marginTop="12dp"

@@ -72,22 +72,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/actionBar">
 
-        <androidx.cardview.widget.CardView
+        <ImageView
+            android:id="@+id/ivBackground"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="0dp"
-            android:background="@color/tranf"
-            android:backgroundTint="@color/tranf"
-            app:cardBackgroundColor="@color/tranf"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="0dp">
+            android:scaleType="centerCrop"/>
 
-            <ImageView
-                android:id="@+id/imvImage"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop" />
-        </androidx.cardview.widget.CardView>
+        <ImageView
+            android:id="@+id/imvImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop" />
 
     </FrameLayout>
 

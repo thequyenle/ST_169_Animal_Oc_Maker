@@ -35,7 +35,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
             btnSetting.onSingleClick {
                 startIntentAnim(SettingsActivity::class.java)
             }
-            btnSticker.onSingleClick {
+            btnMyCreation.onSingleClick {
                 startIntentAnim(ListStickerActivity::class.java)
             }
             btnMyCreation.onSingleClick {

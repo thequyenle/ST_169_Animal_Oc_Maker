@@ -45,6 +45,7 @@
     <string name="zero_star">I need your love</string>
     <string name="rate_us_0">You have not rated it yet!</string>
     <string name="rate">Rate</string>
+
     <string name="exit">Exit your customize</string>
     <string name="exit_rate">Exit</string>
     <string name="not_yet_rate">Please select number of stars</string>
@@ -97,4 +98,10 @@
     <string name="reset_your_customize">Reset your customize</string>
     <string name="change_your_whole_design_are_you_sure">Change your whole design, are you sure?</string>
     <string name="view">View</string>
+    <string name="do_you_like_the_app">Do you like the app?</string>
+    <string name="let_us_know_your_experience">Let us know your experience</string>
+    <string name="rating_oh_no">Oh, no!</string>
+    <string name="rating_love_you">We love you too!</string>
+    <string name="rating_feedback_request">Please give us some feedback</string>
+    <string name="rating_thanks">Thanks for your feedback \t</string>
 </resources>

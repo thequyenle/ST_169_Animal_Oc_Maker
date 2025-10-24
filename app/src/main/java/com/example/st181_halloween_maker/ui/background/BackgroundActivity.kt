@@ -6,6 +6,7 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.base.BaseActivity
+import android.content.Intent
 import com.example.st181_halloween_maker.core.extensions.handleBack
 import com.example.st181_halloween_maker.core.extensions.onSingleClick
 import com.example.st181_halloween_maker.core.extensions.showToast
@@ -24,6 +25,7 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private val backgroundAdapter by lazy { BackgroundAdapter(this) }
     private val viewModel: BackgroundViewModel by viewModels()
     private var selectedBackgroundPath: String? = null
+    private var previousImagePath: String? = null
 
     override fun setViewBinding(): ActivityBackgroundBinding {
         return ActivityBackgroundBinding.inflate(LayoutInflater.from(this))
@@ -31,9 +33,9 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
     override fun initView() {
         // Load ảnh từ Intent
-        val imagePath = intent.getStringExtra(IntentKey.INTENT_KEY)
-        if (!imagePath.isNullOrEmpty()) {
-            Glide.with(this).load(imagePath).into(binding.ivPreviousImage)
+        previousImagePath = intent.getStringExtra(IntentKey.INTENT_KEY)
+        if (!previousImagePath.isNullOrEmpty()) {
+            Glide.with(this).load(previousImagePath).into(binding.ivPreviousImage)
         }
 
         // Load danh sách background
@@ -94,23 +96,15 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     }
 
     private fun handleSave() {
-        // Save the combined image and navigate to ViewActivity
-        lifecycleScope.launch {
-            viewModel.saveImageFromView(this@BackgroundActivity, binding.layoutCustomLayer)
-                .collect { result ->
-                    when (result) {
-                        is SaveState.Loading -> showLoading()
-                        is SaveState.Error -> {
-                            dismissLoading(true)
-                            showToast(R.string.save_failed_please_try_again)
-                        }
-                        is SaveState.Success -> {
-                            dismissLoading(true)
-                            // Navigate to ViewActivity instead of SuccessActivity
-                            startIntent(ViewActivity::class.java, result.path)
-                        }
-                    }
-                }
+        // Navigate to ViewActivity with both paths
+        if (!selectedBackgroundPath.isNullOrEmpty()) {
+            val intent = Intent(this, ViewActivity::class.java).apply {
+                putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
+                putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
+            }
+            startActivity(intent)
+        } else {
+            showToast(R.string.please_select_an_image)
         }
     }
 

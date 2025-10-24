@@ -7,4 +7,6 @@ object IntentKey {
     const val TYPE_KEY = "TYPE_KEY"
     const val PATH_KEY = "PATH_KEY"
     const val TRENDING_KEY = "TRENDING_KEY"
+    const val PREVIOUS_IMAGE_KEY = "previous_image_key"
+    const val BACKGROUND_IMAGE_KEY = "background_image_key"
 }
