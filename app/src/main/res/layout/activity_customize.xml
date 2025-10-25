@@ -34,7 +34,7 @@
         android:background="@drawable/ic_save_next"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnBack"
-        app:layout_goneMarginEnd="21dp">
+        app:layout_goneMarginEnd="21dp"/>
 
     <!-- Layout Image Layer -->
 
@@ -67,13 +67,29 @@
         app:layout_constraintTop_toBottomOf="@id/btnReset"
         app:layout_constraintEnd_toEndOf="@id/btnNext" />
 
+    <!-- layoutCustomLayer - Character Preview Area -->
+    <FrameLayout
+        android:id="@+id/layoutCustomLayer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/layoutRcvColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnReset"
+        android:layout_marginBottom="18dp"
+        >
+
+        <!-- Character layers will be added dynamically here -->
+
+    </FrameLayout>
+
     <!-- gl0625 -->
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/gl0625"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_begin="457dp" />
+        app:layout_constraintGuide_percent="0.61" />
 
 
     <FrameLayout
@@ -120,6 +136,7 @@
             android:layout_height="match_parent"
             android:paddingHorizontal="12dp"
             android:paddingTop="16dp"
+            android:background="#FFF0D7"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="5"
             tools:listitem="@layout/item_cus" />
@@ -131,7 +148,7 @@
         android:layout_width="match_parent"
         android:layout_height="64dp"
         android:layout_marginBottom="2dp"
-        android:background="@drawable/img_bg_layer_cus"
+        android:background="#FFCC97"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:paddingEnd="12dp"
