@@ -54,7 +54,6 @@
     <string name="category">Category</string>
     <string name="download">Download</string>
     <string name="share">Share</string>
-    <string name="share_failed">Share failed! Please try again.</string>
     <string name="no_item_here">No item is here</string>
     <string name="save">Save</string>
     <string name="successfully">Successfully</string>
