@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.widget.AppCompatButton
@@ -102,38 +103,37 @@ class RatingDialog(
     }
 
     private fun setupListeners() {
-        // Rating bar change listener with deselect prevention
+        // Rating bar change listener
+        // Note: srb_clearRatingEnabled="false" in XML prevents clicking same star to deselect
+        // But still allows swiping left to reach 0 stars
         ratingBar.setOnRatingChangeListener { ratingBarView, rating, fromUser ->
+            Log.d("RatingDialog", "Rating changed: rating=$rating, fromUser=$fromUser, selectedRating=$selectedRating")
+
             if (fromUser) {
                 val newRating = rating.toInt()
-
-                // CRITICAL FIX: Prevent deselect when clicking the same star
-                // When user clicks the same star, the library tries to deselect it (rating becomes 0)
-                // We detect this and restore the previous rating immediately
-                if (newRating == 0 && selectedRating > 0) {
-                    // User clicked the same star that was already selected
-                    // Restore the previous rating to keep it selected
-                    ratingBarView.rating = selectedRating.toFloat()
-                    return@setOnRatingChangeListener
-                }
+                Log.d("RatingDialog", "New rating: $newRating, Previous: $selectedRating")
 
                 // If somehow the same rating comes through, ignore it
                 if (newRating == selectedRating) {
+                    Log.d("RatingDialog", "Same rating detected, ignoring")
                     return@setOnRatingChangeListener
                 }
 
                 // Update selected rating
                 selectedRating = newRating
+                Log.d("RatingDialog", "Updating UI for rating: $selectedRating")
 
                 // Update UI based on new rating
                 if (selectedRating == 0) {
-                    // Reset UI to initial state
+                    // Show zero star state when swiping left to 0
+                    Log.d("RatingDialog", "Showing zero star state")
                     imvAvtRate.setImageResource(R.drawable.ic_ask)
                     tv1.text = context.getString(R.string.do_you_like_the_app)
                     tv2.text = context.getString(R.string.let_us_know_your_experience)
                     btnVote.isEnabled = false
                     btnVote.alpha = 0.5f
                 } else {
+                    Log.d("RatingDialog", "Showing $selectedRating star state")
                     updateUIForRating(selectedRating)
                 }
             }

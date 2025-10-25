@@ -60,7 +60,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv2"
-            app:srb_clearRatingEnabled="true"
+            app:srb_clearRatingEnabled="false"
             app:srb_clickable="true"
             app:srb_drawableEmpty="@drawable/ic_star_empty"
             app:srb_drawableFilled="@drawable/ic_star"

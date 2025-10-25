@@ -2,124 +2,89 @@ package com.example.st181_halloween_maker
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.databinding.DataBindingUtil.setContentView
-import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.base.BaseActivity
+import com.example.st181_halloween_maker.core.extensions.gone
+import com.example.st181_halloween_maker.core.extensions.handleBack
+import com.example.st181_halloween_maker.core.extensions.onSingleClick
+import com.example.st181_halloween_maker.core.extensions.startIntentAnim
+import com.example.st181_halloween_maker.core.utils.RatingPreferences
 import com.example.st181_halloween_maker.databinding.ActivitySettingsBinding
 import com.example.st181_halloween_maker.dialog.RatingDialog
-import com.example.st181_halloween_maker.utils.LocaleHelper
+import com.example.st181_halloween_maker.ui.language.LanguageActivity
 
-class SettingsActivity : BaseActivity() {
+class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
 
-    private lateinit var binding: ActivitySettingsBinding
-
-    private var isRated = false
-    private lateinit var layoutRateUs: ConstraintLayout
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        binding = ActivitySettingsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        layoutRateUs = binding.layoutRate
-        loadRatingStatus()
-
-        setupClickListeners()
+    private val ratingPrefs by lazy {
+        RatingPreferences(this)
     }
 
-    companion object {
-        private const val PREFS_NAME = "FakeCallSettings"  // or any name you prefer
-        private const val KEY_RATED = "is_rated"
+    override fun setViewBinding(): ActivitySettingsBinding {
+        return ActivitySettingsBinding.inflate(LayoutInflater.from(this))
     }
 
-    override fun attachBaseContext(newBase: Context) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase))
+
+
+    override fun initView() {
+        // Load and apply rating status
+        if (ratingPrefs.isRated()) {
+            binding.btnRate.gone()
+        }
     }
 
-    private fun setupClickListeners() {
-        // Back button
-        binding.btnBack.setOnClickListener {
-            finish()
+    override fun viewListener() {
+        binding.apply {
+            btnBack.onSingleClick { handleBack() }
+
+            btnLang.onSingleClick { navigateToLanguage() }
+
+            btnRate.onSingleClick { showRatingDialog() }
+
+            btnShare.onSingleClick { shareApp() }
+
+            btnPolicy.onSingleClick { openPrivacyPolicy() }
         }
+    }
 
-        // Language
-        binding.layoutLanguage.setOnClickListener {
-            val intent = Intent(this, LanguageActivity::class.java)
-            intent.putExtra("from_settings", true)
-            startActivity(intent)
+    override fun initText() {
+        // No text initialization needed
+    }
+
+    private fun navigateToLanguage() {
+        val intent = Intent(this, LanguageActivity::class.java).apply {
+            putExtra("from_settings", true)
         }
-
-        // Rate Us
-        binding.layoutRate.setOnClickListener {
-
-            showRatingDialog()
-        }
-
-        // Share App
-        binding.layoutShare.setOnClickListener {
-            shareApp()
-        }
-
-        // Privacy Policy
-        binding.layoutPrivacy.setOnClickListener {
-            // TODO: Open privacy policy
-            openPrivacyPolicy()
-        }
-
-
+        startActivity(intent)
     }
 
     private fun showRatingDialog() {
         RatingDialog.show(
             this,
             onRatingSubmitted = { rating ->
-                // User đã chọn rating và submit
                 handleRatingSubmitted()
             },
             onDismiss = {
-                // Dialog đóng nhưng không submit (ấn Exit hoặc touch outside)
-                // Không làm gì, giữ nguyên trạng thái
+                // Dialog dismissed without rating
             }
         )
     }
 
     private fun handleRatingSubmitted() {
-        // Đánh dấu đã rating
-        isRated = true
-        saveRatingStatus(true)
+        ratingPrefs.setRated(true)
+        animateAndHideRateButton()
+    }
 
-        // Ẩn layout Rate Us với animation
-        layoutRateUs.animate()
+    private fun animateAndHideRateButton() {
+        binding.btnRate.animate()
             .alpha(0f)
-            .translationY(-layoutRateUs.height.toFloat())
+            .translationY(-binding.btnRate.height.toFloat())
             .setDuration(300)
             .withEndAction {
-                layoutRateUs.visibility = View.GONE
+                binding.btnRate.visibility = View.GONE
             }
             .start()
     }
-
-    // To this:
-    private fun saveRatingStatus(rated: Boolean) {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putBoolean(KEY_RATED, rated).apply()
-    }
-
-    private fun loadRatingStatus() {
-        val prefs = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        isRated = prefs.getBoolean(KEY_RATED, false)
-
-        // Nếu đã rating rồi thì ẩn luôn
-        if (isRated) {
-            layoutRateUs.visibility = View.GONE
-        }
-    }
-
 
     private fun shareApp() {
         val shareIntent = Intent().apply {
@@ -127,7 +92,7 @@ class SettingsActivity : BaseActivity() {
             type = "text/plain"
             putExtra(
                 Intent.EXTRA_TEXT,
-                "Check out this amazing Alarm Clock app: http://play.google.com/store/apps/details?id=${packageName}"
+                "Check out this amazing app: http://play.google.com/store/apps/details?id=${packageName}"
             )
         }
         startActivity(Intent.createChooser(shareIntent, "Share app via"))
@@ -140,7 +105,4 @@ class SettingsActivity : BaseActivity() {
         }
         startActivity(intent)
     }
-
-
-
 }
