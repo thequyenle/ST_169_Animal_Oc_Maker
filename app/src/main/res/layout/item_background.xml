@@ -54,7 +54,7 @@
                     android:backgroundTint="@color/white"
                     android:clickable="true"
                     android:focusable="true"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/btn_none_save"
                     android:visibility="gone" />
 

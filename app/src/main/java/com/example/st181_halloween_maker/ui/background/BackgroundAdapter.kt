@@ -42,18 +42,37 @@ class BackgroundAdapter(private val context: Context) : RecyclerView.Adapter<Bac
                 }
             }
 
+            // Update border based on selection
             if (item.isSelected) {
                 binding.borderFrame.setBackgroundResource(com.example.st181_halloween_maker.R.drawable.bg_border_selected)
             } else {
                 binding.borderFrame.setBackgroundResource(android.R.color.transparent)
             }
 
-            binding.imvImage.setOnClickListener {
-                onItemClick?.invoke(item, position)
-            }
-
-            binding.btnNone.setOnClickListener {
-                onNoneClick?.invoke(position)
+            // Set click listeners based on what's visible
+            when (position) {
+                0 -> {
+                    if (!isBody) {
+                        // When btnNone is visible, set click listener on both btnNone and root
+                        binding.btnNone.setOnClickListener {
+                            onNoneClick?.invoke(position)
+                        }
+                        binding.root.setOnClickListener {
+                            onNoneClick?.invoke(position)
+                        }
+                    } else {
+                        binding.root.setOnClickListener(null)
+                    }
+                }
+                else -> {
+                    // For regular images
+                    binding.imvImage.setOnClickListener {
+                        onItemClick?.invoke(item, position)
+                    }
+                    binding.root.setOnClickListener {
+                        onItemClick?.invoke(item, position)
+                    }
+                }
             }
         }
     }

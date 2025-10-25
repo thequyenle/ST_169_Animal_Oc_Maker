@@ -109,12 +109,15 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         lifecycleScope.launch(Dispatchers.Main) {
             selectedBackgroundPath = null
 
-            // Clear selection state
+            // Update selection state - mark "None" item as selected
             val currentList = backgroundAdapter.getCurrentList()
-            currentList.forEach { it.isSelected = false }
+            currentList.forEach { it.isSelected = false }  // Deselect all
+            if (position < currentList.size) {
+                currentList[position].isSelected = true  // Select the "None" item
+            }
 
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
-            backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to hide border
+            backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
         }
     }
 
