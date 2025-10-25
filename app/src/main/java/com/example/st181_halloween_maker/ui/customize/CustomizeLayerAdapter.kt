@@ -31,7 +31,7 @@ class CustomizeLayerAdapter(val context: Context) :
         }
         binding.apply {
 
-            vFocus.isVisible = item.isSelected
+            vFocus.isSelected = item.isSelected
 
             when (item.path) {
                 AssetsKey.NONE_LAYER -> {

@@ -125,7 +125,6 @@
         android:id="@+id/layoutRcv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/img_bg_layer_cus"
         app:layout_constraintBottom_toTopOf="@id/rcvNavigation"
         app:layout_constraintTop_toBottomOf="@+id/gl0625">
 

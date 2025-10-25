@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_custom"
+    android:background="@drawable/img_bg_app"
     tools:context=".ui.background.BackgroundActivity">
 
     <RelativeLayout
@@ -25,8 +25,8 @@
 
             <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="39dp"
+                android:layout_height="39dp"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="16dp"
@@ -35,23 +35,12 @@
 
             <FrameLayout
                 android:id="@+id/btnSave"
-                android:layout_width="48dp"
-                android:layout_height="32dp"
+                android:layout_width="39dp"
+                android:layout_height="39dp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
                 android:background="@drawable/ic_save_next"
                 android:layout_marginEnd="16dp">
-                <TextView
-                    android:id="@+id/txtSave"
-                    style="@style/custom_text"
-                    android:layout_width="40dp"
-                    android:gravity="center"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/save"
-                    android:textSize="16sp"
-                    android:layout_gravity="center"
-                    android:textColor="@color/orange"/>
             </FrameLayout>
 
         </RelativeLayout>
@@ -63,13 +52,11 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="20dp"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintBottom_toTopOf="@+id/layoutRcv"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/actionBar"
-        app:layout_constraintVertical_bias="0.0" >
+         >
         <ImageView
             android:id="@+id/ivBackground"
             android:layout_width="match_parent"
@@ -83,6 +70,55 @@
 
     </FrameLayout>
 
+
+    <LinearLayout
+        android:id="@+id/layoutButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="8dp"
+        android:background="@drawable/img_bg_layer_cus"
+        app:layout_constraintBottom_toTopOf="@id/layoutRcv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <FrameLayout
+            android:id="@+id/btnMyAlbum"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/img_item_ss">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="My Album"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/btnShare"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:background="@drawable/img_item_ss">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Share"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/layoutRcv"
@@ -99,6 +135,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingHorizontal="12dp"
+            android:background="#FFF0D7"
             android:paddingTop="6dp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="4"

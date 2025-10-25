@@ -58,6 +58,6 @@
             android:id="@+id/vFocus"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/bg_8_stroke_orange"/>
+            android:background="@drawable/bg_item_cus_selector"/>
     </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
