@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="76dp"
+    android:layout_height="110dp"
     android:layout_margin="6dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <FrameLayout
@@ -11,7 +11,6 @@
         android:visibility="gone"
         android:background="@drawable/bg_item_focus_bg"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -21,38 +20,46 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.cardview.widget.CardView
+        <!-- Outer border frame for selection stroke -->
+        <FrameLayout
+            android:id="@+id/borderFrame"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_margin="2dp"
-            app:cardBackgroundColor="@color/tranf"
-            app:cardCornerRadius="7dp"
-            app:cardElevation="0dp">
+            android:background="@android:color/transparent"
+            android:padding="2dp">
 
-            <ImageView
-                android:id="@+id/imvImage"
+            <!-- Inner CardView with content -->
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img_no_image" />
+                app:cardBackgroundColor="@color/tranf"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp">
 
-            <ImageView
-                android:id="@+id/btnNone"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:backgroundTint="@color/white"
-                android:clickable="true"
-                android:focusable="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/btn_none_save"
-                android:visibility="gone" />
+                <ImageView
+                    android:id="@+id/imvImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/img_no_image" />
 
-        </androidx.cardview.widget.CardView>
+                <ImageView
+                    android:id="@+id/btnNone"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/white"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/btn_none_save"
+                    android:visibility="gone" />
+
+            </androidx.cardview.widget.CardView>
+        </FrameLayout>
     </FrameLayout>
 
 

@@ -57,6 +57,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         initRcv()
         lifecycleScope.launch { showLoading() }
         dataViewModel.ensureData(this)
+
+        // Set background based on category position
+        val categoryPosition = intent.getIntExtra(IntentKey.INTENT_KEY, 0)
+        val backgroundDrawable = when(categoryPosition) {
+            0 -> R.drawable.bg_data1
+            1 -> R.drawable.bg_data2
+            2 -> R.drawable.bg_data3
+            else -> R.drawable.img_bg_app
+        }
+        binding.main.setBackgroundResource(backgroundDrawable)
     }
 
     override fun dataObservable() {
@@ -312,7 +322,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     is SaveState.Success -> {
                         dismissLoading(true)
-                        startIntent(BackgroundActivity::class.java, result.path)
+                        startIntent(BackgroundActivity::class.java, result.path, viewModel.positionSelected)
                     }
                 }
             }

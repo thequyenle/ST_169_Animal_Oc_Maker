@@ -43,9 +43,9 @@ class BackgroundAdapter(private val context: Context) : RecyclerView.Adapter<Bac
             }
 
             if (item.isSelected) {
-               binding.layoutFocus1.show()
+                binding.borderFrame.setBackgroundResource(com.example.st181_halloween_maker.R.drawable.bg_border_selected)
             } else {
-                binding.layoutFocus1.gone()
+                binding.borderFrame.setBackgroundResource(android.R.color.transparent)
             }
 
             binding.imvImage.setOnClickListener {

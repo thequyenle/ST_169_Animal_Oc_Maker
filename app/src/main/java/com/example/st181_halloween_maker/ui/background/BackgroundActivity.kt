@@ -34,9 +34,19 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     override fun initView() {
         // Load ảnh từ Intent
         previousImagePath = intent.getStringExtra(IntentKey.INTENT_KEY)
+        val categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
         if (!previousImagePath.isNullOrEmpty()) {
             Glide.with(this).load(previousImagePath).into(binding.ivPreviousImage)
         }
+
+        // Set background based on category position
+        val backgroundDrawable = when(categoryPosition) {
+            0 -> R.drawable.bg_data1
+            1 -> R.drawable.bg_data2
+            2 -> R.drawable.bg_data3
+            else -> R.drawable.img_bg_app
+        }
+        binding.main.setBackgroundResource(backgroundDrawable)
 
         // Load danh sách background
         val list = viewModel.getListBackground(this)
@@ -80,10 +90,17 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             val path = item.path
             selectedBackgroundPath = path
+
+            // Update selection state
+            val currentList = backgroundAdapter.getCurrentList()
+            currentList.forEach { it.isSelected = false }  // Deselect all
+            item.isSelected = true  // Select current item
+
             withContext(Dispatchers.Main) {
                 Glide.with(this@BackgroundActivity)
                     .load(path)
                     .into(binding.ivBackground)
+                backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border
             }
         }
     }
@@ -91,7 +108,13 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private fun handleRemoveBackground(position: Int) {
         lifecycleScope.launch(Dispatchers.Main) {
             selectedBackgroundPath = null
+
+            // Clear selection state
+            val currentList = backgroundAdapter.getCurrentList()
+            currentList.forEach { it.isSelected = false }
+
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
+            backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to hide border
         }
     }
 

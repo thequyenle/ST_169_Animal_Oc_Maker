@@ -21,6 +21,7 @@ import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.dialog.LoadingDialog
 import com.example.st181_halloween_maker.core.dialog.NoInternetDialog
 import com.example.st181_halloween_maker.core.utils.KeyApp.INTENT_KEY
+import com.example.st181_halloween_maker.core.utils.key.IntentKey
 import com.example.st181_halloween_maker.core.utils.SystemUtils
 import com.example.st181_halloween_maker.core.utils.SystemUtils.lastClickTime
 import com.example.st181_halloween_maker.core.utils.SystemUtils.setLocale
@@ -87,6 +88,12 @@ internal fun Activity.startIntent(targetActivity: Class<*>, value: Int) {
     startActivity(intent)
 }
 
+internal fun Activity.startIntent(targetActivity: Class<*>, stringValue: String, intValue: Int) {
+    val intent = Intent(this, targetActivity)
+    intent.putExtra(INTENT_KEY, stringValue)
+    intent.putExtra(IntentKey.CATEGORY_POSITION_KEY, intValue)
+    startActivity(intent)
+}
 
 internal fun Activity.startIntent(targetActivity: Class<*>, key: String, value: String) {
     val intent = Intent(this, targetActivity)
