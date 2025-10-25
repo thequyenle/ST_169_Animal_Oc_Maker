@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AugmentWebviewStateStore">
+    <option name="stateMap">
+      <map>
+        <entry key="CHAT_STATE" value="{&quot;currentConversationId&quot;:&quot;e1522282-fecc-4678-9eda-72952aa3b382&quot;,&quot;agentExecutionMode&quot;:&quot;manual&quot;,&quot;isPanelCollapsed&quot;:true,&quot;displayedAnnouncements&quot;:[],&quot;conversations&quot;:{&quot;e1522282-fecc-4678-9eda-72952aa3b382&quot;:{&quot;id&quot;:&quot;e1522282-fecc-4678-9eda-72952aa3b382&quot;,&quot;name&quot;:&quot;I need to check the code to answer the user's question about whether a rating dialog appears when pressing the exit button an even number of times at home.\n&quot;,&quot;createdAtIso&quot;:&quot;2025-10-25T01:09:20.770Z&quot;,&quot;lastInteractedAtIso&quot;:&quot;2025-10-25T01:10:01.721Z&quot;,&quot;chatHistory&quot;:[{&quot;chatItemType&quot;:&quot;exchange-pointer&quot;,&quot;exchangeUuid&quot;:&quot;4f31916d-d056-4ffe-ba62-1121702572be&quot;,&quot;timestamp&quot;:&quot;2025-10-25T01:10:01.737Z&quot;,&quot;request_message&quot;:&quot;ấn nút thoát tại home với số lần chẵn thì có xuất hện rating k?&quot;,&quot;status&quot;:&quot;success&quot;,&quot;seen_state&quot;:&quot;unseen&quot;}],&quot;feedbackStates&quot;:{&quot;temp-fe-4f4ff696-2b13-4576-98e2-faa1ccd21636&quot;:{&quot;selectedRating&quot;:0,&quot;feedbackNote&quot;:&quot;&quot;}},&quot;toolUseStates&quot;:{},&quot;draftExchange&quot;:{&quot;request_message&quot;:&quot;&quot;,&quot;rich_text_json_repr&quot;:{&quot;type&quot;:&quot;doc&quot;,&quot;content&quot;:[{&quot;type&quot;:&quot;paragraph&quot;}]},&quot;status&quot;:&quot;draft&quot;},&quot;requestIds&quot;:[],&quot;isPinned&quot;:false,&quot;isShareable&quot;:true,&quot;extraData&quot;:{&quot;isAgentConversation&quot;:true,&quot;hasDirtyEdits&quot;:false,&quot;baselineTimestamp&quot;:0,&quot;hasTitleGenerated&quot;:true},&quot;personaType&quot;:0,&quot;rootTaskUuid&quot;:&quot;0c05916c-ec43-48e6-ac40-3b57748d9ec5&quot;}}}" />
+      </map>
+    </option>
+  </component>
+</project>
