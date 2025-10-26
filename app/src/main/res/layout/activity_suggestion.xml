@@ -59,18 +59,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <TextView
+            <com.example.st181_halloween_maker.core.custom.StrokeTextView
                 android:id="@+id/tommy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="27dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
-                android:paddingBottom="5dp"
+                android:paddingBottom="7dp"
+                android:paddingTop="3dp"
                 android:text="@string/tommy"
                 android:textColor="#FFA600"
                 android:textSize="24sp"
+                app:strokeWidth="4dp"
+                app:strokeColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -113,7 +116,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <TextView
+            <com.example.st181_halloween_maker.core.custom.StrokeTextView
                 android:id="@+id/miley"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -121,10 +124,13 @@
                 android:layout_marginTop="18dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
-                android:paddingBottom="5dp"
+                android:paddingBottom="7dp"
+                android:paddingTop="3dp"
                 android:text="@string/miley"
                 android:textColor="#FF7396"
                 android:textSize="24sp"
+                app:strokeWidth="4dp"
+                app:strokeColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardTommy1" />
 
@@ -167,7 +173,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <TextView
+            <com.example.st181_halloween_maker.core.custom.StrokeTextView
                 android:id="@+id/dammy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -175,10 +181,13 @@
                 android:layout_marginTop="18dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
-                android:paddingBottom="5dp"
+                android:paddingBottom="7dp"
+                android:paddingTop="3dp"
                 android:text="@string/dammy"
                 android:textColor="#8501D2"
                 android:textSize="24sp"
+                app:strokeWidth="4dp"
+                app:strokeColor="@color/white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/cardMiley1" />
 
