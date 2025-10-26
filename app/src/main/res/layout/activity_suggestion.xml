@@ -74,27 +74,44 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/imvTommy1"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTommy1"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
                 app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/tommy" />
+                app:layout_constraintTop_toBottomOf="@id/tommy">
 
-            <ImageView
-                android:id="@+id/imvTommy2"
+                <ImageView
+                    android:id="@+id/imvTommy1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTommy2"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginEnd="24dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tommy" />
+                app:layout_constraintTop_toBottomOf="@id/tommy">
+
+                <ImageView
+                    android:id="@+id/imvTommy2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/miley"
@@ -109,28 +126,46 @@
                 android:textColor="#FF7396"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imvTommy1" />
+                app:layout_constraintTop_toBottomOf="@id/cardTommy1" />
 
-            <ImageView
-                android:id="@+id/imvMiley1"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMiley1"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/miley" />
+                app:layout_constraintTop_toBottomOf="@id/miley">
 
-            <ImageView
-                android:id="@+id/imvMiley2"
+                <ImageView
+                    android:id="@+id/imvMiley1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMiley2"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginEnd="24dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/miley" />
+                app:layout_constraintTop_toBottomOf="@id/miley">
+
+                <ImageView
+                    android:id="@+id/imvMiley2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
 
             <TextView
                 android:id="@+id/dammy"
@@ -145,28 +180,46 @@
                 android:textColor="#8501D2"
                 android:textSize="24sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/imvMiley1" />
+                app:layout_constraintTop_toBottomOf="@id/cardMiley1" />
 
-            <ImageView
-                android:id="@+id/imvDammy1"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDammy1"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/dammy" />
+                app:layout_constraintTop_toBottomOf="@id/dammy">
 
-            <ImageView
-                android:id="@+id/imvDammy2"
+                <ImageView
+                    android:id="@+id/imvDammy1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDammy2"
                 android:layout_width="151dp"
                 android:layout_height="151dp"
                 android:layout_marginTop="13dp"
                 android:layout_marginEnd="24dp"
-                android:background="@drawable/background_suggest"
-                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp"
+                app:cardBackgroundColor="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dammy" />
+                app:layout_constraintTop_toBottomOf="@id/dammy">
+
+                <ImageView
+                    android:id="@+id/imvDammy2"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop" />
+
+            </com.google.android.material.card.MaterialCardView>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
