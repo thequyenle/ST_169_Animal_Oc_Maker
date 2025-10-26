@@ -44,9 +44,15 @@ class SuggestionViewModel : ViewModel() {
             val thumbnailsMap = mutableMapOf<String, Bitmap>()
 
             withContext(Dispatchers.IO) {
-                // Tommy (data1 - position 0)
+                // Tommy (data1 - position 0, characterIndex 0)
                 if (allData.size > 0) {
-                    val tommySuggestions = generateSuggestionsForCategory(allData[0], 0, "Tommy", context)
+                    val tommySuggestions = generateSuggestionsForCategory(
+                        characterData = allData[0],
+                        categoryPosition = 0,
+                        characterIndex = 0,
+                        categoryName = "Tommy",
+                        context = context
+                    )
                     suggestionsList.addAll(tommySuggestions)
 
                     // Generate thumbnails for Tommy
@@ -62,9 +68,15 @@ class SuggestionViewModel : ViewModel() {
                     }
                 }
 
-                // Miley (data2 - position 1)
+                // Miley (data2 - position 1, characterIndex 1)
                 if (allData.size > 1) {
-                    val mileySuggestions = generateSuggestionsForCategory(allData[1], 1, "Miley", context)
+                    val mileySuggestions = generateSuggestionsForCategory(
+                        characterData = allData[1],
+                        categoryPosition = 1,
+                        characterIndex = 1,
+                        categoryName = "Miley",
+                        context = context
+                    )
                     suggestionsList.addAll(mileySuggestions)
 
                     // Generate thumbnails for Miley
@@ -80,9 +92,15 @@ class SuggestionViewModel : ViewModel() {
                     }
                 }
 
-                // Dammy (data3 - position 2)
+                // Dammy (data3 - position 2, characterIndex 2)
                 if (allData.size > 2) {
-                    val dammySuggestions = generateSuggestionsForCategory(allData[2], 2, "Dammy", context)
+                    val dammySuggestions = generateSuggestionsForCategory(
+                        characterData = allData[2],
+                        categoryPosition = 2,
+                        characterIndex = 2,
+                        categoryName = "Dammy",
+                        context = context
+                    )
                     suggestionsList.addAll(dammySuggestions)
 
                     // Generate thumbnails for Dammy
@@ -113,6 +131,7 @@ class SuggestionViewModel : ViewModel() {
     private fun generateSuggestionsForCategory(
         characterData: CustomizeModel,
         categoryPosition: Int,
+        characterIndex: Int,
         categoryName: String,
         context: Context
     ): List<SuggestionModel> {
@@ -125,13 +144,14 @@ class SuggestionViewModel : ViewModel() {
             val suggestion = SuggestionModel(
                 id = "${categoryName}_${index}_${UUID.randomUUID()}",
                 categoryPosition = categoryPosition,
+                characterIndex = characterIndex,
                 characterData = characterData.avatar,
                 randomState = randomState,
                 background = randomBackground
             )
 
             suggestions.add(suggestion)
-            Log.d("SuggestionViewModel", "Generated: ${categoryName}_${index}")
+            Log.d("SuggestionViewModel", "Generated: ${categoryName}_${index} (characterIndex: $characterIndex)")
         }
 
         return suggestions

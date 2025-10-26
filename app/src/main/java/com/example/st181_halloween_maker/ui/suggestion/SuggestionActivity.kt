@@ -133,6 +133,7 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     private fun openCustomizeWithSuggestion(suggestion: SuggestionModel) {
         val intent = Intent(this, CustomizeActivity::class.java).apply {
             putExtra(IntentKey.CATEGORY_POSITION_KEY, suggestion.categoryPosition)
+            putExtra(IntentKey.CHARACTER_INDEX, suggestion.characterIndex)
             putExtra(IntentKey.IS_SUGGESTION, true)
             putExtra(IntentKey.SUGGESTION_STATE, suggestion.randomState.toJson())
             putExtra(IntentKey.SUGGESTION_BACKGROUND, suggestion.background)

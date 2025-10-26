@@ -16,4 +16,5 @@ object IntentKey {
     const val IS_SUGGESTION = "is_suggestion"
     const val SUGGESTION_STATE = "suggestion_state"
     const val SUGGESTION_BACKGROUND = "suggestion_background"
+    const val CHARACTER_INDEX = "character_index"
 }

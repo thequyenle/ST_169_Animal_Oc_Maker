@@ -62,11 +62,18 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
         // Check if opening from suggestion
         val isSuggestion = intent.getBooleanExtra(IntentKey.IS_SUGGESTION, false)
-        val categoryPosition = if (isSuggestion) {
+
+        // Get character index - ưu tiên CHARACTER_INDEX nếu có (từ suggestion)
+        val characterIndex = if (intent.hasExtra(IntentKey.CHARACTER_INDEX)) {
+            intent.getIntExtra(IntentKey.CHARACTER_INDEX, 0)
+        } else if (isSuggestion) {
             intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
         } else {
             intent.getIntExtra(IntentKey.INTENT_KEY, 0)
         }
+
+        // Set background based on character index
+        val categoryPosition = characterIndex
 
         // Set background based on category position
         val backgroundDrawable = when(categoryPosition) {
@@ -90,7 +97,13 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch {
             dataViewModel.allData.collect { list ->
                 if (list.isNotEmpty()) {
-                    viewModel.positionSelected = intent.getIntExtra(IntentKey.INTENT_KEY, 0)
+                    // Dùng CHARACTER_INDEX nếu có, fallback về INTENT_KEY
+                    viewModel.positionSelected = if (intent.hasExtra(IntentKey.CHARACTER_INDEX)) {
+                        intent.getIntExtra(IntentKey.CHARACTER_INDEX, 0)
+                    } else {
+                        intent.getIntExtra(IntentKey.INTENT_KEY, 0)
+                    }
+
                     viewModel.setDataCustomize(list[viewModel.positionSelected])
                     viewModel.setIsDataAPI(viewModel.positionSelected >= ValueKey.POSITION_API)
                     initData()

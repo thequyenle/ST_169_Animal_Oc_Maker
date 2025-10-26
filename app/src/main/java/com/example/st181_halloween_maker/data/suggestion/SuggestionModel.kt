@@ -8,6 +8,7 @@ import com.google.gson.Gson
 data class SuggestionModel(
     val id: String,
     val categoryPosition: Int,
+    val characterIndex: Int,      // Index chính xác của character trong allData list
     val characterData: String,
     val randomState: RandomState,
     val background: String
