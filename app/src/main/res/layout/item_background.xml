@@ -51,10 +51,10 @@
                     android:id="@+id/btnNone"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:backgroundTint="@color/white"
+                    android:background="@drawable/bg_btn_none"
                     android:clickable="true"
                     android:focusable="true"
-                    android:scaleType="centerCrop"
+                    android:scaleType="centerInside"
                     android:src="@drawable/btn_none_save"
                     android:visibility="gone" />
 
