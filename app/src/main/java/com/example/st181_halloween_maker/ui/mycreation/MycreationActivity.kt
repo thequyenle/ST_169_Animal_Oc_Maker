@@ -1,5 +1,6 @@
 package com.example.st181_halloween_maker.ui.mycreation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.enableEdgeToEdge
@@ -13,8 +14,10 @@ import com.example.st181_halloween_maker.core.extensions.handleBack
 import com.example.st181_halloween_maker.core.extensions.onSingleClick
 import com.example.st181_halloween_maker.core.extensions.show
 import com.example.st181_halloween_maker.core.helper.MediaHelper
+import com.example.st181_halloween_maker.core.utils.key.IntentKey
 import com.example.st181_halloween_maker.core.utils.key.ValueKey
 import com.example.st181_halloween_maker.databinding.ActivityMycreationBinding
+import com.example.st181_halloween_maker.ui.view.ViewActivity
 import com.girlmaker.create.avatar.creator.model.MyCreationModel
 
 class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
@@ -75,7 +78,11 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
     private fun handleRcv() {
         myCreationAdapter.onItemClick = { path ->
-            // Handle item click - you can add navigation or preview here if needed
+            // Navigate to ViewActivity with the image path
+            val intent = Intent(this, ViewActivity::class.java).apply {
+                putExtra(IntentKey.IMAGE_PATH_KEY, path)
+            }
+            startActivity(intent)
         }
     }
 

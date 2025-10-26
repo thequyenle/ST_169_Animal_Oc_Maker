@@ -104,4 +104,8 @@
     <string name="rating_love_you">We love you too!</string>
     <string name="rating_feedback_request">Please give us some feedback</string>
     <string name="rating_thanks">Thanks for your feedback \t</string>
+    <string name="are_you_sure_you_want_to_delete_this_image">Do you want to delete?</string>
+    <string name="image_deleted_successfully">delete successfully!</string>
+    <string name="file_not_found">file not found</string>
+    <string name="delete_failed">delete failed</string>
 </resources>

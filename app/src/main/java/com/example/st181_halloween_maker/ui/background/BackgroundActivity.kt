@@ -16,7 +16,6 @@ import com.example.st181_halloween_maker.core.utils.key.IntentKey
 import com.example.st181_halloween_maker.core.utils.key.ValueKey
 import com.example.st181_halloween_maker.databinding.ActivityBackgroundBinding
 import com.example.st181_halloween_maker.ui.success.SuccessActivity
-import com.example.st181_halloween_maker.ui.view.ViewActivity
 import com.girlmaker.create.avatar.creator.model.BackGroundModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -125,7 +124,7 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     }
 
     private fun handleSave() {
-        // Save to My Creation and navigate to ViewActivity
+        // Save to My Creation and navigate to SuccessActivity
         if (!selectedBackgroundPath.isNullOrEmpty()) {
             lifecycleScope.launch {
                 val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
@@ -139,8 +138,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                             }
                             is SaveState.Success -> {
                                 dismissLoading(true)
-                                // Navigate to ViewActivity after saving
-                                val intent = Intent(this@BackgroundActivity, ViewActivity::class.java).apply {
+                                // Navigate to SuccessActivity after saving
+                                val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
                                     putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
                                     putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
                                 }

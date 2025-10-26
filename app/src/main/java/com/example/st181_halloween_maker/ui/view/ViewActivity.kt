@@ -1,84 +1,182 @@
 package com.example.st181_halloween_maker.ui.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.base.BaseActivity
+import com.example.st181_halloween_maker.core.dialog.ConfirmDialog
+import com.example.st181_halloween_maker.core.extensions.handleBack
 import com.example.st181_halloween_maker.core.extensions.onSingleClick
 import com.example.st181_halloween_maker.core.extensions.showToast
 import com.example.st181_halloween_maker.core.extensions.startIntent
 import com.example.st181_halloween_maker.core.helper.BitmapHelper
 import com.example.st181_halloween_maker.core.helper.MediaHelper
-import com.example.st181_halloween_maker.core.utils.SaveState
+import com.example.st181_halloween_maker.core.utils.HandleState
 import com.example.st181_halloween_maker.core.utils.key.IntentKey
-import com.example.st181_halloween_maker.core.utils.key.ValueKey
-import com.example.st181_halloween_maker.databinding.ActivityViewBinding
+import com.example.st181_halloween_maker.databinding.ActivitySuccessBinding
 import com.example.st181_halloween_maker.ui.home.HomeActivity
 import com.example.st181_halloween_maker.ui.mycreation.MycreationActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 
-class ViewActivity : BaseActivity<ActivityViewBinding>() {
-    override fun setViewBinding(): ActivityViewBinding {
-        return ActivityViewBinding.inflate(LayoutInflater.from(this))
+class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
+    private var imagePath: String? = null
+
+    override fun setViewBinding(): ActivitySuccessBinding {
+        return ActivitySuccessBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
-        // Get both image paths from intent
-        val backgroundPath = intent.getStringExtra(IntentKey.BACKGROUND_IMAGE_KEY)
-        val previousImagePath = intent.getStringExtra(IntentKey.PREVIOUS_IMAGE_KEY)
+        // Get image path from intent
+        imagePath = intent.getStringExtra(IntentKey.IMAGE_PATH_KEY)
 
-        // Display the background image
-        if (!backgroundPath.isNullOrEmpty()) {
+        // Display the image
+        if (!imagePath.isNullOrEmpty()) {
             Glide.with(this)
-                .load(backgroundPath)
-                .into(binding.ivBackground)
-        }
-
-        // Display the previous image on top
-        if (!previousImagePath.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(previousImagePath)
+                .load(imagePath)
                 .into(binding.imvImage)
         }
     }
 
     override fun viewListener() {
-        // Add click listener for ic_home to return to HomeActivity
-        binding.icHome.onSingleClick {
-            startIntent(HomeActivity::class.java)
-            finish()
+        // Add click listener for btnBack to go back to previous screen
+        binding.btnBack.onSingleClick {
+            handleBack()
         }
 
-        // Add click listener for btnMyAlbum to navigate to MycreationActivity
-        binding.btnMyAlbum.onSingleClick {
-            startIntent(MycreationActivity::class.java)
-            finish()
+        // Add click listener for ic_delete to delete the image
+        binding.icDelete.onSingleClick {
+            showDeleteDialog()
+        }
+
+        // Add click listener for btnDownload to download the image
+        binding.btnDownload.onSingleClick {
+            downloadImage()
+        }
+
+        // Add click listener for btnShare to share the image
+        binding.btnShare.onSingleClick {
+            shareImage()
         }
     }
 
-    private fun saveImageToAlbum() {
+    private fun showDeleteDialog() {
+        val dialog = ConfirmDialog(
+            this,
+            R.string.delete,
+            R.string.do_you_want_to_delete
+        )
+        dialog.onYesClick = {
+            deleteImage()
+            dialog.dismiss()
+        }
+        dialog.onNoClick = {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun deleteImage() {
+        if (!imagePath.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                try {
+                    val file = File(imagePath!!)
+                    if (file.exists()) {
+                        file.delete()
+                        showToast(R.string.image_deleted_successfully)
+                        finish() // Go back to previous screen after deleting
+                    } else {
+                        showToast(R.string.file_not_found)
+                    }
+                } catch (e: Exception) {
+                    showToast(R.string.delete_failed)
+                }
+            }
+        }
+    }
+
+    private fun downloadImage() {
+        if (!imagePath.isNullOrEmpty()) {
+            lifecycleScope.launch {
+                try {
+                    val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                    MediaHelper.saveBitmapToExternal(this@ViewActivity, bitmap)
+                        .collect { state ->
+                            when (state) {
+                                HandleState.LOADING -> showLoading()
+                                HandleState.SUCCESS -> {
+                                    dismissLoading(true)
+                                    showToast(R.string.image_has_been_saved_successfully)
+                                }
+                                HandleState.FAIL -> {
+                                    dismissLoading(true)
+                                    showToast(R.string.save_failed_please_try_again)
+                                }
+                                HandleState.NOT_SELECT -> {
+                                    // Do nothing
+                                }
+                            }
+                        }
+                } catch (e: Exception) {
+                    dismissLoading(true)
+                    showToast(R.string.save_failed_please_try_again)
+                }
+            }
+        }
+    }
+
+    private fun shareImage() {
         lifecycleScope.launch {
-            val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
-            MediaHelper.saveBitmapToInternalStorage(this@ViewActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
-                .collect { result ->
-                    when (result) {
-                        is SaveState.Loading -> showLoading()
-                        is SaveState.Error -> {
-                            dismissLoading(true)
-                            showToast(R.string.save_failed_please_try_again)
-                        }
-                        is SaveState.Success -> {
-                            dismissLoading(true)
-                            showToast(R.string.image_has_been_saved_successfully)
-                        }
+            try {
+                showLoading()
+
+                // Create bitmap from view
+                val bitmap = withContext(Dispatchers.Default) {
+                    BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                }
+
+                // Save bitmap to cache
+                val file = withContext(Dispatchers.IO) {
+                    with(MediaHelper) {
+                        this@ViewActivity.saveBitmapToCache(bitmap)
                     }
                 }
+
+                dismissLoading(true)
+
+                // Create content URI using FileProvider for Android 7.0+
+                val contentUri = FileProvider.getUriForFile(
+                    this@ViewActivity,
+                    "${applicationContext.packageName}.provider",
+                    file
+                )
+
+                // Create share intent
+                val shareIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, contentUri)
+                    type = "image/png"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+
+                // Show share chooser
+                val chooser = Intent.createChooser(shareIntent, getString(R.string.share))
+                startActivity(chooser)
+
+            } catch (e: Exception) {
+                dismissLoading(true)
+                showToast("Share failed: ${e.message}")
+            }
         }
     }
 
