@@ -3,7 +3,9 @@
     android:layout_width="76dp"
     android:layout_height="110dp"
     android:layout_margin="6dp"
+    android:elevation="3dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <FrameLayout
         android:id="@+id/layoutFocus1"
         android:layout_width="0dp"
