@@ -13,6 +13,7 @@ import com.example.st181_halloween_maker.core.extensions.showToast
 import com.example.st181_halloween_maker.core.extensions.startIntent
 import com.example.st181_halloween_maker.core.utils.SaveState
 import com.example.st181_halloween_maker.core.utils.key.IntentKey
+import com.example.st181_halloween_maker.core.utils.key.ValueKey
 import com.example.st181_halloween_maker.databinding.ActivityBackgroundBinding
 import com.example.st181_halloween_maker.ui.success.SuccessActivity
 import com.example.st181_halloween_maker.ui.view.ViewActivity
@@ -20,6 +21,8 @@ import com.girlmaker.create.avatar.creator.model.BackGroundModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import com.example.st181_halloween_maker.core.helper.BitmapHelper
+import com.example.st181_halloween_maker.core.helper.MediaHelper
 
 class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private val backgroundAdapter by lazy { BackgroundAdapter(this) }
@@ -122,13 +125,31 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     }
 
     private fun handleSave() {
-        // Navigate to ViewActivity with both paths
+        // Save to My Creation and navigate to ViewActivity
         if (!selectedBackgroundPath.isNullOrEmpty()) {
-            val intent = Intent(this, ViewActivity::class.java).apply {
-                putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
-                putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
+            lifecycleScope.launch {
+                val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                MediaHelper.saveBitmapToInternalStorage(this@BackgroundActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
+                    .collect { result ->
+                        when (result) {
+                            is SaveState.Loading -> showLoading()
+                            is SaveState.Error -> {
+                                dismissLoading(true)
+                                showToast(R.string.save_failed_please_try_again)
+                            }
+                            is SaveState.Success -> {
+                                dismissLoading(true)
+                                // Navigate to ViewActivity after saving
+                                val intent = Intent(this@BackgroundActivity, ViewActivity::class.java).apply {
+                                    putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
+                                    putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
+                                }
+                                startActivity(intent)
+                                finish()
+                            }
+                        }
+                    }
             }
-            startActivity(intent)
         } else {
             showToast(R.string.please_select_an_image)
         }

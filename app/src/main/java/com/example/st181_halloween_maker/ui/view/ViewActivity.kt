@@ -55,9 +55,10 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
             finish()
         }
 
-        // Add click listener for btnMyAlbum to save image to MycreationActivity album
+        // Add click listener for btnMyAlbum to navigate to MycreationActivity
         binding.btnMyAlbum.onSingleClick {
-            saveImageToAlbum()
+            startIntent(MycreationActivity::class.java)
+            finish()
         }
     }
 
