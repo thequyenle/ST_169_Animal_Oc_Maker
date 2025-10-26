@@ -108,4 +108,7 @@
     <string name="image_deleted_successfully">delete successfully!</string>
     <string name="file_not_found">file not found</string>
     <string name="delete_failed">delete failed</string>
+    <string name="tommy">Tommy</string>
+    <string name="miley">Miley</string>
+    <string name="dammy">Dammy</string>
 </resources>

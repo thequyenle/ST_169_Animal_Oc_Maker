@@ -13,6 +13,7 @@ import com.example.st181_halloween_maker.dialog.RatingDialog
 import com.example.st181_halloween_maker.ui.category.CategoryActivity
 import com.example.st181_halloween_maker.ui.lissticker.ListStickerActivity
 import com.example.st181_halloween_maker.ui.mycreation.MycreationActivity
+import com.example.st181_halloween_maker.ui.suggestion.SuggestionActivity
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
@@ -37,10 +38,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 startIntentAnim(SettingsActivity::class.java)
             }
             btnMyCreation.onSingleClick {
-                startIntentAnim(ListStickerActivity::class.java)
-            }
-            btnMyCreation.onSingleClick {
                 startIntentAnim(MycreationActivity::class.java)
+            }
+            btnSuggestion.onSingleClick {
+                startIntentAnim(SuggestionActivity::class.java)
             }
         }
     }

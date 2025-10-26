@@ -32,6 +32,10 @@
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".ui.suggestion.SuggestionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".ui.mycreation.MycreationActivity"
             android:exported="false"
             android:screenOrientation="portrait" />

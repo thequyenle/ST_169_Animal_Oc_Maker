@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/img_bg_app"
+    tools:context=".ui.suggestion.SuggestionActivity">
+
+    <!-- Action Bar Background -->
+
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="39dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="54dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/txtTitle"
+        style="@style/custom_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/coiny_regular"
+        android:gravity="center"
+        android:text="@string/suggestion"
+        android:textColor="@color/pink"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
+    
+    <TextView
+        android:id="@+id/tommy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/tommy"
+        android:fontFamily="@font/coiny_regular"
+        android:textSize="24sp"
+        android:includeFontPadding="false"
+        android:textColor="#FFA600"
+        android:paddingBottom="5dp"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="@id/btnBack"
+        android:layout_marginTop="30dp"/>
+    
+    <ImageView
+        android:id="@+id/imvTommy1"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        app:cardCornerRadius="16dp"
+        android:elevation="6dp"
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/tommy"
+        app:layout_constraintStart_toStartOf="@id/tommy"
+        android:layout_marginTop="13dp"/>
+    <ImageView
+        android:id="@+id/imvTommy2"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        android:elevation="6dp"
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/tommy"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="13dp"/>
+
+    <TextView
+        android:id="@+id/miley"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/btnBack"
+        app:layout_constraintTop_toBottomOf="@id/imvTommy1"
+        android:text="@string/miley"
+        android:textSize="24sp"
+        android:textColor="#FF7396"
+        android:fontFamily="@font/coiny_regular"
+        android:layout_marginTop="18dp"
+        android:includeFontPadding="false"
+        android:paddingBottom="5dp"/>
+
+    <ImageView
+        android:id="@+id/imvMiley1"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        android:elevation="6dp"
+
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/miley"
+        app:layout_constraintStart_toStartOf="@id/tommy"
+        android:layout_marginTop="13dp"/>
+    <ImageView
+        android:id="@+id/imvMiley2"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        android:elevation="6dp"
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/miley"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="13dp"/>
+
+    <TextView
+        android:id="@+id/dammy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/btnBack"
+        app:layout_constraintTop_toBottomOf="@id/imvMiley1"
+        android:text="@string/dammy"
+        android:textSize="24sp"
+        android:textColor="#8501D2"
+        android:fontFamily="@font/coiny_regular"
+        android:layout_marginTop="18dp"
+        android:includeFontPadding="false"
+        android:paddingBottom="5dp"/>
+
+    <ImageView
+        android:id="@+id/imvDammy1"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        android:elevation="6dp"
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/dammy"
+        app:layout_constraintStart_toStartOf="@id/tommy"
+        android:layout_marginTop="13dp"/>
+    <ImageView
+        android:id="@+id/imvDammy2"
+        android:layout_width="151dp"
+        android:layout_height="151dp"
+        android:elevation="6dp"
+        android:background="@drawable/background_suggest"
+        app:layout_constraintTop_toBottomOf="@id/dammy"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="13dp"/>
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
