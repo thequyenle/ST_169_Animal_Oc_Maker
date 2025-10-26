@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.st181_halloween_maker.R
-
+import com.example.st181_halloween_maker.core.dialog.ItemOptionsPopup
 import com.example.st181_halloween_maker.core.extensions.gone
 import com.example.st181_halloween_maker.core.extensions.onSingleClick
 import com.example.st181_halloween_maker.core.extensions.show
@@ -19,7 +19,9 @@ import com.example.st181_halloween_maker.databinding.ItemMyCreationBinding
 class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationAdapter.MyLibraryViewHolder>() {
     private var listMyLibrary: ArrayList<MyCreationModel> = arrayListOf()
     var onItemClick: ((String) -> Unit)? = null
-    var onMoreClick: ((String, Int, View) -> Unit)? = null
+    var onDeleteClick: ((String, Int) -> Unit)? = null
+    var onShareClick: ((String) -> Unit)? = null
+    var onDownloadClick: ((String) -> Unit)? = null
     var onLongClick: ((Int) -> Unit)? = null
     var onItemTick: ((Int) -> Unit)? = null
 
@@ -44,16 +46,37 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
             binding.root.onSingleClick {
                 onItemClick?.invoke(item.path)
             }
+
             binding.btnMore.onSingleClick {
-//                onMoreClick?.invoke(item.path, position, it)
+                showOptionsPopup(it, item.path, position)
             }
+
             binding.root.setOnLongClickListener {
                 onLongClick?.invoke(position)
                 return@setOnLongClickListener true
             }
+
             binding.btnSelect.onSingleClick {
                 onItemTick?.invoke(position)
             }
+        }
+
+        private fun showOptionsPopup(anchorView: View, imagePath: String, position: Int) {
+            val popup = ItemOptionsPopup(context)
+
+            popup.onDeleteClick = {
+                onDeleteClick?.invoke(imagePath, position)
+            }
+
+            popup.onShareClick = {
+                onShareClick?.invoke(imagePath)
+            }
+
+            popup.onDownloadClick = {
+                onDownloadClick?.invoke(imagePath)
+            }
+
+            popup.showAtLocation(anchorView)
         }
     }
 
