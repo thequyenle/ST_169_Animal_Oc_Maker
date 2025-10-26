@@ -2,6 +2,7 @@ package com.example.st181_halloween_maker.ui.customize
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -21,6 +22,7 @@ import com.example.st181_halloween_maker.data.custom.ItemColorModel
 import com.example.st181_halloween_maker.data.custom.ItemNavCustomModel
 import com.example.st181_halloween_maker.data.custom.LayerListModel
 import com.example.st181_halloween_maker.data.custom.NavigationModel
+import com.example.st181_halloween_maker.data.suggestion.RandomState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +55,10 @@ class CustomizeViewModel : ViewModel() {
     // Trạng thái flip
     private val _isFlip = MutableStateFlow(false)
     val isFlip = _isFlip.asStateFlow()
+
+    // Biến lưu suggestion preset
+    private val _suggestionState = MutableStateFlow<RandomState?>(null)
+    private val _suggestionBackground = MutableStateFlow<String?>(null)
 
     //----------------------------------------------------------------------------------------------------------------------
     private val _positionNavSelected = MutableStateFlow(-1)
@@ -153,6 +159,84 @@ class CustomizeViewModel : ViewModel() {
     fun setColorListMost(colorList: ArrayList<String>) {
         _colorListMost.value = colorList
     }
+
+    fun setSuggestionPreset(stateJson: String?, background: String?) {
+        stateJson?.let {
+            _suggestionState.value = RandomState.fromJson(it)
+        }
+        _suggestionBackground.value = background
+    }
+
+    /**
+     * Apply suggestion preset after character loaded
+     * Call this after setDataCustomize() and before setFocusItemNavDefault()
+     */
+    suspend fun applySuggestionPreset() {
+        val preset = _suggestionState.value ?: return
+
+        Log.d("CustomizeViewModel", "Applying suggestion preset with ${preset.layerSelections.size} layers")
+
+        // Apply each layer selection
+        preset.layerSelections.forEach { (positionCustom, selection) ->
+            // Find the layer
+            val layerIndex = _dataCustomize.value?.layerList?.indexOfFirst {
+                it.positionCustom == positionCustom
+            } ?: return@forEach
+
+            if (layerIndex < 0) return@forEach
+
+            val layer = _dataCustomize.value?.layerList?.get(layerIndex) ?: return@forEach
+
+            // Validate item index
+            if (selection.itemIndex >= layer.layer.size) {
+                Log.e("CustomizeViewModel", "Invalid item index ${selection.itemIndex} for layer $positionCustom")
+                return@forEach
+            }
+
+            val item = layer.layer[selection.itemIndex]
+
+            // Set path
+            _pathSelectedList.value[positionCustom] = selection.path
+            _keySelectedItemList.value[layer.positionNavigation] = selection.path
+
+            // Set selected state
+            _isSelectedItemList.value[layer.positionNavigation] = true
+
+            // Set color if applicable
+            if (item.isMoreColors && item.listColor.isNotEmpty()) {
+                val validColorIndex = selection.colorIndex.coerceIn(0, item.listColor.size - 1)
+                _positionColorItemList.value[layer.positionNavigation] = validColorIndex
+                _isShowColorList.value[layer.positionNavigation] = true
+            }
+
+            // Update item nav list to mark selected item
+            _itemNavList.value[layer.positionNavigation] =
+                _itemNavList.value[layer.positionNavigation].mapIndexed { index, model ->
+                    model.copy(isSelected = index == selection.itemIndex)
+                }.toCollection(ArrayList())
+
+            Log.d("CustomizeViewModel", "Applied layer $positionCustom with item ${selection.itemIndex}")
+        }
+
+        Log.d("CustomizeViewModel", "Suggestion preset applied successfully")
+    }
+
+    /**
+     * Get suggestion background
+     */
+    fun getSuggestionBackground(): String? {
+        return _suggestionBackground.value
+    }
+
+    /**
+     * Check if has suggestion preset
+     */
+    fun hasSuggestionPreset(): Boolean {
+        return _suggestionState.value != null
+    }
+
+
+
 
     //----------------------------------------------------------------------------------------------------------------------
     // Setter suspend

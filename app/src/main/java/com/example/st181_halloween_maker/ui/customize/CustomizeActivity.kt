@@ -53,13 +53,22 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         return ActivityCustomizeBinding.inflate(LayoutInflater.from(this))
     }
 
+    // Thêm vào CustomizeActivity.kt
+
     override fun initView() {
         initRcv()
         lifecycleScope.launch { showLoading() }
         dataViewModel.ensureData(this)
 
+        // Check if opening from suggestion
+        val isSuggestion = intent.getBooleanExtra(IntentKey.IS_SUGGESTION, false)
+        val categoryPosition = if (isSuggestion) {
+            intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
+        } else {
+            intent.getIntExtra(IntentKey.INTENT_KEY, 0)
+        }
+
         // Set background based on category position
-        val categoryPosition = intent.getIntExtra(IntentKey.INTENT_KEY, 0)
         val backgroundDrawable = when(categoryPosition) {
             0 -> R.drawable.bg_data1
             1 -> R.drawable.bg_data2
@@ -67,6 +76,13 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             else -> R.drawable.img_bg_app
         }
         binding.main.setBackgroundResource(backgroundDrawable)
+
+        // Store suggestion data if exists
+        if (isSuggestion) {
+            val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+            val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+            viewModel.setSuggestionPreset(suggestionStateJson, suggestionBackground)
+        }
     }
 
     override fun dataObservable() {
@@ -158,6 +174,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             { positionBottomNavigation -> handleClickBottomNavigation(positionBottomNavigation) }
     }
 
+// Update initData() trong CustomizeActivity.kt
+
     private fun initData(){
         val handleExceptionCoroutine = CoroutineExceptionHandler { _, throwable ->
             eLog("initData: ${throwable.message}")
@@ -180,6 +198,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
         CoroutineScope(SupervisorJob() + Dispatchers.IO + handleExceptionCoroutine).launch {
             var pathImageDefault = ""
+
             // Get data from list
             val deferred1 = async {
                 viewModel.resetDataList()
@@ -189,9 +208,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList.first().positionCustom)
                 viewModel.setPositionNavSelected(viewModel.dataCustomize.value!!.layerList.first().positionNavigation)
                 viewModel.setBottomNavigationListDefault()
+
+                // ✅ Apply suggestion preset if exists
+                if (viewModel.hasSuggestionPreset()) {
+                    viewModel.applySuggestionPreset()
+                }
+
                 dLog("deferred1")
                 return@async true
             }
+
             // Add custom view in FrameLayout
             val deferred2 = async(Dispatchers.Main) {
                 if (deferred1.await()) {
@@ -200,13 +226,20 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 }
                 return@async true
             }
-            // Fill data default
+
+            // Fill data default or preset
             val deferred3 = async {
                 if (deferred1.await() && deferred2.await()) {
-                    pathImageDefault = viewModel.dataCustomize.value!!.layerList.first().layer.first().image
-                    viewModel.setIsSelectedItem(viewModel.positionCustom.value)
-                    viewModel.setPathSelected(viewModel.positionCustom.value, pathImageDefault)
-                    viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
+                    // ✅ Load images from preset paths instead of default
+                    if (viewModel.hasSuggestionPreset()) {
+                        // All paths already set in applySuggestionPreset()
+                        pathImageDefault = ""  // Not needed for preset
+                    } else {
+                        pathImageDefault = viewModel.dataCustomize.value!!.layerList.first().layer.first().image
+                        viewModel.setIsSelectedItem(viewModel.positionCustom.value)
+                        viewModel.setPathSelected(viewModel.positionCustom.value, pathImageDefault)
+                        viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
+                    }
                     dLog("deferred5")
                 }
                 return@async true
@@ -214,7 +247,22 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             withContext(Dispatchers.Main){
                 if (deferred1.await() && deferred2.await() && deferred3.await()){
-                    Glide.with(this@CustomizeActivity).load(pathImageDefault).into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                    // ✅ Load all images from preset
+                    if (viewModel.hasSuggestionPreset()) {
+                        viewModel.pathSelectedList.value.forEachIndexed { index, path ->
+                            if (path.isNotEmpty()) {
+                                Glide.with(this@CustomizeActivity)
+                                    .load(path)
+                                    .into(viewModel.imageViewList.value[index])
+                            }
+                        }
+                    } else {
+                        // Load default image
+                        Glide.with(this@CustomizeActivity)
+                            .load(pathImageDefault)
+                            .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                    }
+
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                     colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
                     checkStatusColor()
@@ -224,7 +272,6 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
     }
-
     private fun checkStatusColor() {
         if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
             if (viewModel.isShowColorList.value[viewModel.positionNavSelected.value]) {

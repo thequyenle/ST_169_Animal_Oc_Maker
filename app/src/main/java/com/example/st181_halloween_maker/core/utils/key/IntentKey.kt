@@ -11,4 +11,9 @@ object IntentKey {
     const val BACKGROUND_IMAGE_KEY = "background_image_key"
     const val CATEGORY_POSITION_KEY = "category_position_key"
     const val IMAGE_PATH_KEY = "image_path_key"
+
+    // Suggestion keys
+    const val IS_SUGGESTION = "is_suggestion"
+    const val SUGGESTION_STATE = "suggestion_state"
+    const val SUGGESTION_BACKGROUND = "suggestion_background"
 }

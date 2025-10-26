@@ -10,6 +10,13 @@
 
     <!-- Action Bar Background -->
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/hehe"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="115dp" />
+
     <!-- Back Button -->
     <ImageView
         android:id="@+id/btnBack"
@@ -37,112 +44,132 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
-    
-    <TextView
-        android:id="@+id/tommy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tommy"
-        android:fontFamily="@font/coiny_regular"
-        android:textSize="24sp"
-        android:includeFontPadding="false"
-        android:textColor="#FFA600"
-        android:paddingBottom="5dp"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toStartOf="@id/btnBack"
-        android:layout_marginTop="30dp"/>
-    
-    <ImageView
-        android:id="@+id/imvTommy1"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        app:cardCornerRadius="16dp"
-        android:elevation="6dp"
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/tommy"
-        app:layout_constraintStart_toStartOf="@id/tommy"
-        android:layout_marginTop="13dp"/>
-    <ImageView
-        android:id="@+id/imvTommy2"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        android:elevation="6dp"
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/tommy"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="13dp"/>
 
-    <TextView
-        android:id="@+id/miley"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/btnBack"
-        app:layout_constraintTop_toBottomOf="@id/imvTommy1"
-        android:text="@string/miley"
-        android:textSize="24sp"
-        android:textColor="#FF7396"
-        android:fontFamily="@font/coiny_regular"
-        android:layout_marginTop="18dp"
-        android:includeFontPadding="false"
-        android:paddingBottom="5dp"/>
+    <!-- ScrollView bắt đầu từ guideline -->
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintTop_toBottomOf="@id/hehe"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageView
-        android:id="@+id/imvMiley1"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        android:elevation="6dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/miley"
-        app:layout_constraintStart_toStartOf="@id/tommy"
-        android:layout_marginTop="13dp"/>
-    <ImageView
-        android:id="@+id/imvMiley2"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        android:elevation="6dp"
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/miley"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="13dp"/>
+            <TextView
+                android:id="@+id/tommy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="30dp"
+                android:fontFamily="@font/coiny_regular"
+                android:includeFontPadding="false"
+                android:paddingBottom="5dp"
+                android:text="@string/tommy"
+                android:textColor="#FFA600"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/dammy"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/btnBack"
-        app:layout_constraintTop_toBottomOf="@id/imvMiley1"
-        android:text="@string/dammy"
-        android:textSize="24sp"
-        android:textColor="#8501D2"
-        android:fontFamily="@font/coiny_regular"
-        android:layout_marginTop="18dp"
-        android:includeFontPadding="false"
-        android:paddingBottom="5dp"/>
+            <ImageView
+                android:id="@+id/imvTommy1"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:cardCornerRadius="16dp"
+                app:layout_constraintStart_toStartOf="@id/tommy"
+                app:layout_constraintTop_toBottomOf="@id/tommy" />
 
-    <ImageView
-        android:id="@+id/imvDammy1"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        android:elevation="6dp"
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/dammy"
-        app:layout_constraintStart_toStartOf="@id/tommy"
-        android:layout_marginTop="13dp"/>
-    <ImageView
-        android:id="@+id/imvDammy2"
-        android:layout_width="151dp"
-        android:layout_height="151dp"
-        android:elevation="6dp"
-        android:background="@drawable/background_suggest"
-        app:layout_constraintTop_toBottomOf="@id/dammy"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="13dp"/>
+            <ImageView
+                android:id="@+id/imvTommy2"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tommy" />
 
+            <TextView
+                android:id="@+id/miley"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/coiny_regular"
+                android:includeFontPadding="false"
+                android:paddingBottom="5dp"
+                android:text="@string/miley"
+                android:textColor="#FF7396"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imvTommy1" />
 
+            <ImageView
+                android:id="@+id/imvMiley1"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:layout_constraintStart_toStartOf="@id/tommy"
+                app:layout_constraintTop_toBottomOf="@id/miley" />
 
+            <ImageView
+                android:id="@+id/imvMiley2"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/miley" />
+
+            <TextView
+                android:id="@+id/dammy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="18dp"
+                android:fontFamily="@font/coiny_regular"
+                android:includeFontPadding="false"
+                android:paddingBottom="5dp"
+                android:text="@string/dammy"
+                android:textColor="#8501D2"
+                android:textSize="24sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/imvMiley1" />
+
+            <ImageView
+                android:id="@+id/imvDammy1"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:layout_constraintStart_toStartOf="@id/tommy"
+                app:layout_constraintTop_toBottomOf="@id/dammy" />
+
+            <ImageView
+                android:id="@+id/imvDammy2"
+                android:layout_width="151dp"
+                android:layout_height="151dp"
+                android:layout_marginTop="13dp"
+                android:layout_marginEnd="24dp"
+                android:background="@drawable/background_suggest"
+                android:elevation="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/dammy" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
