@@ -8,208 +8,77 @@
     android:background="@drawable/img_bg_app"
     tools:context=".ui.mycreation.MycreationActivity">
 
-    <RelativeLayout
-        android:id="@+id/actionBar"
-        android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/tranf"
+    <!-- Back Button -->
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="39dp"
+        android:layout_height="39dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="54dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/txtTitle"
+        style="@style/custom_text"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/coiny_regular"
+        android:gravity="center"
+        android:text="@string/my_creation"
+        android:textColor="@color/pink"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp">
-
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_back" />
-
-            <ImageView
-                android:id="@+id/btnExit"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:visibility="gone"
-                android:layout_marginStart="16dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-            <ImageView
-                android:id="@+id/btn"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="60dp"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
-
-            <TextView
-                android:id="@+id/txtTitle"
-                style="@style/custom_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/btn1"
-                android:layout_marginTop="5dp"
-                android:layout_toEndOf="@+id/btn"
-                android:fontFamily="@font/coiny_regular"
-                android:gravity="center"
-                android:textColor="@color/pink"
-                android:text="@string/my_creation"
-                android:textSize="24sp" />
-
-
-            <ImageView
-                android:id="@+id/btnSelectAll"
-                android:layout_width="32dp"
-                android:visibility="gone"
-                android:layout_height="32dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="60dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-
-
-            <ImageView
-                android:id="@+id/btn1"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="60dp"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-
-        </RelativeLayout>
-
-    </RelativeLayout>
-
-
-
-
-    <!-- RCV-->
-
-
-    <!-- Bot-->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rcv"
-        android:layout_width="match_parent"
+    <!-- ScrollView chứa RecyclerView -->
+    <ScrollView
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="66dp"
-        android:layout_marginBottom="5dp"
-        android:paddingHorizontal="15dp"
-        android:paddingVertical="2dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/actionBar"
-        app:layout_constraintVertical_bias="0.0"
-        app:spanCount="2"
-        tools:listitem="@layout/item_my_creation" />
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
 
-    <FrameLayout
-        android:id="@+id/layoutBot"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        android:visibility="gone"
-        android:layout_marginBottom="22dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:background="@color/tranf"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:layout_marginHorizontal="20dp">
+            android:layout_height="wrap_content">
 
-
-            <FrameLayout
-                android:id="@+id/btnShare"
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcv"
                 android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_gravity="start"
-                android:layout_weight="1"
-                android:background="@drawable/img_item_ss">
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="55dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginBottom="20dp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:spanCount="2"
+                tools:listitem="@layout/item_my_creation" />
 
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="20dp"
-                    android:src="@drawable/share_ic"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <TextView
-                    android:id="@+id/txtShare"
-                    style="@style/custom_text"
-                    android:layout_width="60dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_gravity="center|center_vertical"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/share"
-                    android:gravity="center"
-                    android:textColor="@color/orange"
-                    android:textSize="20sp" />
-            </FrameLayout>
+    </ScrollView>
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="0dp" />
-
-            <FrameLayout
-                android:id="@+id/btnDowLoad"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_gravity="end"
-                android:layout_weight="1"
-                android:background="@drawable/img_item_ss">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="20dp"
-                    android:src="@drawable/download_ic"/>
-
-                <TextView
-                    android:id="@+id/txtDownLoad"
-                    style="@style/custom_text"
-                    android:layout_width="90dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center|center_vertical"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:text="@string/download"
-                    android:gravity="center"
-                    android:layout_marginStart="20dp"
-                    android:textColor="@color/orange"
-                    android:textSize="20sp" />
-            </FrameLayout>
-
-
-
-        </LinearLayout>
-
-    </FrameLayout>
-
-
-    <!-- No Item-->
+    <!-- No Item Layout -->
     <RelativeLayout
         android:id="@+id/layoutNoItem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginBottom="100dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -235,5 +104,46 @@
             android:textSize="12sp" />
 
     </RelativeLayout>
+
+    <!-- Hidden views for compatibility with existing code -->
+    <ImageView
+        android:id="@+id/btnExit"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btn"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btnSelectAll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/btn1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/layoutBot"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

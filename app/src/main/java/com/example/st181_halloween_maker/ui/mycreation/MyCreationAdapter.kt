@@ -48,7 +48,7 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
             }
 
             binding.btnMore.onSingleClick {
-                showOptionsPopup(it, item.path, position)
+                showOptionsPopup(binding.root, item.path, position)
             }
 
             binding.root.setOnLongClickListener {
@@ -61,7 +61,7 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
             }
         }
 
-        private fun showOptionsPopup(anchorView: View, imagePath: String, position: Int) {
+        private fun showOptionsPopup(itemRootView: View, imagePath: String, position: Int) {
             val popup = ItemOptionsPopup(context)
 
             popup.onDeleteClick = {
@@ -76,7 +76,7 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
                 onDownloadClick?.invoke(imagePath)
             }
 
-            popup.showAtLocation(anchorView)
+            popup.showAtLocation(itemRootView)
         }
     }
 

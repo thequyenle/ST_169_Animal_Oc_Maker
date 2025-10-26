@@ -26,8 +26,8 @@ class ItemOptionsPopup(private val context: Context) {
 
         popupWindow = PopupWindow(
             binding.root,
-            126.dpToPx(),
             113.dpToPx(),
+            126.dpToPx(),
             true
         ).apply {
             isOutsideTouchable = true
@@ -57,15 +57,19 @@ class ItemOptionsPopup(private val context: Context) {
         }
     }
 
-    fun showAtLocation(anchorView: View) {
-        // Calculate position to show at center of the anchor view
+    fun showAtLocation(itemRootView: View) {
+        // Calculate position to show at center of the item (not the button)
         val location = IntArray(2)
-        anchorView.getLocationOnScreen(location)
+        itemRootView.getLocationOnScreen(location)
 
-        val x = location[0] + (anchorView.width / 2) - (126.dpToPx() / 2)
-        val y = location[1] + (anchorView.height / 2) - (113.dpToPx() / 2)
+        val popupWidth = 113.dpToPx()
+        val popupHeight = 126.dpToPx()
 
-        popupWindow?.showAtLocation(anchorView, Gravity.NO_GRAVITY, x, y)
+        // Center popup in the middle of the item
+        val x = location[0] + (itemRootView.width / 2) - (popupWidth / 2)
+        val y = location[1] + (itemRootView.height / 2) - (popupHeight / 2)
+
+        popupWindow?.showAtLocation(itemRootView, Gravity.NO_GRAVITY, x, y)
     }
 
     fun dismiss() {
