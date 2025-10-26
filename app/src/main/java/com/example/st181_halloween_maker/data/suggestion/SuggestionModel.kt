@@ -2,44 +2,47 @@ package com.example.st181_halloween_maker.data.suggestion
 
 import com.google.gson.Gson
 
+/**
+ * Model đại diện cho một suggestion (gợi ý trang phục)
+ */
 data class SuggestionModel(
     val id: String,
-    val categoryPosition: Int,  // 0=Tommy, 1=Miley, 2=Dammy
-    val characterData: String,  // Avatar path
+    val categoryPosition: Int,
+    val characterData: String,
     val randomState: RandomState,
     val background: String
-) {
-    fun toJson(): String = Gson().toJson(this)
+)
 
-    companion object {
-        fun fromJson(json: String): SuggestionModel? {
-            return try {
-                Gson().fromJson(json, SuggestionModel::class.java)
-            } catch (e: Exception) {
-                null
-            }
-        }
-    }
-}
-
+/**
+ * Lưu trữ trạng thái random của các layers
+ * Key: positionCustom của layer
+ * Value: LayerSelection chứa thông tin item được chọn
+ */
 data class RandomState(
-    val layerSelections: Map<Int, LayerSelection>  // positionCustom -> selection
+    val layerSelections: Map<Int, LayerSelection>
 ) {
-    fun toJson(): String = Gson().toJson(this)
+    /**
+     * Convert sang JSON string để truyền qua Intent
+     */
+    fun toJson(): String {
+        return Gson().toJson(this)
+    }
 
     companion object {
-        fun fromJson(json: String): RandomState? {
-            return try {
-                Gson().fromJson(json, RandomState::class.java)
-            } catch (e: Exception) {
-                null
-            }
+        /**
+         * Parse từ JSON string
+         */
+        fun fromJson(json: String): RandomState {
+            return Gson().fromJson(json, RandomState::class.java)
         }
     }
 }
 
+/**
+ * Thông tin về item được chọn trong một layer
+ */
 data class LayerSelection(
-    val itemIndex: Int,         // Index trong layer.layer list
-    val path: String,           // Path của item đã chọn
-    val colorIndex: Int = 0     // Index của màu (nếu có màu)
+    val itemIndex: Int,      // Index của item trong layer
+    val path: String,        // Path của image/color được chọn
+    val colorIndex: Int      // Index của color nếu item có nhiều màu
 )

@@ -1,6 +1,7 @@
 package com.example.st181_halloween_maker.ui.suggestion
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,8 @@ import com.example.st181_halloween_maker.data.suggestion.SuggestionModel
 import com.example.st181_halloween_maker.databinding.ActivitySuggestionBinding
 import com.example.st181_halloween_maker.ui.customize.CustomizeActivity
 import com.example.st181_halloween_maker.ui.home.DataViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
@@ -25,29 +28,37 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     }
 
     override fun initView() {
-        // Load data và generate suggestions
+        // Observe suggestions và thumbnails kết hợp
         lifecycleScope.launch {
-            showLoading()
-
-            // Ensure data is loaded
-            dataViewModel.ensureData(this@SuggestionActivity)
-
-            // Wait for data
-            dataViewModel.allData.collect { allData ->
-                if (allData.isNotEmpty()) {
-                    // Generate suggestions
-                    suggestionViewModel.generateAllSuggestions(allData, this@SuggestionActivity)
+            combine(
+                suggestionViewModel.suggestions,
+                suggestionViewModel.thumbnails
+            ) { suggestions: List<SuggestionModel>, thumbnails: Map<String, Bitmap> ->
+                Pair(suggestions, thumbnails)
+            }.collect { (suggestions, thumbnails) ->
+                if (suggestions.isNotEmpty() && thumbnails.isNotEmpty()) {
+                    dismissLoading()
+                    displaySuggestions(suggestions, thumbnails)
                 }
             }
         }
 
-        // Observe suggestions and display
+        // Load data và generate suggestions
         lifecycleScope.launch {
-            suggestionViewModel.suggestions.collect { suggestions ->
-                if (suggestions.isNotEmpty()) {
-                    dismissLoading()
-                    displaySuggestions(suggestions)
-                }
+            showLoading()
+
+            try {
+                // Ensure data is loaded
+                dataViewModel.ensureData(this@SuggestionActivity)
+
+                // Lấy data một lần khi đã có
+                val allData = dataViewModel.allData.first { it.isNotEmpty() }
+
+                // Generate suggestions với thumbnails
+                suggestionViewModel.generateAllSuggestions(allData, this@SuggestionActivity)
+            } catch (e: Exception) {
+                dismissLoading()
+                // TODO: Handle error (show error message)
             }
         }
     }
@@ -65,26 +76,29 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     /**
      * Display all 6 suggestions (2 for each category)
      */
-    private fun displaySuggestions(suggestions: List<SuggestionModel>) {
+    private fun displaySuggestions(
+        suggestions: List<SuggestionModel>,
+        thumbnails: Map<String, android.graphics.Bitmap>
+    ) {
         // Tommy suggestions (category 0)
         val tommySuggestions = suggestions.filter { it.categoryPosition == 0 }
         if (tommySuggestions.size >= 2) {
-            loadSuggestion(tommySuggestions[0], binding.imvTommy1)
-            loadSuggestion(tommySuggestions[1], binding.imvTommy2)
+            loadSuggestion(tommySuggestions[0], binding.imvTommy1, thumbnails)
+            loadSuggestion(tommySuggestions[1], binding.imvTommy2, thumbnails)
         }
 
         // Miley suggestions (category 1)
         val mileySuggestions = suggestions.filter { it.categoryPosition == 1 }
         if (mileySuggestions.size >= 2) {
-            loadSuggestion(mileySuggestions[0], binding.imvMiley1)
-            loadSuggestion(mileySuggestions[1], binding.imvMiley2)
+            loadSuggestion(mileySuggestions[0], binding.imvMiley1, thumbnails)
+            loadSuggestion(mileySuggestions[1], binding.imvMiley2, thumbnails)
         }
 
         // Dammy suggestions (category 2)
         val dammySuggestions = suggestions.filter { it.categoryPosition == 2 }
         if (dammySuggestions.size >= 2) {
-            loadSuggestion(dammySuggestions[0], binding.imvDammy1)
-            loadSuggestion(dammySuggestions[1], binding.imvDammy2)
+            loadSuggestion(dammySuggestions[0], binding.imvDammy1, thumbnails)
+            loadSuggestion(dammySuggestions[1], binding.imvDammy2, thumbnails)
         }
     }
 
@@ -93,12 +107,19 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
      */
     private fun loadSuggestion(
         suggestion: SuggestionModel,
-        imageView: android.widget.ImageView
+        imageView: android.widget.ImageView,
+        thumbnails: Map<String, android.graphics.Bitmap>
     ) {
-        // Load thumbnail (sử dụng avatar làm placeholder, sau này có thể generate bitmap)
-        Glide.with(this)
-            .load(suggestion.characterData)
-            .into(imageView)
+        // Load actual thumbnail bitmap
+        val thumbnail = thumbnails[suggestion.id]
+        if (thumbnail != null) {
+            imageView.setImageBitmap(thumbnail)
+        } else {
+            // Fallback: Load avatar if thumbnail generation failed
+            Glide.with(this)
+                .load(suggestion.characterData)
+                .into(imageView)
+        }
 
         // Set click listener
         imageView.onSingleClick {
