@@ -55,9 +55,15 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             btnChangSetting.onSingleClick {
                 handleChangeSetting()
             }
-            handleRcv()
             txtLanguageStart.select()
             txtLanguageCenter.select()
+        }
+
+        // Handle RecyclerView item clicks - chỉ select, chưa lưu
+        languageAdapter.onItemClick = { selected ->
+            codeLang = selected.code
+            // Chỉ select, không tự động lưu hay chuyển màn
+            // Phải click btnDone hoặc btnChangSetting mới lưu và chuyển màn
         }
     }
 
@@ -104,33 +110,41 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             listLanguage.addAll(getLanguageList())
 
             val lang = SystemUtils.getPreLanguage(this@LanguageActivity)
+            var selectedPosition = -1
 
+            // Tìm và đưa ngôn ngữ đã lưu lên đầu danh sách
             for(i in listLanguage.indices){
                 if(listLanguage[i].code == lang){
-                    val matchingLanguage = listLanguage[i]
+                    val matchingLanguage = listLanguage[i].copy()
                     listLanguage.removeAt(i)
-                    listLanguage.add(0,matchingLanguage)
-
-                    if(!SystemUtils.isFirstLang(this@LanguageActivity)){
-                        listLanguage[0].activate = true
-                    }
+                    listLanguage.add(0, matchingLanguage)
+                    selectedPosition = 0
                     break
                 }
             }
-            if(isFirstAccess){
+
+            // Nếu đã chọn ngôn ngữ rồi (vào từ Settings), hiện ngôn ngữ đã lưu ở trạng thái selected
+            if(!SystemUtils.isFirstLang(this@LanguageActivity)){
+                // Đã chọn ngôn ngữ rồi → hiện selected
+                if(selectedPosition != -1){
+                    listLanguage[0].activate = true
+                    codeLang = lang
+                }
+            } else {
+                // Lần đầu (onboarding) → reset tất cả về trạng thái chưa chọn
                 codeLang = ""
                 listLanguage.forEach { it.activate = false }
             }
+
             rcv.adapter = languageAdapter
             rcv.itemAnimator = null
             languageAdapter.submitList(listLanguage)
 
-
-        }
-        languageAdapter.onItemClick = { selected ->
-            codeLang = selected.code
-            if (isFirstAccess) {
-                handleDoneFirst()
+            // Scroll đến ngôn ngữ đã chọn nếu đã từng chọn ngôn ngữ
+            if(selectedPosition != -1 && !SystemUtils.isFirstLang(this@LanguageActivity)){
+                rcv.post {
+                    rcv.smoothScrollToPosition(selectedPosition)
+                }
             }
         }
     }
@@ -148,17 +162,12 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
     }
 
     private fun handleChangeSetting(){
-        setPreLanguage(this@LanguageActivity, codeLang)
-        startIntentAnim(HomeActivity::class.java)
-        finishAffinity()
-    }
-
-    private fun handleRcv(){
-        binding.apply {
-            languageAdapter.onItemClick = {
-                    item -> codeLang = item.code
-                languageAdapter.submitItem(item.code)
-            }
+        if(codeLang == ""){
+            Toast.makeText(this, R.string.not_select_lang, Toast.LENGTH_SHORT).show()
+        }else{
+            setPreLanguage(this@LanguageActivity, codeLang)
+            startIntentAnim(HomeActivity::class.java)
+            finishAffinity()
         }
     }
 

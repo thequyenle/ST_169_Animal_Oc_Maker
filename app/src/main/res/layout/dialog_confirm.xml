@@ -22,13 +22,16 @@
             android:textSize="18sp" />
 
         <!-- Description Text -->
+        <!-- Description Text -->
         <TextView
             android:id="@+id/txtDescription"
             style="@style/custom_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:fontFamily="@font/josefin_sans_regular"
             android:gravity="center"
             android:text="@string/do_you_want_to_delete"

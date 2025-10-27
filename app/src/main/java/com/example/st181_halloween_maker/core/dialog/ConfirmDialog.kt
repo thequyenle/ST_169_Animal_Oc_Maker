@@ -4,6 +4,7 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.st181_halloween_maker.R
@@ -16,7 +17,7 @@ import com.example.st181_halloween_maker.databinding.DialogConfirmBinding
 import kotlin.apply
 
 class ConfirmDialog(val context: Activity, val title: Int, val description: Int) :
-    BaseDialog<DialogConfirmBinding>(context, maxWidth = true, maxHeight = true) {
+    BaseDialog<DialogConfirmBinding>(context, maxWidth = false, maxHeight = false) {
     override val layoutId: Int = R.layout.dialog_confirm
     override val isCancel: Boolean = false
     override val isBack: Boolean = false
@@ -26,6 +27,15 @@ class ConfirmDialog(val context: Activity, val title: Int, val description: Int)
     var onDismissClick: (() -> Unit)? = null
     override fun initView() {
         initText()
+
+        // Cố định kích thước dialog là 316dp
+        val widthInDp = 316
+        val widthInPx = (widthInDp * context.resources.displayMetrics.density).toInt()
+
+        window?.setLayout(
+            widthInPx,
+            ViewGroup.LayoutParams.WRAP_CONTENT
+        )
     }
 
     override fun initAction() {

@@ -62,13 +62,13 @@ class LanguageAdapter(val context: Context): RecyclerView.Adapter<LanguageAdapte
     fun submitList(list: ArrayList<LanguageModel>){
         languageList.clear()
         languageList.addAll(list)
-        notifyDataSetChanged()
-    }
-
-    // Duyệt qua ds các phần tử
-    fun submitItem(code: String) {
-        languageList.forEach {
-            it.activate = it.code == code
+        // Tìm vị trí của item đang active để cập nhật currentActive
+        for(i in languageList.indices){
+            if(languageList[i].activate){
+                currentActive = i
+                break
+            }
         }
+        notifyDataSetChanged()
     }
 }

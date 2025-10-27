@@ -43,7 +43,7 @@
                 android:layout_toEndOf="@+id/btnBack"
                 android:fontFamily="@font/coiny_regular"
                 android:gravity="center"
-                android:text="@string/successfully"
+                android:text="@string/view"
                 android:textColor="@color/pink"
                 android:textSize="24sp"
                 android:visibility="visible" />
