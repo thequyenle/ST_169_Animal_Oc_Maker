@@ -208,10 +208,19 @@ class CustomizeViewModel : ViewModel() {
                 _isShowColorList.value[layer.positionNavigation] = true
             }
 
-            // ✅ QUAN TRỌNG: Dùng setItemNavList() để reset all và chỉ set 1 item = true
-            setItemNavList(layer.positionNavigation, selection.itemIndex)
+            // ✅ CRITICAL FIX: Convert data model index → RecyclerView index
+            // RecyclerView có None/Random buttons ở đầu, cần cộng offset:
+            // - Layer đầu (Body): chỉ có Random button → offset +1
+            // - Các layer khác: có None + Random buttons → offset +2
+            val rcvIndex = if (layerIndex == 0) {
+                selection.itemIndex + 1  // Body layer: Random button at index 0
+            } else {
+                selection.itemIndex + 2  // Other layers: None(0) + Random(1)
+            }
 
-            Log.d("CustomizeViewModel", "Applied layer $positionCustom with item ${selection.itemIndex}")
+            setItemNavList(layer.positionNavigation, rcvIndex)
+
+            Log.d("CustomizeViewModel", "Applied layer $positionCustom: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex")
         }
 
         Log.d("CustomizeViewModel", "Suggestion preset applied successfully")

@@ -15,6 +15,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Tôi có bug trong Android app: Khi chọn item từ màn Suggestion và chuyển sang màn Customize, ảnh hiển thị đúng trên nhân vật NHƯNG item focus trong RecyclerView (rcvLayer) lại SAI - nó focus vào button random hoặc item khác thay vì item đúng.&#10;Code hiện tại:&#10;Trong applySuggestionPreset() của CustomizeViewModel.kt:&#10;&#10;Tôi đang gọi setItemNavList(layer.positionNavigation, selection.itemIndex) để set focus&#10;selection.itemIndex được lưu từ lúc random item trong SuggestionViewModel&#10;&#10;Trong initData() của CustomizeActivity.kt, thứ tự gọi:&#10;&#10;addValueToItemNavList() - Build itemNavList&#10;setFocusItemNavDefault() - Set focus mặc định&#10;applySuggestionPreset() - Apply suggestion preset&#10;&#10;Vấn đề nghi ngờ:&#10;&#10;selection.itemIndex có thể không khớp với vị trí thực tế trong RecyclerView vì RecyclerView có thêm None button (index 0) và Random button (index 1 ở layer đầu)&#10;Mapping giữa itemIndex trong data model và vị trí trong RecyclerView bị sai&#10;&#10;Hãy phân tích và đưa ra giải pháp fix bug này. Cần đảm bảo item được focus ĐÚNG vị trí trong RecyclerView khi apply suggestion preset">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761578065966" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="cho chiều cao ảnh intro1 nhỏ lại ở introAcitivity hoặc IntroAdapter nhé. các intro khác không ảnh hưởng">
           <value>
             <GhostTextMetaData>

@@ -143,9 +143,9 @@
             android:id="@+id/rcvLayer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#FFF0D7"
             android:paddingHorizontal="12dp"
             android:paddingTop="16dp"
-            android:background="#FFF0D7"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="5"
             tools:listitem="@layout/item_cus" />
