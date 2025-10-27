@@ -37,6 +37,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         // Load ảnh từ Intent
         previousImagePath = intent.getStringExtra(IntentKey.INTENT_KEY)
         val categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
+        val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+
         if (!previousImagePath.isNullOrEmpty()) {
             Glide.with(this).load(previousImagePath).into(binding.ivPreviousImage)
         }
@@ -54,6 +56,12 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         val list = viewModel.getListBackground(this)
         backgroundAdapter.submitList(list)
         binding.rcvLayer.adapter = backgroundAdapter
+
+        // Pre-select suggestion background if exists
+        if (!suggestionBackground.isNullOrEmpty()) {
+            preSelectBackground(list, suggestionBackground)
+        }
+
         backgroundAdapter.onItemClick = { item, position ->
             if (viewModel.isDataAPI()) {
                 viewModel.checkDataInternet(this) {
@@ -120,6 +128,38 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
             backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
+        }
+    }
+
+    /**
+     * Pre-select background from suggestion
+     */
+    private fun preSelectBackground(list: List<BackGroundModel>, backgroundPath: String) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            // Find matching background in list
+            val matchingIndex = list.indexOfFirst { it.path == backgroundPath }
+
+            if (matchingIndex >= 0) {
+                val matchingItem = list[matchingIndex]
+                selectedBackgroundPath = backgroundPath
+
+                // Update selection state
+                list.forEach { it.isSelected = false }  // Deselect all
+                matchingItem.isSelected = true  // Select matching item
+
+                withContext(Dispatchers.Main) {
+                    // Load background image
+                    Glide.with(this@BackgroundActivity)
+                        .load(backgroundPath)
+                        .into(binding.ivBackground)
+
+                    // Refresh adapter to show border
+                    backgroundAdapter.notifyDataSetChanged()
+
+                    // Scroll to selected item
+                    binding.rcvLayer.scrollToPosition(matchingIndex)
+                }
+            }
         }
     }
 

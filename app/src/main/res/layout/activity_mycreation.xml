@@ -38,6 +38,7 @@
 
     <!-- ScrollView chứa RecyclerView -->
     <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -49,6 +50,8 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
+            android:id="@+id/constraintLayoutInScroll"
+
             android:layout_height="wrap_content">
 
             <!-- RecyclerView -->

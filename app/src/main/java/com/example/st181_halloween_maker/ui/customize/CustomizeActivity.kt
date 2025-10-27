@@ -1,5 +1,6 @@
 package com.example.st181_halloween_maker.ui.customize
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -382,7 +383,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     is SaveState.Success -> {
                         dismissLoading(true)
-                        startIntent(BackgroundActivity::class.java, result.path, viewModel.positionSelected)
+                        // Pass suggestion background if exists
+                        val intent = Intent(this@CustomizeActivity, BackgroundActivity::class.java).apply {
+                            putExtra(IntentKey.INTENT_KEY, result.path)
+                            putExtra(IntentKey.CATEGORY_POSITION_KEY, viewModel.positionSelected)
+                            // Pass suggestion background to BackgroundActivity
+                            viewModel.getSuggestionBackground()?.let { bg ->
+                                putExtra(IntentKey.SUGGESTION_BACKGROUND, bg)
+                            }
+                        }
+                        startActivity(intent)
                     }
                 }
             }

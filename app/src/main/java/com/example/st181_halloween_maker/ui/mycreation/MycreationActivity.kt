@@ -9,6 +9,7 @@ import androidx.core.content.FileProvider
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
 import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.base.BaseActivity
 import com.example.st181_halloween_maker.core.dialog.ConfirmDialog
@@ -43,10 +44,25 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
     override fun initView() {
         loadSavedImages()
         initRcv()
+        // Click on ScrollView to exit selection mode
+        // Click on ScrollView to exit selection mode
+        // Click on ScrollView content to exit selection mode
+        binding.constraintLayoutInScroll.setOnClickListener {
+            if (isSelectionMode) {
+                exitSelectionMode()
+            }
+        }
     }
 
     override fun viewListener() {
         binding.apply {
+            // Click outside to exit selection mode
+            main.setOnClickListener {
+                if (isSelectionMode) {
+                    exitSelectionMode()
+                }
+            }
+
             btnBack.onSingleClick {
                 if (isSelectionMode) {
                     exitSelectionMode()
@@ -108,6 +124,21 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             rcv.adapter = myCreationAdapter
             rcv.itemAnimator = null
             myCreationAdapter.submitList(myCreationList)
+
+            // Click on empty space in RecyclerView to exit selection mode
+            rcv.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+                override fun onInterceptTouchEvent(rv: RecyclerView, e: android.view.MotionEvent): Boolean {
+                    if (isSelectionMode && e.action == android.view.MotionEvent.ACTION_UP) {
+                        val child = rv.findChildViewUnder(e.x, e.y)
+                        if (child == null) {
+                            // Clicked on empty space
+                            exitSelectionMode()
+                            return true
+                        }
+                    }
+                    return false
+                }
+            })
         }
     }
 
