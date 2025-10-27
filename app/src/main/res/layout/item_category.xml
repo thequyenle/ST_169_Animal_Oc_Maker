@@ -6,19 +6,31 @@
     android:layout_marginHorizontal="4dp"
     android:layout_marginBottom="8dp">
 
-    <!-- item_layout.xml -->
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
-        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintDimensionRatio="1:1.15"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Background frame -->
+        <ImageView
+            android:id="@+id/imvFrame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="fitXY"
+            android:src="@drawable/img_tommy_make_character" />
+
+        <!-- Content image inside frame -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="30dp"
             android:backgroundTint="@color/tranf"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">
@@ -27,10 +39,8 @@
                 android:id="@+id/imvImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:src="@drawable/img_frame_home_1" />
+                android:scaleType="centerCrop" />
         </androidx.cardview.widget.CardView>
     </FrameLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

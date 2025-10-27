@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.st181_halloween_maker.R
 import com.example.st181_halloween_maker.core.extensions.onSingleClick
 import com.example.st181_halloween_maker.core.utils.DataLocal.shimmer
 import com.example.st181_halloween_maker.data.custom.CustomizeModel
@@ -23,6 +24,17 @@ class CategoryAdapter(val context: Context): RecyclerView.Adapter<CategoryAdapte
             val shimmerDrawable = ShimmerDrawable().apply {
                 setShimmer(shimmer)
             }
+
+            // Set frame based on position
+            val frameRes = when(position) {
+                0 -> R.drawable.img_tommy_make_character
+                1 -> R.drawable.img_miley_make_character
+                2 -> R.drawable.img_dammy_make_character
+                else -> R.drawable.img_tommy_make_character // Default
+            }
+            binding.imvFrame.setImageResource(frameRes)
+
+            // Load content image
             Glide.with(binding.root).load(item.avatar).placeholder(shimmerDrawable).error(shimmerDrawable).into(binding.imvImage)
 
             binding.root.onSingleClick {

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Animal Oc Maker</string>
     <string name="go_to_setting_title">Permission settings</string>
@@ -51,7 +52,7 @@
     <string name="not_yet_rate">Please select number of stars</string>
     <string name="have_rated">Thank you for rate our app</string>
 
-    <string name="category">Category</string>
+    <string name="category">Make Character</string>
     <string name="download">Download</string>
     <string name="share">Share</string>
     <string name="no_item_here">No item is here</string>
