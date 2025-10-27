@@ -6,10 +6,13 @@
     android:layout_marginVertical="8dp"
     android:layout_marginEnd="8dp">
 
-    <FrameLayout
+    <androidx.cardview.widget.CardView
         android:id="@+id/layoutFocus1"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:cardCornerRadius="6dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#FF7396"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_8_stroke_orange" />
-    </FrameLayout>
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
