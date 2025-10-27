@@ -311,6 +311,25 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                     colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+
+                    // ✅ THÊM ĐOẠN NÀY: Scroll to selected item if has suggestion preset
+                    if (viewModel.hasSuggestionPreset()) {
+                        val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                            .indexOfFirst { it.isSelected }
+                        if (selectedIndex >= 0) {
+                            binding.rcvLayer.scrollToPosition(selectedIndex)
+                        }
+
+                        // Scroll to selected color if exists
+                        if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+                            val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                                .indexOfFirst { it.isSelected }
+                            if (selectedColorIndex >= 0) {
+                                binding.rcvColor.scrollToPosition(selectedColorIndex)
+                            }
+                        }
+                    }
+
                     checkStatusColor()
                     dismissLoading()
                     dLog("main")

@@ -208,7 +208,7 @@ class CustomizeViewModel : ViewModel() {
                 _isShowColorList.value[layer.positionNavigation] = true
             }
 
-            // Update item nav list to mark selected item (reset all others to false)
+            // ✅ QUAN TRỌNG: Dùng setItemNavList() để reset all và chỉ set 1 item = true
             setItemNavList(layer.positionNavigation, selection.itemIndex)
 
             Log.d("CustomizeViewModel", "Applied layer $positionCustom with item ${selection.itemIndex}")
@@ -216,7 +216,6 @@ class CustomizeViewModel : ViewModel() {
 
         Log.d("CustomizeViewModel", "Suggestion preset applied successfully")
     }
-
     /**
      * Get suggestion background
      */
