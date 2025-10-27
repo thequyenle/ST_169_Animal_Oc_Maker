@@ -1,5 +1,6 @@
 package com.example.st169_animal_oc_maker.ui.splash
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
 import androidx.activity.viewModels
@@ -35,6 +36,8 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
         lifecycleScope.launch {
             viewModel.allData.collect { data ->
                 if (data.isNotEmpty()){
+                    kotlinx.coroutines.delay(3000)
+
                     if (SystemUtils.isFirstLang(this@SplashActivity)) {
                         startActivity(Intent(this@SplashActivity, LanguageActivity::class.java))
                         check = true
@@ -56,9 +59,10 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
 
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         if (check) {
-            super.onBackPressed()
+           // super.onBackPressed()
         } else {
             check = false
         }

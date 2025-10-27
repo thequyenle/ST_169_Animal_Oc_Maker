@@ -4,7 +4,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="12dp"
         android:elevation="0dp"
         app:cardElevation="0dp">
 
@@ -31,10 +31,10 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="14dp"
                 android:layout_toEndOf="@+id/imvFlag"
-                android:fontFamily="@font/londrina_solid_regular"
+                android:fontFamily="@font/josefin_sans_regular"
                 android:gravity="start"
                 android:textColor="@color/white"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/rdbLang"

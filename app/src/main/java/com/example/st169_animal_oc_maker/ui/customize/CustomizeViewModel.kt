@@ -208,11 +208,8 @@ class CustomizeViewModel : ViewModel() {
                 _isShowColorList.value[layer.positionNavigation] = true
             }
 
-            // Update item nav list to mark selected item
-            _itemNavList.value[layer.positionNavigation] =
-                _itemNavList.value[layer.positionNavigation].mapIndexed { index, model ->
-                    model.copy(isSelected = index == selection.itemIndex)
-                }.toCollection(ArrayList())
+            // Update item nav list to mark selected item (reset all others to false)
+            setItemNavList(layer.positionNavigation, selection.itemIndex)
 
             Log.d("CustomizeViewModel", "Applied layer $positionCustom with item ${selection.itemIndex}")
         }

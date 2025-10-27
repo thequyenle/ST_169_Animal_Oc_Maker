@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GhostTextManager">
+    <option name="inputs">
+      <map>
+        <entry key="Bug trong applySuggestionPreset():&#10;&#10;VẤN ĐỀ:&#10;- Khi apply suggestion preset, items được set path đúng&#10;- NHƯNG focus state (isSelected) bị sai&#10;- Nhiều items cùng có isSelected = true&#10;- Gây ra focus sai vị trí, thậm chí focus lên btnRandom&#10;&#10;NGUYÊN NHÂN:&#10;Trong applySuggestionPreset(), khi set item selected:&#10;```kotlin&#10;_itemNavList.value[positionNav][itemIndex].isSelected = true&#10;```&#10;→ Chỉ set 1 item = true, KHÔNG reset các items khác = false&#10;&#10;GIẢI PHÁP:&#10;Thay đổi logic trong applySuggestionPreset():&#10;&#10;THAY VÌ:&#10;```kotlin&#10;_itemNavList.value[layer.positionNavigation][selection.itemIndex].isSelected = true&#10;```&#10;&#10;DÙNG METHOD CÓ SẴN:&#10;```kotlin&#10;setItemNavList(layer.positionNavigation, selection.itemIndex)&#10;```&#10;&#10;Vì setItemNavList() đã có logic:&#10;- Reset TẤT CẢ items trong layer = false&#10;- Chỉ set 1 item đúng = true&#10;&#10;CODE:&#10;Update method applySuggestionPreset() trong CustomizeViewModel.&#10;Thay thế việc set isSelected trực tiếp bằng gọi setItemNavList().&#10;```">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761575092377" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="cho chiều cao ảnh intro1 nhỏ lại ở introAcitivity hoặc IntroAdapter nhé. các intro khác không ảnh hưởng">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761565567398" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="cho ảnh intro1 magintop thêm 20dp đi">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761565808555" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="tôi bị một lỗi cirtical, đó là khi ở phần suggestion, khi chọn một item bất kỳ thì đưa đến phần customize, nhưng mà lẽ ra các item của tôi nó không được focus vào phần btnRandom của item_cus mới phải">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761573627696" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

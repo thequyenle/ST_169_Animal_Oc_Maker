@@ -3,6 +3,7 @@ package com.example.st169_animal_oc_maker.ui.intro
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +21,22 @@ class IntroAdapter(val context: Context, private val items: List<IntroModel>) :
         fun bind(item: IntroModel) {
             binding.apply {
                 imvImage.setImageResource(item.image)
+
+                // Chỉ giảm chiều cao cho intro1
+                if (item.image == R.drawable.intro1) {
+                    val params = imvImage.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    params.height = (context.resources.displayMetrics.heightPixels * 0.7).toInt()
+                    params.topMargin = (40 * context.resources.displayMetrics.density).toInt()
+                    imvImage.layoutParams = params
+                } else {
+                    val params = imvImage.layoutParams as ConstraintLayout.LayoutParams
+                    params.width = ViewGroup.LayoutParams.MATCH_PARENT
+                    params.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                    params.topMargin = 0
+                    imvImage.layoutParams = params
+                }
+
                 txtContent.text = ContextCompat.getString(context, item.content)
                 txtContent.typeface = ResourcesCompat.getFont(context, R.font.coiny_regular)
                 txtContent.select()

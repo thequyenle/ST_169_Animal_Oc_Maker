@@ -40,7 +40,7 @@ class LanguageAdapter(val context: Context): RecyclerView.Adapter<LanguageAdapte
                     itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_selected)
                 } else {
                     rdbLang.setImageResource(R.drawable.ic_not_tick_lang_pink)
-                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.pink))
                     itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_unselected)
 
                 }
