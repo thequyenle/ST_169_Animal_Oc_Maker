@@ -10,7 +10,8 @@
       "Bash(dir /b /s:*)",
       "Bash(cat:*)",
       "Bash(dir /s /b \"D:\\androidProject\\ST181_Base_Maker\\app\\src\\main\\java\")",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(./gradlew clean:*)"
     ],
     "deny": [],
     "ask": []

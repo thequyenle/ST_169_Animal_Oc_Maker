@@ -27,10 +27,10 @@ class BottomNavigationAdapter(val context: Context) :
         binding.apply {
 
             if (item.isSelected) {
-                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.pink))
                 imvSelected.invisible()
             } else {
-                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.pink))
+                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 imvSelected.gone()
             }
             Glide.with(root).load(item.imageNavigation).placeholder(shimmerDrawable).into(imvImage)
