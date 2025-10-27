@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <com.example.st181_halloween_maker.core.custom.StrokeTextView
+            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/tommy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -116,7 +116,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.example.st181_halloween_maker.core.custom.StrokeTextView
+            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/miley"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -173,7 +173,7 @@
 
             </com.google.android.material.card.MaterialCardView>
 
-            <com.example.st181_halloween_maker.core.custom.StrokeTextView
+            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/dammy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

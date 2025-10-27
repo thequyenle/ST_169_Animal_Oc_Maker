@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.st181_halloween_maker'
+    namespace 'com.example.st169_animal_oc_maker'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.st181_halloween_maker"
+        applicationId "com.example.st169_animal_oc_maker"
         minSdk 24
         targetSdk 35
         versionCode 1
@@ -16,7 +16,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         def formattedDate = new Date().format('MM.dd.yyyy')
-        archivesBaseName = "ST181_Halloween_Maker_v${versionName}_${formattedDate}"
+        archivesBaseName = "ST169_Animal_Maker_v${versionName}_${formattedDate}"
     }
 
     buildTypes {
