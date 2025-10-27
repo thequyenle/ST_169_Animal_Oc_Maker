@@ -47,12 +47,12 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
             handleBack()
         }
 
-        // Add click listener for ic_home to navigate to home
+        // Add click listener for ic_delete to delete the image
         binding.icDelete.onSingleClick {
-            handleBack()
+            showDeleteDialog()
         }
 
-        // Add click listener for btnMyAlbum (was download)
+        // Add click listener for btnDownload to download the image
         binding.btnDownload.onSingleClick {
             downloadImage()
         }

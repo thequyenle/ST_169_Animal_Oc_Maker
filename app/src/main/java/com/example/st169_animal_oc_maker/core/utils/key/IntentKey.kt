@@ -17,4 +17,7 @@ object IntentKey {
     const val SUGGESTION_STATE = "suggestion_state"
     const val SUGGESTION_BACKGROUND = "suggestion_background"
     const val CHARACTER_INDEX = "character_index"
+
+    // Navigation source flags
+    const val FROM_SUCCESS = "from_success"
 }

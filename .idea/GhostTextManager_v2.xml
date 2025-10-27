@@ -75,6 +75,30 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="binding.btnBack.onSingleClick {&#10;            // Tạo Intent để quay lại màn hình BackgroundActivity&#10;            val intent = Intent(this, BackgroundActivity::class.java).apply {&#10;                // Đặt cờ để xóa các activity phía trên và tái sử dụng activity đã có&#10;            }&#10;            startActivity(intent)&#10;            finish() // Kết thúc SuccessActivity hiện tại&#10;        }&#10;ở phần successActivity, tôi muốn clickBack quay về backgroundActivity, nhưng phải gi nguyên trạng thái của nhân vật cùng background đã chọn cơ">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761587586177" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="bạn kiêm tra lại giúp tôi, khi đi từ customize sang backgroundactivity, chọn background rồi ấn btnSave thì ảnh hện ở activity_success phải đi kèm cả background đã chọn mới đúng">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761586210294" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="cho chiều cao ảnh intro1 nhỏ lại ở introAcitivity hoặc IntroAdapter nhé. các intro khác không ảnh hưởng">
           <value>
             <GhostTextMetaData>
@@ -94,6 +118,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1761565808555" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="khi ở màn success, bấm vào my album -&gt; mycreation , click back thì phải quay về màn home thay vì customize mới đúng">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761587917375" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="thêm chức năng xóa ở ic_delete trong activity_view nhé. Sử dụng dialog có sẵn là ConfirmDialog">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761585738654" />
                 </list>
               </option>
             </GhostTextMetaData>

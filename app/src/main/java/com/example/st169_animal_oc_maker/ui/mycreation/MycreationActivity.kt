@@ -19,6 +19,7 @@ import com.example.st169_animal_oc_maker.core.utils.HandleState
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
 import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
 import com.example.st169_animal_oc_maker.databinding.ActivityMycreationBinding
+import com.example.st169_animal_oc_maker.ui.home.HomeActivity
 import com.example.st169_animal_oc_maker.ui.view.ViewActivity
 import com.girlmaker.create.avatar.creator.model.MyCreationModel
 import kotlinx.coroutines.Dispatchers
@@ -31,12 +32,16 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
     private val myCreationAdapter by lazy { MyCreationAdapter(this) }
     private val myCreationList = ArrayList<MyCreationModel>()
     private var isSelectionMode = false
+    private var fromSuccess = false
 
     override fun setViewBinding(): ActivityMycreationBinding {
         return ActivityMycreationBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
+        // Check if navigated from SuccessActivity
+        fromSuccess = intent.getBooleanExtra(IntentKey.FROM_SUCCESS, false)
+
         loadSavedImages()
         initRcv()
         // Click on ScrollView to exit selection mode
@@ -62,7 +67,14 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                 if (isSelectionMode) {
                     exitSelectionMode()
                 } else {
-                    handleBack()
+                    // If from SuccessActivity, navigate to HomeActivity
+                    if (fromSuccess) {
+                        val intent = Intent(this@MycreationActivity, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        handleBack()
+                    }
                 }
             }
 
