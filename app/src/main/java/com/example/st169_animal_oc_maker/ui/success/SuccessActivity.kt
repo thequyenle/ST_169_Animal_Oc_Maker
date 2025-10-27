@@ -14,14 +14,14 @@ import com.example.st169_animal_oc_maker.core.helper.MediaHelper
 import com.example.st169_animal_oc_maker.core.utils.SaveState
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
 import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
-import com.example.st169_animal_oc_maker.databinding.ActivityViewBinding
+import com.example.st169_animal_oc_maker.databinding.ActivitySuccessBinding
 import com.example.st169_animal_oc_maker.ui.home.HomeActivity
 import com.example.st169_animal_oc_maker.ui.mycreation.MycreationActivity
 import kotlinx.coroutines.launch
 
-class SuccessActivity : BaseActivity<ActivityViewBinding>() {
-    override fun setViewBinding(): ActivityViewBinding {
-        return ActivityViewBinding.inflate(LayoutInflater.from(this))
+class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
+    override fun setViewBinding(): ActivitySuccessBinding {
+        return ActivitySuccessBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
@@ -29,14 +29,7 @@ class SuccessActivity : BaseActivity<ActivityViewBinding>() {
         val backgroundPath = intent.getStringExtra(IntentKey.BACKGROUND_IMAGE_KEY)
         val previousImagePath = intent.getStringExtra(IntentKey.PREVIOUS_IMAGE_KEY)
 
-        // Display the background image
-        if (!backgroundPath.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(backgroundPath)
-                .into(binding.ivBackground)
-        }
-
-        // Display the previous image on top
+        // Display the image (activity_success.xml only has imvImage, no ivBackground)
         if (!previousImagePath.isNullOrEmpty()) {
             Glide.with(this)
                 .load(previousImagePath)
@@ -50,16 +43,21 @@ class SuccessActivity : BaseActivity<ActivityViewBinding>() {
             handleBack()
         }
 
-        // Add click listener for ic_home to return to HomeActivity
+        // Add click listener for ic_delete to return to HomeActivity
         binding.icHome.onSingleClick {
             startIntent(HomeActivity::class.java)
             finish()
         }
 
-        // Add click listener for btnMyAlbum to navigate to MycreationActivity
+        // Add click listener for btnDownload to navigate to MycreationActivity
         binding.btnMyAlbum.onSingleClick {
             startIntent(MycreationActivity::class.java)
             finish()
+        }
+
+        // Add click listener for btnShare (if needed)
+        binding.btnShare.onSingleClick {
+            saveImageToAlbum()
         }
     }
 

@@ -16,17 +16,17 @@ import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
 import com.example.st169_animal_oc_maker.core.helper.MediaHelper
 import com.example.st169_animal_oc_maker.core.utils.HandleState
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.databinding.ActivitySuccessBinding
+import com.example.st169_animal_oc_maker.databinding.ActivityViewBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 
-class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
+class ViewActivity : BaseActivity<ActivityViewBinding>() {
     private var imagePath: String? = null
 
-    override fun setViewBinding(): ActivitySuccessBinding {
-        return ActivitySuccessBinding.inflate(LayoutInflater.from(this))
+    override fun setViewBinding(): ActivityViewBinding {
+        return ActivityViewBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
@@ -47,12 +47,12 @@ class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
             handleBack()
         }
 
-        // Add click listener for ic_delete to delete the image
+        // Add click listener for ic_home to navigate to home
         binding.icDelete.onSingleClick {
-            showDeleteDialog()
+            handleBack()
         }
 
-        // Add click listener for btnDownload to download the image
+        // Add click listener for btnMyAlbum (was download)
         binding.btnDownload.onSingleClick {
             downloadImage()
         }

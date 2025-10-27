@@ -27,6 +27,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Mình có một project Android, hiện tại tên layout và Activity bị đảo ngược:&#10;&#10;activity_success.xml đang được sử dụng cho ViewActivity.kt&#10;&#10;activity_view.xml đang được sử dụng cho SuccessActivity.kt&#10;&#10;Trong ViewActivity.kt / activity_success.xml đã có chức năng chia sẻ ảnh (share).">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761584696012" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Prompt:&#10;&#10;Hãy tối ưu code của tôi để tránh bị lag khi load dữ liệu trong SuggestionActivity.&#10;&#10;Mục tiêu:&#10;&#10;Chạy các tác vụ nặng như ensureData() và generateAllSuggestions() ở background thread (Dispatchers.IO).&#10;&#10;Không block UI thread.&#10;&#10;Vẫn giữ nguyên logic hiển thị suggestions và thumbnails như cũ.&#10;&#10;Giữ lại showLoading() và dismissLoading(), đảm bảo dismissLoading() luôn được gọi dù có lỗi.&#10;&#10;Dưới đây là code hiện tại:&#10;&#10;lifecycleScope.launch {&#10;    showLoading()&#10;&#10;    try {&#10;        // Ensure data is loaded&#10;        dataViewModel.ensureData(this@&lt;file_name&gt;&#10;&#10;        // Lấy data một lần khi đã có&#10;        val allData = dataViewModel.allData.first { it.isNotEmpty() }&#10;&#10;        // Generate suggestions với thumbnails&#10;        suggestionViewModel.generateAllSuggestions(allData, this@&lt;file_name&gt;&#10;    } catch (e: Exception) {&#10;        dismissLoading()&#10;        // TODO: Handle error (show error message)&#10;    }&#10;}&#10;&#10;&#10;Hãy viết lại đoạn này sao cho các hàm nặng chạy trong withContext(Dispatchers.IO) để UI không bị chậm.">
           <value>
             <GhostTextMetaData>
