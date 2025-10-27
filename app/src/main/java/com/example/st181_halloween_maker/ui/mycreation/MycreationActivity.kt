@@ -34,6 +34,7 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
     private val myCreationAdapter by lazy { MyCreationAdapter(this) }
     private val myCreationList = ArrayList<MyCreationModel>()
+    private var isSelectionMode = false
 
     override fun setViewBinding(): ActivityMycreationBinding {
         return ActivityMycreationBinding.inflate(LayoutInflater.from(this))
@@ -47,7 +48,31 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
     override fun viewListener() {
         binding.apply {
             btnBack.onSingleClick {
-                handleBack()
+                if (isSelectionMode) {
+                    exitSelectionMode()
+                } else {
+                    handleBack()
+                }
+            }
+
+            // Delete button - delete selected items
+            delete.onSingleClick {
+                deleteSelectedItems()
+            }
+
+            // Download button - download selected items
+            btnDownload.onSingleClick {
+                downloadSelectedItems()
+            }
+
+            // Share button - share selected items
+            btnShare.onSingleClick {
+                shareSelectedItems()
+            }
+
+            // Select All button
+            btnSelectAll.onSingleClick {
+                toggleSelectAll()
             }
         }
         handleRcv()
@@ -105,6 +130,16 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
         myCreationAdapter.onDownloadClick = { path ->
             downloadImage(path)
+        }
+
+        // Handle long press to enter selection mode
+        myCreationAdapter.onLongClick = { position ->
+            enterSelectionMode(position)
+        }
+
+        // Handle item tick/untick
+        myCreationAdapter.onItemTick = { position ->
+            toggleItemSelection(position)
         }
     }
 
@@ -232,6 +267,215 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         // Reload images when returning to this activity
         loadSavedImages()
         myCreationAdapter.submitList(myCreationList)
+    }
+
+    // ==================== SELECTION MODE FUNCTIONS ====================
+
+    private fun enterSelectionMode(position: Int) {
+        if (!isSelectionMode) {
+            isSelectionMode = true
+
+            // Show selection UI
+            binding.delete.show()
+            binding.btnDownload.show()
+            binding.btnShare.show()
+            binding.btnSelectAll.show()
+
+            // Enable selection mode for all items
+            myCreationList.forEach { it.isShowSelection = true }
+
+            // Select the long-pressed item
+            myCreationList[position].isSelected = true
+
+            // Update adapter
+            myCreationAdapter.submitList(myCreationList)
+
+            // Update Select All checkbox
+            updateSelectAllCheckbox()
+        }
+    }
+
+    private fun exitSelectionMode() {
+        isSelectionMode = false
+
+        // Hide selection UI
+        binding.delete.gone()
+        binding.btnDownload.gone()
+        binding.btnShare.gone()
+        binding.btnSelectAll.gone()
+
+        // Disable selection mode and clear selections
+        myCreationList.forEach {
+            it.isShowSelection = false
+            it.isSelected = false
+        }
+
+        // Update adapter
+        myCreationAdapter.submitList(myCreationList)
+    }
+
+    private fun toggleItemSelection(position: Int) {
+        myCreationList[position].isSelected = !myCreationList[position].isSelected
+        myCreationAdapter.submitItem(position, myCreationList[position].isSelected)
+        updateSelectAllCheckbox()
+    }
+
+    private fun toggleSelectAll() {
+        val allSelected = myCreationList.all { it.isSelected }
+
+        myCreationList.forEach { it.isSelected = !allSelected }
+        myCreationAdapter.submitList(myCreationList)
+        updateSelectAllCheckbox()
+    }
+
+    private fun updateSelectAllCheckbox() {
+        val allSelected = myCreationList.isNotEmpty() && myCreationList.all { it.isSelected }
+        binding.checkImg.setImageResource(
+            if (allSelected) R.drawable.ic_check else R.drawable.ic_uncheck
+        )
+    }
+
+    private fun getSelectedItems(): List<MyCreationModel> {
+        return myCreationList.filter { it.isSelected }
+    }
+
+    private fun deleteSelectedItems() {
+        val selectedItems = getSelectedItems()
+        if (selectedItems.isEmpty()) {
+            showToast(R.string.please_select_at_least_one_item)
+            return
+        }
+
+        val dialog = ConfirmDialog(
+            this,
+            R.string.delete,
+            R.string.do_you_want_to_delete
+        )
+        dialog.onYesClick = {
+            lifecycleScope.launch {
+                try {
+                    var deletedCount = 0
+                    selectedItems.forEach { item ->
+                        val file = File(item.path)
+                        if (file.exists() && file.delete()) {
+                            deletedCount++
+                            myCreationList.remove(item)
+                        }
+                    }
+
+                    if (deletedCount > 0) {
+                        showToast(getString(R.string.deleted_successfully, deletedCount))
+                        myCreationAdapter.submitList(myCreationList)
+
+                        // Check if list is empty
+                        if (myCreationList.isEmpty()) {
+                            binding.layoutNoItem.show()
+                            binding.rcv.gone()
+                            exitSelectionMode()
+                        } else {
+                            updateSelectAllCheckbox()
+                        }
+                    }
+                } catch (e: Exception) {
+                    showToast(R.string.delete_failed)
+                }
+            }
+            dialog.dismiss()
+        }
+        dialog.onNoClick = {
+            dialog.dismiss()
+        }
+        dialog.show()
+    }
+
+    private fun downloadSelectedItems() {
+        val selectedItems = getSelectedItems()
+        if (selectedItems.isEmpty()) {
+            showToast(R.string.please_select_at_least_one_item)
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                showLoading()
+
+                val selectedPaths = selectedItems.map { it.path }
+                val bitmaps = withContext(Dispatchers.IO) {
+                    BitmapHelper.convertPathsToBitmaps(this@MycreationActivity, selectedPaths)
+                }
+
+                var savedCount = 0
+                bitmaps.forEach { bitmap ->
+                    MediaHelper.saveBitmapToExternal(this@MycreationActivity, bitmap)
+                        .collect { state ->
+                            when (state) {
+                                HandleState.SUCCESS -> savedCount++
+                                else -> {}
+                            }
+                        }
+                }
+
+                dismissLoading(true)
+                if (savedCount > 0) {
+                    showToast(getString(R.string.saved_successfully, savedCount))
+                } else {
+                    showToast(R.string.save_failed_please_try_again)
+                }
+
+            } catch (e: Exception) {
+                dismissLoading(true)
+                showToast(R.string.save_failed_please_try_again)
+            }
+        }
+    }
+
+    private fun shareSelectedItems() {
+        val selectedItems = getSelectedItems()
+        if (selectedItems.isEmpty()) {
+            showToast(R.string.please_select_at_least_one_item)
+            return
+        }
+
+        lifecycleScope.launch {
+            try {
+                val uris = ArrayList<android.net.Uri>()
+
+                selectedItems.forEach { item ->
+                    val file = File(item.path)
+                    if (file.exists()) {
+                        val contentUri = FileProvider.getUriForFile(
+                            this@MycreationActivity,
+                            "${applicationContext.packageName}.provider",
+                            file
+                        )
+                        uris.add(contentUri)
+                    }
+                }
+
+                if (uris.isEmpty()) {
+                    showToast(R.string.file_not_found)
+                    return@launch
+                }
+
+                val shareIntent = Intent().apply {
+                    if (uris.size == 1) {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_STREAM, uris[0])
+                    } else {
+                        action = Intent.ACTION_SEND_MULTIPLE
+                        putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris)
+                    }
+                    type = "image/png"
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+
+                val chooser = Intent.createChooser(shareIntent, getString(R.string.share))
+                startActivity(chooser)
+
+            } catch (e: Exception) {
+                showToast("Share failed: ${e.message}")
+            }
+        }
     }
 
 }

@@ -40,13 +40,24 @@
 
                     <ImageView
                         android:id="@+id/btnMore"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="11dp"
                         android:layout_marginTop="9dp"
                         android:padding="2dp"
+                        android:visibility="visible"
                         android:src="@drawable/ic_menu" />
+                    <ImageView
+                        android:id="@+id/imgCheck"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="11dp"
+                        android:layout_marginTop="9dp"
+                        android:visibility="gone"
+                        android:padding="2dp"
+                        android:src="@drawable/ic_uncheck" />
 
                     <ImageView
                         android:id="@+id/btnSelect"

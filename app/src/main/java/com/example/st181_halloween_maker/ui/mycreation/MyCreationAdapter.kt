@@ -29,34 +29,48 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
         fun bind(item: MyCreationModel, position: Int) {
             Glide.with(binding.root).load(item.path).placeholder(shimmerDrawable).error(shimmerDrawable).into(binding.imvImage)
 
+            // Toggle between btnMore and imgCheck based on selection mode
             if (item.isShowSelection) {
-                binding.btnSelect.show()
                 binding.btnMore.gone()
-            } else {
+                binding.imgCheck.show()
                 binding.btnSelect.gone()
-                binding.btnMore.show()
-            }
 
-            if (item.isSelected) {
-                binding.btnSelect.setImageResource(R.drawable.ic_tick_item)
+                // Update imgCheck icon based on selection state
+                if (item.isSelected) {
+                    binding.imgCheck.setImageResource(R.drawable.ic_check)
+                } else {
+                    binding.imgCheck.setImageResource(R.drawable.ic_uncheck)
+                }
             } else {
-                binding.btnSelect.setImageResource(R.drawable.ic_not_tick_item)
+                binding.btnMore.show()
+                binding.imgCheck.gone()
+                binding.btnSelect.gone()
             }
 
+            // Handle root click
             binding.root.onSingleClick {
-                onItemClick?.invoke(item.path)
+                if (item.isShowSelection) {
+                    // In selection mode, clicking item toggles selection
+                    onItemTick?.invoke(position)
+                } else {
+                    // Normal mode, open item
+                    onItemClick?.invoke(item.path)
+                }
             }
 
+            // Handle btnMore click (show popup menu)
             binding.btnMore.onSingleClick {
                 showOptionsPopup(binding.root, item.path, position)
             }
 
+            // Handle long click to enter selection mode
             binding.root.setOnLongClickListener {
                 onLongClick?.invoke(position)
                 return@setOnLongClickListener true
             }
 
-            binding.btnSelect.onSingleClick {
+            // Handle imgCheck click to toggle selection
+            binding.imgCheck.onSingleClick {
                 onItemTick?.invoke(position)
             }
         }

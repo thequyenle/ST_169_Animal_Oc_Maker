@@ -112,4 +112,7 @@
     <string name="miley">Miley</string>
     <string name="dammy">Dammy</string>
     <string name="select_all">Select all</string>
+    <string name="please_select_at_least_one_item">Please select at least one item</string>
+    <string name="deleted_successfully">Deleted %1$d item(s) successfully!</string>
+    <string name="saved_successfully">Saved %1$d item(s) successfully!</string>
 </resources>
