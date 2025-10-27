@@ -50,6 +50,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     val customizeLayerAdapter by lazy { CustomizeLayerAdapter(this) }
     val bottomNavigationAdapter by lazy { BottomNavigationAdapter(this) }
 
+    // Thêm biến để lưu trạng thái color bar
+    private var isColorBarVisible = true
+    private var categoryPosition = 0
+
     override fun setViewBinding(): ActivityCustomizeBinding {
         return ActivityCustomizeBinding.inflate(LayoutInflater.from(this))
     }
@@ -73,8 +77,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             intent.getIntExtra(IntentKey.INTENT_KEY, 0)
         }
 
-        // Set background based on character index
-        val categoryPosition = characterIndex
+        // Lưu category position để dùng cho btnColor
+        categoryPosition = characterIndex
 
         // Set background based on category position
         val backgroundDrawable = when(categoryPosition) {
@@ -85,12 +89,45 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
         binding.main.setBackgroundResource(backgroundDrawable)
 
+        // Set background cho layoutRcvColor dựa trên category position
+        val colorBarBackground = when(categoryPosition) {
+            0 -> R.drawable.bg_color_cus_1
+            1 -> R.drawable.bg_color_cus_2
+            2 -> R.drawable.bg_color_cus_3
+            else -> R.drawable.bg_color_cus_1
+        }
+        binding.layoutRcvColor.setBackgroundResource(colorBarBackground)
+
+        // Set icon color tương ứng
+        updateColorIcon()
+
         // Store suggestion data if exists
         if (isSuggestion) {
             val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
             val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
             viewModel.setSuggestionPreset(suggestionStateJson, suggestionBackground)
         }
+    }
+    private fun updateColorIcon() {
+        val iconRes = when(categoryPosition) {
+            0 -> if (isColorBarVisible) R.drawable.ic_color_1_enable else R.drawable.ic_color_1_disable
+            1 -> if (isColorBarVisible) R.drawable.ic_color_2_enable else R.drawable.ic_color_2_disable
+            2 -> if (isColorBarVisible) R.drawable.ic_color_3_enable else R.drawable.ic_color_3_disable
+            else -> if (isColorBarVisible) R.drawable.ic_color_1_enable else R.drawable.ic_color_1_disable
+        }
+        binding.btnColor.setImageResource(iconRes)
+    }
+
+    private fun toggleColorBar() {
+        isColorBarVisible = !isColorBarVisible
+
+        if (isColorBarVisible) {
+            binding.layoutRcvColor.visible()
+        } else {
+            binding.layoutRcvColor.invisible()
+        }
+
+        updateColorIcon()
     }
 
     override fun dataObservable() {
@@ -146,6 +183,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             btnRandom.onSingleClick { viewModel.checkDataInternet(this@CustomizeActivity) { handleRandomAllLayer() } }
             btnReset.onSingleClick { handleReset() }
             btnFlip.onSingleClick { viewModel.setIsFlip() }
+            btnColor.onSingleClick { toggleColorBar() }
+
         }
         handleRcv()
     }
@@ -289,13 +328,18 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     private fun checkStatusColor() {
         if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
             if (viewModel.isShowColorList.value[viewModel.positionNavSelected.value]) {
+                // Mặc định hiển thị khi vào màn hình
+                isColorBarVisible = true
                 binding.layoutRcvColor.visible()
             } else {
+                isColorBarVisible = false
                 binding.layoutRcvColor.invisible()
             }
         } else {
+            isColorBarVisible = false
             binding.layoutRcvColor.invisible()
         }
+        updateColorIcon()
     }
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
