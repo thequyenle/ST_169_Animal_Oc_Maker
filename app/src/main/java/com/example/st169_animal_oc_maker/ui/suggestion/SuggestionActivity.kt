@@ -14,9 +14,11 @@ import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
 import com.example.st169_animal_oc_maker.databinding.ActivitySuggestionBinding
 import com.example.st169_animal_oc_maker.ui.customize.CustomizeActivity
 import com.example.st169_animal_oc_maker.ui.home.DataViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
 
@@ -43,22 +45,30 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
             }
         }
 
-        // Load data và generate suggestions
+        // Load data và generate suggestions - Tối ưu với background thread
         lifecycleScope.launch {
             showLoading()
 
             try {
-                // Ensure data is loaded
-                dataViewModel.ensureData(this@SuggestionActivity)
+                // ✅ Chạy tác vụ nặng trong background thread (Dispatchers.IO)
+                withContext(Dispatchers.IO) {
+                    // Ensure data is loaded
+                    dataViewModel.ensureData(this@SuggestionActivity)
 
-                // Lấy data một lần khi đã có
-                val allData = dataViewModel.allData.first { it.isNotEmpty() }
+                    // Lấy data một lần khi đã có
+                    val allData = dataViewModel.allData.first { it.isNotEmpty() }
 
-                // Generate suggestions với thumbnails
-                suggestionViewModel.generateAllSuggestions(allData, this@SuggestionActivity)
+                    // Generate suggestions với thumbnails
+                    suggestionViewModel.generateAllSuggestions(allData, this@SuggestionActivity)
+                }
+
+                // dismissLoading() sẽ được gọi tự động khi suggestions emit data
+                // thông qua observer ở trên (lines 32-44)
             } catch (e: Exception) {
+                // ✅ Đảm bảo dismiss loading nếu có lỗi
                 dismissLoading()
                 // TODO: Handle error (show error message)
+                e.printStackTrace()
             }
         }
     }

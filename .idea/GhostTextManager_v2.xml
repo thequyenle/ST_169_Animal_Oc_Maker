@@ -15,6 +15,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Prompt:&#10;&#10;Hãy tối ưu code của tôi để tránh bị lag khi load dữ liệu trong SuggestionActivity.&#10;&#10;Mục tiêu:&#10;&#10;Chạy các tác vụ nặng như ensureData() và generateAllSuggestions() ở background thread (Dispatchers.IO).&#10;&#10;Không block UI thread.&#10;&#10;Vẫn giữ nguyên logic hiển thị suggestions và thumbnails như cũ.&#10;&#10;Giữ lại showLoading() và dismissLoading(), đảm bảo dismissLoading() luôn được gọi dù có lỗi.&#10;&#10;Dưới đây là code hiện tại:&#10;&#10;lifecycleScope.launch {&#10;    showLoading()&#10;&#10;    try {&#10;        // Ensure data is loaded&#10;        dataViewModel.ensureData(this@&lt;file_name&gt;&#10;&#10;        // Lấy data một lần khi đã có&#10;        val allData = dataViewModel.allData.first { it.isNotEmpty() }&#10;&#10;        // Generate suggestions với thumbnails&#10;        suggestionViewModel.generateAllSuggestions(allData, this@&lt;file_name&gt;&#10;    } catch (e: Exception) {&#10;        dismissLoading()&#10;        // TODO: Handle error (show error message)&#10;    }&#10;}&#10;&#10;&#10;Hãy viết lại đoạn này sao cho các hàm nặng chạy trong withContext(Dispatchers.IO) để UI không bị chậm.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761579002957" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Tôi có bug trong Android app: Khi chọn item từ màn Suggestion và chuyển sang màn Customize, ảnh hiển thị đúng trên nhân vật NHƯNG item focus trong RecyclerView (rcvLayer) lại SAI - nó focus vào button random hoặc item khác thay vì item đúng.&#10;Code hiện tại:&#10;Trong applySuggestionPreset() của CustomizeViewModel.kt:&#10;&#10;Tôi đang gọi setItemNavList(layer.positionNavigation, selection.itemIndex) để set focus&#10;selection.itemIndex được lưu từ lúc random item trong SuggestionViewModel&#10;&#10;Trong initData() của CustomizeActivity.kt, thứ tự gọi:&#10;&#10;addValueToItemNavList() - Build itemNavList&#10;setFocusItemNavDefault() - Set focus mặc định&#10;applySuggestionPreset() - Apply suggestion preset&#10;&#10;Vấn đề nghi ngờ:&#10;&#10;selection.itemIndex có thể không khớp với vị trí thực tế trong RecyclerView vì RecyclerView có thêm None button (index 0) và Random button (index 1 ở layer đầu)&#10;Mapping giữa itemIndex trong data model và vị trí trong RecyclerView bị sai&#10;&#10;Hãy phân tích và đưa ra giải pháp fix bug này. Cần đảm bảo item được focus ĐÚNG vị trí trong RecyclerView khi apply suggestion preset">
           <value>
             <GhostTextMetaData>
