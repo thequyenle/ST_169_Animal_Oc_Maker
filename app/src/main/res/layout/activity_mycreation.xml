@@ -89,8 +89,8 @@
 
         <ImageView
             android:id="@+id/imgImage"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/img_no_image" />
 
@@ -100,11 +100,11 @@
             android:layout_below="@+id/imgImage"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="8dp"
-            android:fontFamily="@font/montserrat_italic"
+            android:fontFamily="@font/nunito_medium"
             android:gravity="center"
             android:text="@string/you_don_t_have_any_character"
-            android:textColor="@color/white"
-            android:textSize="12sp" />
+            android:textColor="@color/pink"
+            android:textSize="16sp" />
 
     </RelativeLayout>
 

@@ -81,7 +81,7 @@
     <string name="suggestions">Suggestions</string>
     <string name="you_have_successfully_created_a_character">You have successfully created a character</string>
     <string name="my_creation">My Creation</string>
-    <string name="you_don_t_have_any_character">You don\'t have any character</string>
+    <string name="you_don_t_have_any_character">No current history</string>
     <string name="network_connection_error">No internet</string>
     <string name="check_your_network_connection">Please check your internet</string>
     <string name="loading">Loading</string>
