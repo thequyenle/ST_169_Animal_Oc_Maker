@@ -27,18 +27,21 @@
             app:cardCornerRadius="4dp"
             app:cardElevation="0dp">
 
+            <!-- Background decoration - hiện khi selected -->
             <ImageView
                 android:id="@+id/imvSelected"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
+                android:visibility="gone"
                 android:src="@drawable/img_bottom_nav_selected" />
 
-            <!--            imvImage-->
+            <!-- Ảnh chính - nằm trên imvSelected -->
             <ImageView
                 android:id="@+id/imvImage"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_margin="4dp"
                 android:scaleType="centerCrop" />
         </androidx.cardview.widget.CardView>
 

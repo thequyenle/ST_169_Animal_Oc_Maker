@@ -27,9 +27,11 @@ class BottomNavigationAdapter(val context: Context) :
         binding.apply {
 
             if (item.isSelected) {
+                // Khi selected: hiện stroke màu pink và background decoration
                 cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.pink))
-                imvSelected.invisible()
+                imvSelected.isVisible = true
             } else {
+                // Khi không selected: stroke màu white và ẩn background decoration
                 cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 imvSelected.gone()
             }
