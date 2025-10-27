@@ -99,6 +99,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="ở activity_view thêm chức nang share cho tôi giống như ở activity_success cũng có đó">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761582898109" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

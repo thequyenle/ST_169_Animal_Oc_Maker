@@ -290,9 +290,10 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
     override fun onResume() {
         super.onResume()
-        // Reload images when returning to this activity
-        loadSavedImages()
-        myCreationAdapter.submitList(myCreationList)
+        if (!isSelectionMode) {
+            loadSavedImages()
+            myCreationAdapter.submitList(myCreationList)
+        }
     }
 
     // ==================== SELECTION MODE FUNCTIONS ====================
