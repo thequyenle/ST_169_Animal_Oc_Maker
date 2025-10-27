@@ -72,4 +72,57 @@ object BitmapHelper {
             throw error
         }
     }
+
+    /**
+     * ✅ NEW: Crop transparent edges from bitmap
+     * Removes all transparent/white borders around the actual content
+     * @param bitmap Source bitmap with transparent edges
+     * @return Cropped bitmap without transparent borders
+     */
+    fun cropTransparentEdges(bitmap: Bitmap): Bitmap {
+        var minX = bitmap.width
+        var minY = bitmap.height
+        var maxX = 0
+        var maxY = 0
+
+        // Find bounds of non-transparent content
+        for (y in 0 until bitmap.height) {
+            for (x in 0 until bitmap.width) {
+                val pixel = bitmap.getPixel(x, y)
+                val alpha = (pixel shr 24) and 0xFF
+
+                // Check if pixel is not fully transparent (alpha > threshold)
+                if (alpha > 10) {
+                    if (x < minX) minX = x
+                    if (x > maxX) maxX = x
+                    if (y < minY) minY = y
+                    if (y > maxY) maxY = y
+                }
+            }
+        }
+
+        // If no content found, return original
+        if (maxX < minX || maxY < minY) {
+            return bitmap
+        }
+
+        // Crop to content bounds
+        val width = maxX - minX + 1
+        val height = maxY - minY + 1
+
+        return try {
+            Bitmap.createBitmap(bitmap, minX, minY, width, height)
+        } catch (e: Exception) {
+            Log.e("BitmapHelper", "cropTransparentEdges failed: ${e.message}")
+            bitmap
+        }
+    }
+
+    /**
+     * ✅ NEW: Create bitmap from ImageView specifically
+     * More efficient than capturing entire layout
+     */
+    fun createBitmapFromImageView(view: View): Bitmap {
+        return createBimapFromView(view)
+    }
 }

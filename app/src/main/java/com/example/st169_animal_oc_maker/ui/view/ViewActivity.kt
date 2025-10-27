@@ -1,6 +1,7 @@
 package com.example.st169_animal_oc_maker.ui.view
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -97,11 +98,20 @@ class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
         }
     }
 
+    /**
+     * ✅ OPTIMIZED: Download image without border/background
+     * Same optimization as shareImage() - capture only the clean image
+     */
     private fun downloadImage() {
         if (!imagePath.isNullOrEmpty()) {
             lifecycleScope.launch {
+                var bitmap: Bitmap? = null
                 try {
-                    val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                    // ✅ Capture only the ImageView (clean, no gradient border)
+                    bitmap = withContext(Dispatchers.Default) {
+                        BitmapHelper.createBitmapFromImageView(binding.imvImage)
+                    }
+
                     MediaHelper.saveBitmapToExternal(this@ViewActivity, bitmap)
                         .collect { state ->
                             when (state) {
@@ -122,22 +132,41 @@ class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
                 } catch (e: Exception) {
                     dismissLoading(true)
                     showToast(R.string.save_failed_please_try_again)
+                } finally {
+                    // ✅ Clean up: Recycle bitmap to free memory
+                    bitmap?.recycle()
                 }
             }
         }
     }
 
+    /**
+     * ✅ OPTIMIZED: Share image without border/background
+     * Strategy:
+     * 1. Capture ONLY the ImageView (imvImage) - no gradient border
+     * 2. Use Dispatchers.IO for file operations
+     * 3. Recycle bitmap after saving to prevent memory leak
+     */
     private fun shareImage() {
         lifecycleScope.launch {
+            var bitmap: Bitmap? = null
             try {
                 showLoading()
 
-                // Create bitmap from view
-                val bitmap = withContext(Dispatchers.Default) {
-                    BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                // ✅ SOLUTION 1: Capture directly from ImageView (clean, no border)
+                bitmap = withContext(Dispatchers.Default) {
+                    BitmapHelper.createBitmapFromImageView(binding.imvImage)
                 }
 
-                // Save bitmap to cache
+                // ✅ Alternative: If you need the entire layout but without border, uncomment this:
+                // bitmap = withContext(Dispatchers.Default) {
+                //     val fullBitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                //     BitmapHelper.cropTransparentEdges(fullBitmap).also {
+                //         if (it != fullBitmap) fullBitmap.recycle() // Recycle original if cropped
+                //     }
+                // }
+
+                // Save bitmap to cache (on IO thread for better performance)
                 val file = withContext(Dispatchers.IO) {
                     with(MediaHelper) {
                         this@ViewActivity.saveBitmapToCache(bitmap)
@@ -168,6 +197,9 @@ class ViewActivity : BaseActivity<ActivitySuccessBinding>() {
             } catch (e: Exception) {
                 dismissLoading(true)
                 showToast("Share failed: ${e.message}")
+            } finally {
+                // ✅ Clean up: Recycle bitmap to free memory
+                bitmap?.recycle()
             }
         }
     }
