@@ -39,6 +39,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Vui lòng giúp tôi phân tích lý do tại sao quá trình chuyển đổi từ HomeActivity → SuggestionActivity lại chậm và hướng dẫn tôi các bước chi tiết để tối ưu hóa.&#10;&#10;Tôi muốn Activity mở ngay lập tức và tải dữ liệu hoặc hình ảnh mượt mà ở chế độ nền.&#10;&#10;Bạn có thể đề xuất các cải tiến trong:&#10;- Sử dụng vòng đời Activity (ví dụ: di chuyển các tác vụ nặng ra khỏi onCreate)&#10;- Tối ưu hóa Coroutine (Dispatcher, combine, collect)&#10;- Tải dữ liệu ViewModel&#10;- Chiến lược tải UI (tải chậm, placeholder, v.v.)&#10;- Bất kỳ bản sửa lỗi nào ở cấp độ mã hoặc kiến ​​trúc để tăng khả năng phản hồi.&#10;&#10;Mục tiêu: làm cho màn hình mở nhanh (dưới 3000ms) ngay cả khi việc tạo dữ liệu hoặc tải hình ảnh nặng.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761579793211" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="cho chiều cao ảnh intro1 nhỏ lại ở introAcitivity hoặc IntroAdapter nhé. các intro khác không ảnh hưởng">
           <value>
             <GhostTextMetaData>

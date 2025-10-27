@@ -15,7 +15,6 @@ import com.example.st169_animal_oc_maker.databinding.ActivitySuggestionBinding
 import com.example.st169_animal_oc_maker.ui.customize.CustomizeActivity
 import com.example.st169_animal_oc_maker.ui.home.DataViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -30,17 +29,30 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     }
 
     override fun initView() {
-        // Observe suggestions và thumbnails kết hợp
+        // ✅ OPTIMIZED: Progressive loading strategy
+        // 1. Show suggestions with placeholders ASAP
+        // 2. Update thumbnails progressively as they load
+
+        // Observe suggestions - show immediately with placeholders
         lifecycleScope.launch {
-            combine(
-                suggestionViewModel.suggestions,
-                suggestionViewModel.thumbnails
-            ) { suggestions: List<SuggestionModel>, thumbnails: Map<String, Bitmap> ->
-                Pair(suggestions, thumbnails)
-            }.collect { (suggestions, thumbnails) ->
-                if (suggestions.isNotEmpty() && thumbnails.isNotEmpty()) {
+            suggestionViewModel.suggestions.collect { suggestions ->
+                if (suggestions.isNotEmpty()) {
                     dismissLoading()
-                    displaySuggestions(suggestions, thumbnails)
+                    // Display with placeholders first
+                    displaySuggestions(suggestions, emptyMap())
+                }
+            }
+        }
+
+        // Observe thumbnails - update progressively as each loads
+        lifecycleScope.launch {
+            suggestionViewModel.thumbnails.collect { thumbnails ->
+                if (thumbnails.isNotEmpty()) {
+                    // Update only the thumbnails that are ready
+                    val suggestions = suggestionViewModel.suggestions.value
+                    if (suggestions.isNotEmpty()) {
+                        displaySuggestions(suggestions, thumbnails)
+                    }
                 }
             }
         }
@@ -113,25 +125,29 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     }
 
     /**
-     * Load suggestion thumbnail và set click listener
+     * ✅ OPTIMIZED: Load suggestion thumbnail with progressive loading
+     * - Show placeholder immediately if thumbnail not ready
+     * - Update to actual thumbnail when available
      */
     private fun loadSuggestion(
         suggestion: SuggestionModel,
         imageView: android.widget.ImageView,
         thumbnails: Map<String, android.graphics.Bitmap>
     ) {
-        // Load actual thumbnail bitmap
         val thumbnail = thumbnails[suggestion.id]
         if (thumbnail != null) {
+            // ✅ Thumbnail ready - show it
             imageView.setImageBitmap(thumbnail)
         } else {
-            // Fallback: Load avatar if thumbnail generation failed
+            // ✅ Thumbnail not ready yet - show placeholder
+            // Use Glide for smooth loading with placeholder
             Glide.with(this)
                 .load(suggestion.characterData)
+                .placeholder(android.R.drawable.ic_menu_gallery) // System placeholder
                 .into(imageView)
         }
 
-        // Set click listener
+        // Set click listener (always clickable, even with placeholder)
         imageView.onSingleClick {
             openCustomizeWithSuggestion(suggestion)
         }
