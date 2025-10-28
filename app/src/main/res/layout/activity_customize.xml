@@ -105,6 +105,7 @@
         android:id="@+id/layoutRcvColor"
         android:layout_width="168dp"
         android:layout_height="wrap_content"
+        android:minHeight="54dp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/bg_color_cus"

@@ -15,6 +15,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="CustomizeActivity: Khi click btnNone trong rcvLayer thì disable rcvColor (không chọn được màu). &#10;Khi click item khác trong rcvLayer thì enable lại rcvColor. &#10;Viết code xử lý logic này.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761615996624" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Mình có một Activity trong Android (viết bằng Kotlin) dùng để tạo bitmap từ layout rồi chia sẻ ảnh.  &#10;Nhưng khi chia sẻ, ảnh bị dính cả phần viền stroke (hoặc border) của layout.  &#10;Mình chỉ muốn chia sẻ phần hình chính (nhân vật hoặc ảnh bên trong), không muốn có viền hoặc nền layout bao quanh.&#10;&#10;Đây là toàn bộ code ViewActivity của mình:&#10;]&#10;&#10;Nhờ bạn phân tích hàm shareImage() và giúp mình sửa lại sao cho:&#10;- Bitmap được tạo ra KHÔNG chứa phần background hay stroke của layout.&#10;- Chỉ lấy phần nội dung chính của ảnh (ví dụ ImageView imvImage).&#10;- Ảnh được chia sẻ phải sạch, không có viền trắng hoặc bóng mờ.&#10;&#10;Bạn có thể:&#10;- Chỉnh code để chỉ chụp phần ImageView cụ thể (thay vì toàn bộ layout).&#10;- Hoặc cắt bitmap (crop) để loại bỏ vùng nền/thừa.&#10;- Hoặc dùng Canvas/Bitmap để loại bỏ viền trắng hoặc trong suốt xung quanh.&#10;&#10;Cuối cùng, vui lòng viết lại hàm shareImage() hoàn chỉnh, gọn và tối ưu hiệu năng (tạo ảnh nhanh, không tốn RAM).">
           <value>
             <GhostTextMetaData>
@@ -46,6 +58,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761579002957" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Trong CustomizeActivity và layout XML:&#10;&#10;1. Trong activity_customize.xml:&#10;   - Thay đổi layoutRcvColor height từ wrap_content thành chiều cao cố định (ví dụ: 54dp)&#10;   - Hoặc thêm android:minHeight cho layoutRcvColor để giữ chiều cao khi empty&#10;   &#10;2. Trong CustomizeActivity.kt:&#10;   - Nếu rcvColor empty: ẩn layoutRcvColor và btnColor bằng INVISIBLE&#10;   - Nếu có item: hiện VISIBLE&#10;   - Xử lý trong checkStatusColor()&#10;&#10;Mục đích: Giữ nguyên vị trí layoutCustomLayer khi rcvColor empty/không empty.&#10;&#10;Viết code xử lý.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761617200720" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -135,6 +159,30 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="làm cho tôi nếu trong rcvColor k có màu, thì phải ẩn layoutRcvColor và btnColor đi, có thì hiện lại promt cho toi">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761616808774" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="nhưng mà khi rcvColor không có item thì nó sẽ bị kéo chiều cao xuống, dù ẩn đi nó vẫn bị lệch ấy">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761617140635" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="thêm chức năng xóa ở ic_delete trong activity_view nhé. Sử dụng dialog có sẵn là ConfirmDialog">
           <value>
             <GhostTextMetaData>
@@ -159,6 +207,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="và lại giữ vị trí hiện tại của item layoutCustomLayer, vì khi ẩn các nút kia đi thì layoutCustomLayer sẽ bị lệch ấy">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761616929243" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="ở activity_view thêm chức nang share cho tôi giống như ở activity_success cũng có đó">
           <value>
             <GhostTextMetaData>
@@ -166,6 +226,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761582898109" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="ở phần customize, tôi muốn khi mà bấm vào nút btnNone trong rcvLayer, thì sẽ không chọn được item_color trong rcvColor được nữa, khi bấm item_cus khác thì chọn lại bình thường, viết promt cho tôi để tôi gửi claude viết, ngắn gọn dễ hiểu">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761615901148" />
                 </list>
               </option>
             </GhostTextMetaData>

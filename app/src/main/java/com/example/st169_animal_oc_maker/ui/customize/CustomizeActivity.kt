@@ -43,6 +43,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     // Thêm biến để lưu trạng thái color bar
     private var isColorBarVisible = true
     private var categoryPosition = 0
+    private var isColorEnabled = true // Biến để lưu trạng thái enable/disable của rcvColor
 
     override fun setViewBinding(): ActivityCustomizeBinding {
         return ActivityCustomizeBinding.inflate(LayoutInflater.from(this))
@@ -339,6 +340,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
     private fun checkStatusColor() {
         if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+            // Có màu -> hiện btnColor
+            binding.btnColor.visible()
+
             if (viewModel.isShowColorList.value[viewModel.positionNavSelected.value]) {
                 // Mặc định hiển thị khi vào màn hình
                 isColorBarVisible = true
@@ -348,10 +352,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 binding.layoutRcvColor.invisible()
             }
         } else {
+            // Không có màu -> ẩn cả layoutRcvColor và btnColor
             isColorBarVisible = false
             binding.layoutRcvColor.invisible()
+            binding.btnColor.invisible()
         }
         updateColorIcon()
+        // Enable lại rcvColor mặc định khi chuyển tab
+        setColorRecyclerViewEnabled(true)
     }
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
@@ -361,6 +369,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 Glide.with(this@CustomizeActivity).load(pathSelected)
                     .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
+                // Enable lại rcvColor khi chọn item khác (không phải btnNone)
+                setColorRecyclerViewEnabled(true)
             }
         }
     }
@@ -369,10 +379,13 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.setIsSelectedItem(viewModel.positionCustom.value)
             viewModel.setPathSelected(viewModel.positionCustom.value, "")
+           // viewModel.setKeySelected(viewModel.positionNavSelected.value, "")
             viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
             withContext(Dispatchers.Main) {
                 Glide.with(this@CustomizeActivity).clear(viewModel.imageViewList.value[viewModel.positionCustom.value])
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
+                // Disable rcvColor khi click btnNone
+                setColorRecyclerViewEnabled(false)
             }
         }
     }
@@ -388,11 +401,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
                     binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
                 }
+                // Enable lại rcvColor khi click random
+                setColorRecyclerViewEnabled(true)
             }
         }
     }
 
     private fun handleChangeColorLayer(position: Int) {
+        // Chỉ cho phép thay đổi màu nếu rcvColor đang enabled
+        if (!isColorEnabled) return
+
         lifecycleScope.launch(Dispatchers.IO) {
             val pathColor = viewModel.setClickChangeColor(position)
             withContext(Dispatchers.Main) {
@@ -400,6 +418,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
             }
         }
+    }
+
+    private fun setColorRecyclerViewEnabled(enabled: Boolean) {
+        isColorEnabled = enabled
+        binding.rcvColor.alpha = if (enabled) 1.0f else 0.4f
+        colorLayerAdapter.isEnabled = enabled
     }
 
     private fun handleClickBottomNavigation(positionBottomNavigation: Int) {

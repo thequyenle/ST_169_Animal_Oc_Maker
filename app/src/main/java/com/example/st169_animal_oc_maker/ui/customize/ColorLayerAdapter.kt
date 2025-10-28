@@ -14,6 +14,7 @@ class ColorLayerAdapter(val context: Context) :
     BaseAdapter<ItemColorModel, ItemColorBinding>(ItemColorBinding::inflate) {
     var onItemClick: ((Int) -> Unit) = {}
     var categoryPosition: Int = 0 // Thêm biến này
+    var isEnabled: Boolean = true // Biến để kiểm soát enable/disable
 
     override fun onBind(binding: ItemColorBinding, item: ItemColorModel, position: Int) {
         binding.apply {
@@ -29,7 +30,12 @@ class ColorLayerAdapter(val context: Context) :
             }
             layoutFocus.setImageResource(focusBackground)
 
-            root.onSingleClick { onItemClick.invoke(position) }
+            // Chỉ cho phép click nếu isEnabled = true
+            root.onSingleClick {
+                if (isEnabled) {
+                    onItemClick.invoke(position)
+                }
+            }
         }
     }
 }
