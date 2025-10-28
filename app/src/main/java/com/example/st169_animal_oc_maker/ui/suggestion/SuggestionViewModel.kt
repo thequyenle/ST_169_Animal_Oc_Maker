@@ -161,6 +161,7 @@ class SuggestionViewModel : ViewModel() {
 
     /**
      * Random tất cả layers của character
+     * ✅ WORKAROUND: Đảm bảo layer đầu tiên (index 0) được xử lý đúng, đặc biệt cho category 1 (Miley)
      */
     private fun randomizeCharacter(character: CustomizeModel): RandomState {
         val layerSelections = mutableMapOf<Int, LayerSelection>()
@@ -185,10 +186,18 @@ class SuggestionViewModel : ViewModel() {
                 0
             }
 
+            // ✅ WORKAROUND: Đảm bảo path được lấy đúng theo logic của handleFillLayer
             val finalPath = if (randomItem.isMoreColors && randomItem.listColor.isNotEmpty()) {
+                // Có màu -> lấy path từ listColor
                 randomItem.listColor[randomColorIndex].path
             } else {
+                // Không có màu -> lấy image gốc
                 randomItem.image
+            }
+
+            // ✅ LOG để debug
+            if (index == 0) {
+                Log.d("SuggestionViewModel", "Layer 0 - Item: $randomItemIndex, Color: $randomColorIndex, Path: $finalPath")
             }
 
             layerSelections[layerListModel.positionCustom] = LayerSelection(

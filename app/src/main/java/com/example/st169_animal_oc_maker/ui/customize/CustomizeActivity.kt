@@ -34,7 +34,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.compareTo
 import kotlin.jvm.java
+import kotlin.text.get
 
 class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     private val viewModel: CustomizeViewModel by viewModels()
@@ -47,6 +49,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     private var isColorBarVisible = true
     private var categoryPosition = 0
     private var isColorEnabled = true // Biến để lưu trạng thái enable/disable của rcvColor
+    private var isSuggestion = false // Biến để lưu trạng thái mở từ suggestion
 
     override fun setViewBinding(): ActivityCustomizeBinding {
         return ActivityCustomizeBinding.inflate(LayoutInflater.from(this))
@@ -60,7 +63,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         dataViewModel.ensureData(this)
 
         // Check if opening from suggestion
-        val isSuggestion = intent.getBooleanExtra(IntentKey.IS_SUGGESTION, false)
+        isSuggestion = intent.getBooleanExtra(IntentKey.IS_SUGGESTION, false)
 
         // Get character index - ưu tiên CHARACTER_INDEX nếu có (từ suggestion)
         val characterIndex = if (intent.hasExtra(IntentKey.CHARACTER_INDEX)) {
@@ -390,18 +393,54 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         }
                     }
 
-                    // ✅ Kiểm tra nếu item selected là btnNone thì disable rcvColor ngay từ đầu
+                    // ✅ SỬA: Gọi checkStatusColor() TRƯỚC để xử lý logic hiển thị color bar
+                    checkStatusColor()
+
+                    // ✅ SỬA: SAU ĐÓ mới check enable/disable rcvColor dựa trên item selected
                     val selectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
                         .firstOrNull { it.isSelected }
-                    if (selectedItem?.path == AssetsKey.NONE_LAYER) {
+
+                    // Chỉ disable nếu là NONE_LAYER hoặc path rỗng
+                    if (selectedItem?.path == AssetsKey.NONE_LAYER ||
+                        viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
                         setColorRecyclerViewEnabled(false)
+                    } else {
+                        // Enable nếu có path và không phải NONE
+                        setColorRecyclerViewEnabled(true)
                     }
 
-                    checkStatusColor()
                     dismissLoading()
                     dLog("main")
+
+                    // ✅ WORKAROUND: Auto-trigger lại layer 0 nếu:
+                    // 1. Mở từ CHARACTER_INDEX = 1 (category Miley)
+                    // 2. HOẶC mở từ suggestion
+                    // 3. VÀ đang ở tab 0 (positionNavSelected == 0)
+                    if ((categoryPosition == 1 || (isSuggestion && viewModel.hasSuggestionPreset()))
+                        && viewModel.positionNavSelected.value == 0) {
+                        // Delay ngắn để đảm bảo UI đã render xong
+                        binding.rcvLayer.postDelayed({
+                            val selectedItemPosition = viewModel.itemNavList.value[0].indexOfFirst { it.isSelected }
+                            if (selectedItemPosition >= 0) {
+                                val selectedItem = viewModel.itemNavList.value[0][selectedItemPosition]
+                                // Trigger handleFillLayer để reload ảnh
+                                if (selectedItem.path != AssetsKey.RANDOM_LAYER && selectedItem.path != AssetsKey.NONE_LAYER) {
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        val pathSelected = viewModel.setClickFillLayer(selectedItem, selectedItemPosition)
+                                        withContext(Dispatchers.Main) {
+                                            Glide.with(this@CustomizeActivity)
+                                                .load(pathSelected)
+                                                .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                                            dLog("🔧 WORKAROUND: Re-triggered layer 0 for category $categoryPosition")
+                                        }
+                                    }
+                                }
+                            }
+                        }, 100) // 100ms delay để đảm bảo UI đã render
+                    }
                 }
             }
+
         }
     }
     private fun checkStatusColor() {
@@ -425,13 +464,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
         updateColorIcon()
 
-        // ✅ SỬA: Chỉ enable lại rcvColor nếu item hiện tại KHÔNG phải là btnNone
-        val selectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
-            .firstOrNull { it.isSelected }
-        if (selectedItem?.path != AssetsKey.NONE_LAYER) {
-            setColorRecyclerViewEnabled(true)
-        }
+        // ✅ XÓA đoạn này - để logic enable/disable ở initData() xử lý
+        // Vì checkStatusColor() chỉ nên quan tâm đến việc hiển thị UI, không nên can thiệp vào enable state
     }
+
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
@@ -581,23 +617,70 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
     }
 
+
     private fun handleRandomAllLayer() {
         lifecycleScope.launch(Dispatchers.IO) {
             val timeStart = System.currentTimeMillis()
             val isOutTurn = viewModel.setClickRandomFullLayer()
+
             withContext(Dispatchers.Main) {
-                viewModel.pathSelectedList.value.forEachIndexed { index, path ->
-                    if (path != "") Glide.with(this@CustomizeActivity).load(path).into(viewModel.imageViewList.value[index])
+                // ✅ Load ảnh cho tất cả layers theo đúng thứ tự
+                viewModel.dataCustomize.value?.layerList?.forEach { layerListModel ->
+                    val positionCustom = layerListModel.positionCustom
+                    val path = viewModel.pathSelectedList.value.getOrNull(positionCustom)
+                    if (!path.isNullOrEmpty()) {
+                        Glide.with(this@CustomizeActivity)
+                            .load(path)
+                            .into(viewModel.imageViewList.value[positionCustom])
+                    } else {
+                        // Clear nếu path rỗng
+                        Glide.with(this@CustomizeActivity)
+                            .clear(viewModel.imageViewList.value[positionCustom])
+                    }
                 }
+
+                // ✅ Update adapter cho navigation hiện tại
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+
+                // ✅ CHECK: Nếu layer ở vị trí hiện tại không phải NONE thì enable rcvColor
+                val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                    .firstOrNull { it.isSelected }
+                if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
+                    !viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
+                    setColorRecyclerViewEnabled(true)
+                } else {
+                    setColorRecyclerViewEnabled(false)
+                }
+
+                // ✅ SCROLL đến item đã được chọn sau khi random
+                val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                    .indexOfFirst { it.isSelected }
+                if (selectedIndex >= 0) {
+                    binding.rcvLayer.post {
+                        binding.rcvLayer.smoothScrollToPosition(selectedIndex)
+                    }
+                }
+
+                // ✅ SCROLL đến màu đã được chọn (nếu có)
+                if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+                    val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                        .indexOfFirst { it.isSelected }
+                    if (selectedColorIndex >= 0) {
+                        binding.rcvColor.post {
+                            binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                        }
+                    }
+                }
+
                 if (isOutTurn) binding.btnRandom.invisible()
                 val timeEnd = System.currentTimeMillis()
                 dLog("time random all : ${timeEnd - timeStart}")
 
-                // ✅ WORKAROUND: Nếu CHARACTER_INDEX = 1, auto-click lại item đã focus ở tab 0
-                if (categoryPosition == 1 && viewModel.positionNavSelected.value == 0) {
-                    Log.d("CustomizeActivity", "Auto-click item in tab 0")
+                // ✅ WORKAROUND: Auto-click lại item đã focus ở tab 0 nếu:
+                // 1. Mở từ CHARACTER_INDEX = 1 (category)
+                // 2. HOẶC mở từ suggestion (Miley)
+                if ((categoryPosition == 1 || isSuggestion) && viewModel.positionNavSelected.value == 0) {
                     // Delay ngắn để đảm bảo adapter đã update xong
                     binding.rcvLayer.postDelayed({
                         val selectedItemPosition = viewModel.itemNavList.value[0].indexOfFirst { it.isSelected }
