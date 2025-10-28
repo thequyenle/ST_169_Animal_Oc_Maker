@@ -78,6 +78,8 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                 }
             }
 
+
+
             // Delete button - delete selected items
             delete.onSingleClick {
                 deleteSelectedItems()
@@ -103,6 +105,16 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         handleRcv()
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        if (fromSuccess) {
+            val intent = Intent(this@MycreationActivity, HomeActivity::class.java)
+            startActivity(intent)
+            finish()
+        } else {
+            handleBack()
+        }
+    }
     override fun initText() {
 
     }

@@ -50,11 +50,11 @@
                             android:layout_marginHorizontal="16dp"
                             android:fontFamily="@font/josefin_sans_regular"
                             android:gravity="center"
-                            android:layout_marginBottom="-30dp"
                             android:text="@string/it_only_takes_a_few_seconds"
-                            android:layout_marginTop="30dp"
                             android:textColor="#FF7396"
                             android:textSize="16sp"
+                            android:layout_marginBottom="15dp"
+                            app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/txtDescription"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent" />
@@ -68,15 +68,15 @@
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent">
 
-                            <com.airbnb.lottie.LottieAnimationView
-                                android:id="@+id/lottie_typing"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@color/tranf"
-                                app:lottie_autoPlay="true"
-                                app:lottie_loop="true"
-                                app:lottie_rawRes="@raw/lottie"
-                                app:lottie_repeatMode="restart" />
+<!--                            <com.airbnb.lottie.LottieAnimationView-->
+<!--                                android:id="@+id/lottie_typing"-->
+<!--                                android:layout_width="match_parent"-->
+<!--                                android:layout_height="match_parent"-->
+<!--                                android:background="@color/tranf"-->
+<!--                                app:lottie_autoPlay="true"-->
+<!--                                app:lottie_loop="true"-->
+<!--                                app:lottie_rawRes="@raw/lottie"-->
+<!--                                app:lottie_repeatMode="restart" />-->
                         </FrameLayout>
 
 

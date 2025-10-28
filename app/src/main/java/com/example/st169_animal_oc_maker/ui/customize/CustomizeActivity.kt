@@ -492,7 +492,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun setColorRecyclerViewEnabled(enabled: Boolean) {
         isColorEnabled = enabled
-        binding.rcvColor.alpha = if (enabled) 1.0f else 0.4f
+        binding.rcvColor.alpha = if (enabled) 1.0f else 1.0f
         colorLayerAdapter.isEnabled = enabled
     }
 
