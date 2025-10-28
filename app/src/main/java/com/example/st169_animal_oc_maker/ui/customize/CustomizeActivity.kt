@@ -371,7 +371,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                     colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
 
-                    // ✅ THÊM ĐOẠN NÀY: Scroll to selected item if has suggestion preset
+                    // ✅ Scroll to selected item if has suggestion preset
                     if (viewModel.hasSuggestionPreset()) {
                         val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
                             .indexOfFirst { it.isSelected }
@@ -394,8 +394,6 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         .firstOrNull { it.isSelected }
                     if (selectedItem?.path == AssetsKey.NONE_LAYER) {
                         setColorRecyclerViewEnabled(false)
-                    } else {
-                        setColorRecyclerViewEnabled(true)
                     }
 
                     checkStatusColor()
@@ -425,8 +423,13 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             binding.btnColor.invisible()
         }
         updateColorIcon()
-        // Enable lại rcvColor mặc định khi chuyển tab
-        setColorRecyclerViewEnabled(true)
+
+        // ✅ SỬA: Chỉ enable lại rcvColor nếu item hiện tại KHÔNG phải là btnNone
+        val selectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+            .firstOrNull { it.isSelected }
+        if (selectedItem?.path != AssetsKey.NONE_LAYER) {
+            setColorRecyclerViewEnabled(true)
+        }
     }
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
@@ -446,7 +449,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             viewModel.setIsSelectedItem(viewModel.positionCustom.value)
             viewModel.setPathSelected(viewModel.positionCustom.value, "")
-           // viewModel.setKeySelected(viewModel.positionNavSelected.value, "")
+            viewModel.setKeySelected(viewModel.positionNavSelected.value, "")
             viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
             withContext(Dispatchers.Main) {
                 Glide.with(this@CustomizeActivity).clear(viewModel.imageViewList.value[viewModel.positionCustom.value])

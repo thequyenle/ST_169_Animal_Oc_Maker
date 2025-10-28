@@ -184,6 +184,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="bạn xem giúp project của tôi xem là item thứ 1, theo thứ tự 0,1,2 trong màn category, nó có bị chỉnh sai gì k, mà vào  màn customizeActivity lại bị lôi focus nhỉ,  chỉ có mỗi item 1 là bị. trên CHARATER_INDEX ấy.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761644556967" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="cho chiều cao ảnh intro1 nhỏ lại ở introAcitivity hoặc IntroAdapter nhé. các intro khác không ảnh hưởng">
           <value>
             <GhostTextMetaData>
@@ -203,6 +215,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761565808555" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="khi ở category, tôi chọn index1 thì vào đúng nhân vật rồi, tiếp đến màn customize, ở rcvNavigation v item_navi đầu tiên, nó trỏ đúng rồi, nhưng ở rcvLayer, nó đang k  trỏ đúng các item, ví dụ nhân vật mặc mũ nhưng ở item lại trỏ vào cái áo. Duy nhất thằng CHARACTER_INDEX ở vị trí 1 là bị, và duy  nhất ở item rcvNavigation đầu tiên, các rcvNavigation khác ok , bạn thử phân tích, xem có phải do lỗi từ data API k, vì đó là data lấy từ API">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761645228943" />
                 </list>
               </option>
             </GhostTextMetaData>
