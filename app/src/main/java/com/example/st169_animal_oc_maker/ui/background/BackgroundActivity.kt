@@ -27,6 +27,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private val viewModel: BackgroundViewModel by viewModels()
     private var selectedBackgroundPath: String? = null
     private var previousImagePath: String? = null
+    private var categoryBackgroundRes: Int = R.drawable.img_bg_app
+    private var isNoneSelected = false
 
     override fun setViewBinding(): ActivityBackgroundBinding {
         return ActivityBackgroundBinding.inflate(LayoutInflater.from(this))
@@ -43,22 +45,25 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         }
 
         // Set background based on category position
-        val backgroundDrawable = when(categoryPosition) {
+        categoryBackgroundRes = when(categoryPosition) {
             0 -> R.drawable.bg_data1
             1 -> R.drawable.bg_data2
             2 -> R.drawable.bg_data3
             else -> R.drawable.img_bg_app
         }
-        binding.main.setBackgroundResource(backgroundDrawable)
+        binding.main.setBackgroundResource(categoryBackgroundRes)
 
         // Load danh sách background
         val list = viewModel.getListBackground(this)
         backgroundAdapter.submitList(list)
         binding.rcvLayer.adapter = backgroundAdapter
 
-        // Pre-select suggestion background if exists
+        // Pre-select suggestion background if exists, otherwise focus on btnNone
         if (!suggestionBackground.isNullOrEmpty()) {
             preSelectBackground(list, suggestionBackground)
+        } else {
+            // Focus mặc định vào btnNone (position 0)
+            focusOnNone(list)
         }
 
         backgroundAdapter.onItemClick = { item, position ->
@@ -99,6 +104,7 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             val path = item.path
             selectedBackgroundPath = path
+            isNoneSelected = false  // Reset None selection flag
 
             // Update selection state
             val currentList = backgroundAdapter.getCurrentList()
@@ -117,6 +123,7 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private fun handleRemoveBackground(position: Int) {
         lifecycleScope.launch(Dispatchers.Main) {
             selectedBackgroundPath = null
+            isNoneSelected = true  // Mark None as selected
 
             // Update selection state - mark "None" item as selected
             val currentList = backgroundAdapter.getCurrentList()
@@ -127,6 +134,28 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
             backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
+        }
+    }
+
+    /**
+     * Focus on None item by default
+     */
+    private fun focusOnNone(list: List<BackGroundModel>) {
+        lifecycleScope.launch(Dispatchers.Main) {
+            // Select the first item (None item)
+            list.forEach { it.isSelected = false }  // Deselect all
+            if (list.isNotEmpty()) {
+                list[0].isSelected = true  // Select None item
+            }
+
+            isNoneSelected = true
+            selectedBackgroundPath = null
+
+            // Clear ivBackground to show only category background
+            Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
+
+            // Refresh adapter to show border on None
+            backgroundAdapter.notifyDataSetChanged()
         }
     }
 
@@ -164,32 +193,34 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
     private fun handleSave() {
         // Save to My Creation and navigate to SuccessActivity
-        if (!selectedBackgroundPath.isNullOrEmpty()) {
-            lifecycleScope.launch {
-                val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
-                MediaHelper.saveBitmapToInternalStorage(this@BackgroundActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
-                    .collect { result ->
-                        when (result) {
-                            is SaveState.Loading -> showLoading()
-                            is SaveState.Error -> {
-                                dismissLoading(true)
-                                showToast(R.string.save_failed_please_try_again)
-                            }
-                            is SaveState.Success -> {
-                                dismissLoading(true)
-                                // Navigate to SuccessActivity after saving
-                                val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
+        lifecycleScope.launch {
+            val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+            MediaHelper.saveBitmapToInternalStorage(this@BackgroundActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
+                .collect { result ->
+                    when (result) {
+                        is SaveState.Loading -> showLoading()
+                        is SaveState.Error -> {
+                            dismissLoading(true)
+                            showToast(R.string.save_failed_please_try_again)
+                        }
+                        is SaveState.Success -> {
+                            dismissLoading(true)
+                            // Navigate to SuccessActivity after saving
+                            val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
+                                if (isNoneSelected) {
+                                    // When None is selected, pass category background resource ID
+                                    putExtra(IntentKey.CATEGORY_BACKGROUND_RES, categoryBackgroundRes)
+                                } else {
+                                    // Normal flow: pass selected background path
                                     putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
-                                    putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
                                 }
-                                startActivity(intent)
-                                finish()
+                                putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
                             }
+                            startActivity(intent)
+                            finish()
                         }
                     }
-            }
-        } else {
-            showToast(R.string.please_select_an_image)
+                }
         }
     }
 

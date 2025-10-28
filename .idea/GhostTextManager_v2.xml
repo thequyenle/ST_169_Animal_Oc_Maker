@@ -15,6 +15,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="BackgroundActivity: Sửa logic focus và navigation như sau:&#10;&#10;1. FOCUS MẶC ĐỊNH:&#10;   - Khi vào BackgroundActivity (không phải từ suggestion), luôn focus vào btnNone trong item_background&#10;   - Trường hợp từ suggestion → customize → background: giữ nguyên background đã chọn (không focus btnNone)&#10;&#10;2. CLICK BTNNONE:&#10;   - Khi click btnNone vẫn navigate sang SuccessActivity được&#10;   - Lấy background tương ứng từ binding.main.background (đã set bằng setBackgroundResource(backgroundDrawable))&#10;   - Pass background này sang SuccessActivity&#10;&#10;3. IMPLEMENTATION:&#10;   - Check xem có phải từ suggestion flow không (dựa vào intent extra)&#10;   - Nếu không phải suggestion: set focus vào btnNone mặc định&#10;   - Khi click btnNone: capture background từ binding.main, convert thành drawable/bitmap, pass sang Success&#10;   - Đảm bảo SuccessActivity nhận được background để hiển thị&#10;&#10;Viết code xử lý.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761623209093" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Bug trong applySuggestionPreset():&#10;&#10;VẤN ĐỀ:&#10;- Khi apply suggestion preset, items được set path đúng&#10;- NHƯNG focus state (isSelected) bị sai&#10;- Nhiều items cùng có isSelected = true&#10;- Gây ra focus sai vị trí, thậm chí focus lên btnRandom&#10;&#10;NGUYÊN NHÂN:&#10;Trong applySuggestionPreset(), khi set item selected:&#10;```kotlin&#10;_itemNavList.value[positionNav][itemIndex].isSelected = true&#10;```&#10;→ Chỉ set 1 item = true, KHÔNG reset các items khác = false&#10;&#10;GIẢI PHÁP:&#10;Thay đổi logic trong applySuggestionPreset():&#10;&#10;THAY VÌ:&#10;```kotlin&#10;_itemNavList.value[layer.positionNavigation][selection.itemIndex].isSelected = true&#10;```&#10;&#10;DÙNG METHOD CÓ SẴN:&#10;```kotlin&#10;setItemNavList(layer.positionNavigation, selection.itemIndex)&#10;```&#10;&#10;Vì setItemNavList() đã có logic:&#10;- Reset TẤT CẢ items trong layer = false&#10;- Chỉ set 1 item đúng = true&#10;&#10;CODE:&#10;Update method applySuggestionPreset() trong CustomizeViewModel.&#10;Thay thế việc set isSelected trực tiếp bằng gọi setItemNavList().&#10;```">
           <value>
             <GhostTextMetaData>
@@ -275,6 +287,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761621916553" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="phần backgroundActivity, khi người dùng vào thì  luôn focus vào btnNone trong item_background, trừ trường hợp đi từ suggestion đến customize rồi background, rồi khi click btnNone vẫn sang màn success đc, và lấy luôn ảnh bg tuương ứng         binding.main.setBackgroundResource(backgroundDrawable). viết promt chuẩn">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761623142878" />
                 </list>
               </option>
             </GhostTextMetaData>
