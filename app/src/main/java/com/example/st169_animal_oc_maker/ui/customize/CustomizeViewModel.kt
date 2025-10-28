@@ -420,7 +420,7 @@ class CustomizeViewModel : ViewModel() {
         _bottomNavigationList.value.forEachIndexed { index, model ->
             val positionSelected = if (index == 0) 1 else 0
             setItemNavList(index, positionSelected)
-            setColorItemNav(index, positionSelected)
+            setColorItemNav(index, 0)
         }
         val pathDefault = _dataCustomize.value!!.layerList.first().layer.first().image
         _pathSelectedList.value[_dataCustomize.value!!.layerList.first().positionCustom] = pathDefault
