@@ -1,6 +1,7 @@
 package com.example.st169_animal_oc_maker.ui.customize
 
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -593,6 +594,29 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 if (isOutTurn) binding.btnRandom.invisible()
                 val timeEnd = System.currentTimeMillis()
                 dLog("time random all : ${timeEnd - timeStart}")
+
+                // ✅ WORKAROUND: Nếu CHARACTER_INDEX = 1, auto-click lại item đã focus ở tab 0
+                if (categoryPosition == 1 && viewModel.positionNavSelected.value == 0) {
+                    Log.d("CustomizeActivity", "Auto-click item in tab 0")
+                    // Delay ngắn để đảm bảo adapter đã update xong
+                    binding.rcvLayer.postDelayed({
+                        val selectedItemPosition = viewModel.itemNavList.value[0].indexOfFirst { it.isSelected }
+                        if (selectedItemPosition >= 0) {
+                            val selectedItem = viewModel.itemNavList.value[0][selectedItemPosition]
+                            // Trigger handleFillLayer để reload ảnh
+                            if (selectedItem.path != AssetsKey.RANDOM_LAYER && selectedItem.path != AssetsKey.NONE_LAYER) {
+                                lifecycleScope.launch(Dispatchers.IO) {
+                                    val pathSelected = viewModel.setClickFillLayer(selectedItem, selectedItemPosition)
+                                    withContext(Dispatchers.Main) {
+                                        Glide.with(this@CustomizeActivity)
+                                            .load(pathSelected)
+                                            .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                                    }
+                                }
+                            }
+                        }
+                    }, 50) // 50ms delay
+                }
             }
         }
     }
