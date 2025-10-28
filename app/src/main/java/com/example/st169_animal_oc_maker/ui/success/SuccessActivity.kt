@@ -2,6 +2,7 @@ package com.example.st169_animal_oc_maker.ui.success
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
@@ -26,55 +27,75 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
+    // ✅ FIX: Lưu tất cả thông tin cần thiết
     private var backgroundPath: String? = null
     private var previousImagePath: String? = null
+    private var categoryPosition: Int = 0
+    private var isNoneSelected: Boolean = false
+    private var backgroundColor: String? = null
 
     override fun setViewBinding(): ActivitySuccessBinding {
         return ActivitySuccessBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
-        // Get both image paths from intent
-        backgroundPath = intent.getStringExtra(IntentKey.BACKGROUND_IMAGE_KEY)
+        // ✅ FIX: Lưu tất cả data từ Intent
         previousImagePath = intent.getStringExtra(IntentKey.PREVIOUS_IMAGE_KEY)
+        categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
+        isNoneSelected = intent.getBooleanExtra(IntentKey.IS_NONE_SELECTED, false)
 
-        // Display background if available
-        if (!backgroundPath.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(backgroundPath)
-                .into(binding.ivBackground)
+        // Load ảnh nhân vật
+        if (!previousImagePath.isNullOrEmpty()) {
+            Glide.with(this).load(previousImagePath).into(binding.imvImage)
         }
 
-        // Display the character image
-        if (!previousImagePath.isNullOrEmpty()) {
-            Glide.with(this)
-                .load(previousImagePath)
-                .into(binding.imvImage)
+        // Handle background
+        if (isNoneSelected) {
+            // ✅ Show background color for None selection
+            backgroundColor = intent.getStringExtra(IntentKey.BACKGROUND_COLOR_KEY)
+            backgroundColor?.let {
+                binding.ivBackground.setBackgroundColor(Color.parseColor(it))
+            }
+            backgroundPath = null  // No background image
+        } else {
+            // ✅ Show background image
+            backgroundPath = intent.getStringExtra(IntentKey.BACKGROUND_IMAGE_KEY)
+            if (!backgroundPath.isNullOrEmpty()) {
+                binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
+                binding.ivBackground.background = null
+                Glide.with(this).load(backgroundPath).into(binding.ivBackground)
+            }
         }
     }
 
     override fun viewListener() {
-        // Add click listener for btnBack to go back to previous screen
+        // ✅ FIX: Truyền đầy đủ thông tin khi quay lại BackgroundActivity
         binding.btnBack.onSingleClick {
-            // Quay lại BackgroundActivity với trạng thái đã chọn
             val intent = Intent(this, BackgroundActivity::class.java).apply {
-                // Truyền lại previousImagePath (ảnh nhân vật)
+                // Truyền ảnh nhân vật
                 putExtra(IntentKey.INTENT_KEY, previousImagePath)
 
+                // Truyền categoryPosition (QUAN TRỌNG!)
+                putExtra(IntentKey.CATEGORY_POSITION_KEY, categoryPosition)
+
                 // Truyền background đã chọn để pre-select
-                putExtra(IntentKey.SUGGESTION_BACKGROUND, backgroundPath)
+                if (!isNoneSelected && !backgroundPath.isNullOrEmpty()) {
+                    putExtra(IntentKey.SUGGESTION_BACKGROUND, backgroundPath)
+                }
+                // Nếu đã chọn None, không cần truyền SUGGESTION_BACKGROUND
+                // BackgroundActivity sẽ tự động focus vào None
             }
             startActivity(intent)
             finish()
         }
 
-        // Add click listener for ic_delete to return to HomeActivity
+        // Add click listener for ic_home to return to HomeActivity
         binding.icHome.onSingleClick {
             startIntent(HomeActivity::class.java)
             finish()
         }
 
-        // Add click listener for btnDownload to navigate to MycreationActivity
+        // Add click listener for btnMyAlbum to navigate to MycreationActivity
         binding.btnMyAlbum.onSingleClick {
             val intent = Intent(this, MycreationActivity::class.java).apply {
                 putExtra(IntentKey.FROM_SUCCESS, true)
@@ -83,7 +104,7 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
             finish()
         }
 
-        // Add click listener for btnShare (if needed)
+        // Add click listener for btnShare
         binding.btnShare.onSingleClick {
             shareImage()
         }
@@ -95,23 +116,15 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
             try {
                 showLoading()
 
-                // ✅ SOLUTION 1: Capture directly from ImageView (clean, no border)
+                // Capture from layout
                 bitmap = withContext(Dispatchers.Default) {
-                    BitmapHelper.createBitmapFromImageView(binding.imvImage)
+                    BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
                 }
-
-                // ✅ Alternative: If you need the entire layout but without border, uncomment this:
-                // bitmap = withContext(Dispatchers.Default) {
-                //     val fullBitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
-                //     BitmapHelper.cropTransparentEdges(fullBitmap).also {
-                //         if (it != fullBitmap) fullBitmap.recycle() // Recycle original if cropped
-                //     }
-                // }
 
                 // Save bitmap to cache (on IO thread for better performance)
                 val file = withContext(Dispatchers.IO) {
                     with(MediaHelper) {
-                            this@SuccessActivity.saveBitmapToCache(bitmap)
+                        this@SuccessActivity.saveBitmapToCache(bitmap)
                     }
                 }
 
@@ -140,15 +153,13 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
                 dismissLoading(true)
                 showToast("Share failed: ${e.message}")
             } finally {
-                // ✅ Clean up: Recycle bitmap to free memory
+                // Clean up: Recycle bitmap to free memory
                 bitmap?.recycle()
             }
         }
     }
 
-
     override fun initText() {
-
+        // Initialize text here if needed
     }
-
 }

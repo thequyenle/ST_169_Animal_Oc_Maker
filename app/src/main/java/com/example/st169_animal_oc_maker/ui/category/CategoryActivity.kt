@@ -67,7 +67,16 @@ class CategoryActivity : BaseActivity<ActivityCategoryBinding>() {
     private fun handleRcv(){
         binding.apply {
             avatarAdapter.onItemClick = { path, position ->
-                startIntent(CustomizeActivity::class.java, position)
+                // Check internet for position 1 and 2 (0-indexed = item 2 and 3 for user)
+                if (position == 1 || position == 2) {
+                    if (InternetHelper.checkInternet(this@CategoryActivity)) {
+                        startIntent(CustomizeActivity::class.java, position)
+                    } else {
+                        showNoInternetDialog()
+                    }
+                } else {
+                    startIntent(CustomizeActivity::class.java, position)
+                }
             }
         }
     }

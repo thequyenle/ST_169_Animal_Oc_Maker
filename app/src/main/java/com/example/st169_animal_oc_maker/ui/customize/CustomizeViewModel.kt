@@ -127,6 +127,10 @@ class CustomizeViewModel : ViewModel() {
         _isDataAPI.value = isAPI
     }
 
+    fun isDataAPI(): Boolean {
+        return _isDataAPI.value
+    }
+
     fun setIsFlip() {
         _isFlip.value = !_isFlip.value
     }

@@ -217,6 +217,11 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                         binding.layoutNoItem.show()
                         binding.rcv.gone()
                     }
+
+                    // Exit selection mode after deleting
+                    if (isSelectionMode) {
+                        exitSelectionMode()
+                    }
                 } else {
                     showToast(R.string.file_not_found)
                 }
@@ -225,7 +230,6 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             }
         }
     }
-
     private fun shareImage(imagePath: String) {
         lifecycleScope.launch {
             try {
@@ -414,10 +418,10 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                         if (myCreationList.isEmpty()) {
                             binding.layoutNoItem.show()
                             binding.rcv.gone()
-                            exitSelectionMode()
-                        } else {
-                            updateSelectAllCheckbox()
                         }
+
+                        // Always exit selection mode after deleting
+                        exitSelectionMode()
                     }
                 } catch (e: Exception) {
                     showToast(R.string.delete_failed)
@@ -430,7 +434,6 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         }
         dialog.show()
     }
-
     private fun downloadSelectedItems() {
         val selectedItems = getSelectedItems()
         if (selectedItems.isEmpty()) {

@@ -24,9 +24,11 @@ class NoInternetDialog (val context: Activity) : BaseDialog<DialogNoInternetBind
     override fun initAction() {
         binding.btnOk.onSingleClick {
             onOkClick?.invoke()
+            dismiss()
         }
         binding.main.onSingleClick {
             onDismissClick?.invoke()
+            dismiss()
         }
     }
 

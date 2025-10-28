@@ -11,6 +11,7 @@ import com.example.st169_animal_oc_maker.core.dialog.ConfirmDialog
 import com.example.st169_animal_oc_maker.core.extensions.dLog
 import com.example.st169_animal_oc_maker.core.extensions.eLog
 import com.example.st169_animal_oc_maker.core.extensions.hideNavigation
+import com.example.st169_animal_oc_maker.core.helper.InternetHelper
 import com.example.st169_animal_oc_maker.core.extensions.invisible
 import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
 import com.example.st169_animal_oc_maker.core.extensions.showToast
@@ -175,7 +176,17 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 btnBack.onSingleClick { confirmExit() }
                 btnNext.onSingleClick { handleSave() }
             }
-            btnRandom.onSingleClick { viewModel.checkDataInternet(this@CustomizeActivity) { handleRandomAllLayer() } }
+            btnRandom.onSingleClick {
+                if (viewModel.isDataAPI()) {
+                    if (InternetHelper.checkInternet(this@CustomizeActivity)) {
+                        handleRandomAllLayer()
+                    } else {
+                        showNoInternetDialog()
+                    }
+                } else {
+                    handleRandomAllLayer()
+                }
+            }
             btnReset.onSingleClick { handleReset() }
             btnFlip.onSingleClick { viewModel.setIsFlip() }
             btnColor.onSingleClick { toggleColorBar() }
@@ -207,19 +218,65 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
 
     private fun handleRcv() {
-        customizeLayerAdapter.onItemClick =
-            { item, position -> viewModel.checkDataInternet(this) { handleFillLayer(item, position) } }
+        customizeLayerAdapter.onItemClick = { item, position ->
+            if (viewModel.isDataAPI()) {
+                if (InternetHelper.checkInternet(this)) {
+                    handleFillLayer(item, position)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
+                handleFillLayer(item, position)
+            }
+        }
 
-        customizeLayerAdapter.onNoneClick =
-            { position -> viewModel.checkDataInternet(this) { handleNoneLayer(position) } }
+        customizeLayerAdapter.onNoneClick = { position ->
+            if (viewModel.isDataAPI()) {
+                if (InternetHelper.checkInternet(this)) {
+                    handleNoneLayer(position)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
+                handleNoneLayer(position)
+            }
+        }
 
-        customizeLayerAdapter.onRandomClick = { viewModel.checkDataInternet(this) { handleRandomLayer() } }
+        customizeLayerAdapter.onRandomClick = {
+            if (viewModel.isDataAPI()) {
+                if (InternetHelper.checkInternet(this)) {
+                    handleRandomLayer()
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
+                handleRandomLayer()
+            }
+        }
 
-        colorLayerAdapter.onItemClick =
-            { position -> viewModel.checkDataInternet(this) { handleChangeColorLayer(position) } }
+        colorLayerAdapter.onItemClick = { position ->
+            if (viewModel.isDataAPI()) {
+                if (InternetHelper.checkInternet(this)) {
+                    handleChangeColorLayer(position)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
+                handleChangeColorLayer(position)
+            }
+        }
 
-        bottomNavigationAdapter.onItemClick =
-            { positionBottomNavigation -> handleClickBottomNavigation(positionBottomNavigation) }
+        bottomNavigationAdapter.onItemClick = { positionBottomNavigation ->
+            if (viewModel.isDataAPI()) {
+                if (InternetHelper.checkInternet(this)) {
+                    handleClickBottomNavigation(positionBottomNavigation)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
+                handleClickBottomNavigation(positionBottomNavigation)
+            }
+        }
     }
 
 // Update initData() trong CustomizeActivity.kt

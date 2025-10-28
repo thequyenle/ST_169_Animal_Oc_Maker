@@ -67,7 +67,7 @@
     <string name="yes">Yes</string>
     <string name="wait_a_few_second">Wait a minute</string>
     <string name="download_success">Download Success To Girl Maker Album</string>
-    <string name="do_you_want_to_reset">Change your whole design, \nare you sure?</string>
+    <string name="do_you_want_to_reset">Do you want to reset?</string>
     <string name="my_album">My Album</string>
     <string name="do_you_want_to_exit">Haven’t saved it yet, do you \nwant to exit?</string>
     <string name="reset">Reset your customize</string>
@@ -85,7 +85,7 @@
     <string name="network_connection_error">No internet</string>
     <string name="check_your_network_connection">Please check your internet</string>
     <string name="loading">Loading</string>
-    <string name="it_only_takes_a_few_seconds">It only takes a few seconds.</string>
+    <string name="it_only_takes_a_few_seconds">Wait a minute</string>
     <string name="create_maker">Character Maker</string>
     <string name="creation">My Creation</string>
     <string name="suggestion">Suggestions</string>
@@ -93,10 +93,10 @@
     <string name="add_to_whatsapp">Add to Whatsapp</string>
     <string name="downloading">Downloading...</string>
     <string name="please_check_your_internet">Please check your internet!</string>
-    <string name="exit_your_customize">Exit your customize</string>
-    <string name="haven_t_saved_it_yet_do_you_want_to_exit">Haven’t saved it yet, do you want to exit?</string>
+    <string name="exit_your_customize">Exit</string>
+    <string name="haven_t_saved_it_yet_do_you_want_to_exit">Do you want to exit?</string>
     <string name="save_failed_please_try_again">Save failed! Please try again.</string>
-    <string name="reset_your_customize">Reset your customize</string>
+    <string name="reset_your_customize">Reset</string>
     <string name="change_your_whole_design_are_you_sure">Change your whole design, are you sure?</string>
     <string name="view">View</string>
     <string name="do_you_like_the_app">Do you like the app?</string>

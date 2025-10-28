@@ -7,6 +7,7 @@ import com.bumptech.glide.Glide
 import com.example.st169_animal_oc_maker.R
 import com.example.st169_animal_oc_maker.core.base.BaseActivity
 import android.content.Intent
+import android.graphics.Color
 import com.example.st169_animal_oc_maker.core.extensions.handleBack
 import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
 import com.example.st169_animal_oc_maker.core.extensions.showToast
@@ -20,6 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
+import com.example.st169_animal_oc_maker.core.helper.InternetHelper
 import com.example.st169_animal_oc_maker.core.helper.MediaHelper
 
 class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
@@ -28,6 +30,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private var selectedBackgroundPath: String? = null
     private var previousImagePath: String? = null
     private var categoryBackgroundRes: Int = R.drawable.img_bg_app
+    private var categoryPosition: Int = 0
+    private var categoryBackgroundColor: String? = null
     private var isNoneSelected = false
 
     override fun setViewBinding(): ActivityBackgroundBinding {
@@ -37,7 +41,7 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     override fun initView() {
         // Load ảnh từ Intent
         previousImagePath = intent.getStringExtra(IntentKey.INTENT_KEY)
-        val categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
+        categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
         val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
 
         if (!previousImagePath.isNullOrEmpty()) {
@@ -52,6 +56,14 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             else -> R.drawable.img_bg_app
         }
         binding.main.setBackgroundResource(categoryBackgroundRes)
+
+        // Set background color for ivBackground based on category position
+        categoryBackgroundColor = when(categoryPosition) {
+            0 -> "#F2AD77"
+            1 -> "#FFDFAD"
+            2 -> "#B5B5B5"
+            else -> "#FFFFFF"
+        }
 
         // Load danh sách background
         val list = viewModel.getListBackground(this)
@@ -75,7 +87,6 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                 handleSelectBackground(item, position)
             }
         }
-
     }
 
     override fun viewListener() {
@@ -88,13 +99,27 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
     private fun handleRcv() {
         backgroundAdapter.onItemClick = { item, position ->
-            viewModel.checkDataInternet(this) {
+            if (viewModel.isDataAPI()) {
+                // Check internet when data is from API
+                if (InternetHelper.checkInternet(this)) {
+                    handleSelectBackground(item, position)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
                 handleSelectBackground(item, position)
             }
         }
 
         backgroundAdapter.onNoneClick = { position ->
-            viewModel.checkDataInternet(this) {
+            if (viewModel.isDataAPI()) {
+                // Check internet when data is from API
+                if (InternetHelper.checkInternet(this)) {
+                    handleRemoveBackground(position)
+                } else {
+                    showNoInternetDialog()
+                }
+            } else {
                 handleRemoveBackground(position)
             }
         }
@@ -112,9 +137,15 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             item.isSelected = true  // Select current item
 
             withContext(Dispatchers.Main) {
+                // ✅ FIX: Clear background drawable AND set transparent color
+                binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
+                binding.ivBackground.background = null  // Clear any drawable
+
+                // Load background image
                 Glide.with(this@BackgroundActivity)
                     .load(path)
                     .into(binding.ivBackground)
+
                 backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border
             }
         }
@@ -132,7 +163,15 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                 currentList[position].isSelected = true  // Select the "None" item
             }
 
+            // ✅ FIX: Clear image from Glide first, then set background color
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
+            binding.ivBackground.setImageDrawable(null)  // Clear any image
+
+            // Set background color based on category position
+            categoryBackgroundColor?.let { colorHex ->
+                binding.ivBackground.setBackgroundColor(Color.parseColor(colorHex))
+            }
+
             backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
         }
     }
@@ -151,8 +190,14 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             isNoneSelected = true
             selectedBackgroundPath = null
 
-            // Clear ivBackground to show only category background
+            // ✅ Clear image from Glide first
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
+            binding.ivBackground.setImageDrawable(null)
+
+            // Set background color based on category position
+            categoryBackgroundColor?.let { colorHex ->
+                binding.ivBackground.setBackgroundColor(Color.parseColor(colorHex))
+            }
 
             // Refresh adapter to show border on None
             backgroundAdapter.notifyDataSetChanged()
@@ -170,12 +215,17 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             if (matchingIndex >= 0) {
                 val matchingItem = list[matchingIndex]
                 selectedBackgroundPath = backgroundPath
+                isNoneSelected = false  // Not None
 
                 // Update selection state
                 list.forEach { it.isSelected = false }  // Deselect all
                 matchingItem.isSelected = true  // Select matching item
 
                 withContext(Dispatchers.Main) {
+                    // Clear background color and set transparent
+                    binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
+                    binding.ivBackground.background = null
+
                     // Load background image
                     Glide.with(this@BackgroundActivity)
                         .load(backgroundPath)
@@ -208,13 +258,16 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                             // Navigate to SuccessActivity after saving
                             val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
                                 if (isNoneSelected) {
-                                    // When None is selected, pass category background resource ID
-                                    putExtra(IntentKey.CATEGORY_BACKGROUND_RES, categoryBackgroundRes)
+                                    // ✅ When None is selected, pass background color
+                                    putExtra(IntentKey.IS_NONE_SELECTED, true)
+                                    putExtra(IntentKey.BACKGROUND_COLOR_KEY, categoryBackgroundColor)
                                 } else {
                                     // Normal flow: pass selected background path
+                                    putExtra(IntentKey.IS_NONE_SELECTED, false)
                                     putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
                                 }
                                 putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
+                                putExtra(IntentKey.CATEGORY_POSITION_KEY, categoryPosition)
                             }
                             startActivity(intent)
                             finish()

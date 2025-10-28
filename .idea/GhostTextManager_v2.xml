@@ -304,6 +304,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="promt cho t,ở backgroundActivity nếu categoryPosition là 0 thì thay backgound ivBackground thành #F2AD77, nếu 1 là #FFDFAD, nếu là 2 là #B5B5B5, trong trường hợp focus btnNone nhé. sau đó ấn btnSave sẽ lưu luôn bg đó ở success">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761624846584" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="thêm chức năng xóa ở ic_delete trong activity_view nhé. Sử dụng dialog có sẵn là ConfirmDialog">
           <value>
             <GhostTextMetaData>
@@ -328,6 +340,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="tôi muốn dialog_no_internet xuất hiện khi mất mạng, mỗi khi người dùng bấm với với item thứ 2 và thứ 3 tại category, nếu vào được và mất mạng, thì click các item bên trong rcvLayer, và rcvNavigation và btnRandom sẽ hiện lại dialog đó, thì promt như nào">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761639441690" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="tại sao khi ấn download ở android 8, các màn có chức năng download như view, success, mycreation, thì lại bị lỗi nhỉ, vết promt cho chuẩn">
           <value>
             <GhostTextMetaData>
@@ -340,6 +364,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="viết promt mà">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761625197921" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="và lại giữ vị trí hiện tại của item layoutCustomLayer, vì khi ẩn các nút kia đi thì layoutCustomLayer sẽ bị lệch ấy">
           <value>
             <GhostTextMetaData>
@@ -347,6 +383,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761616929243" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="ý là promt cho claude code viết luôn">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761639518794" />
                 </list>
               </option>
             </GhostTextMetaData>

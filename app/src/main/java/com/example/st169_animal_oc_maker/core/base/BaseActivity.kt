@@ -22,6 +22,7 @@ import androidx.viewbinding.ViewBinding
 import com.example.st169_animal_oc_maker.R
 import com.example.st169_animal_oc_maker.core.custom.StrokeTextView
 import com.example.st169_animal_oc_maker.core.dialog.LoadingDialog
+import com.example.st169_animal_oc_maker.core.dialog.NoInternetDialog
 import com.example.st169_animal_oc_maker.core.extensions.checkPermissions
 import com.example.st169_animal_oc_maker.core.extensions.goToSettings
 import com.example.st169_animal_oc_maker.core.extensions.handleBack
@@ -46,6 +47,10 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
 
     protected val loadingDialog: LoadingDialog by lazy {
         LoadingDialog(this)
+    }
+
+    protected val noInternetDialog: NoInternetDialog by lazy {
+        NoInternetDialog(this)
     }
 
     protected abstract fun setViewBinding(): T
@@ -207,6 +212,24 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
                 loadingDialog.dismiss()
                 hideNavigation(isBlack)
             }
+        }
+    }
+
+    /**
+     * Show no internet dialog
+     */
+    fun showNoInternetDialog() {
+        if (!noInternetDialog.isShowing) {
+            noInternetDialog.show()
+        }
+    }
+
+    /**
+     * Dismiss no internet dialog
+     */
+    fun dismissNoInternetDialog() {
+        if (noInternetDialog.isShowing) {
+            noInternetDialog.dismiss()
         }
     }
 
