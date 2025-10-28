@@ -27,6 +27,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="MyCreationAdapter: Sửa binding.root.onSingleClick để luôn gọi onItemClick?.invoke(item.path) &#10;bất kể selection mode. Chỉ có binding.imgCheck.onSingleClick mới toggle selection.&#10;Mục đích: Click item → view detail, click checkbox → toggle select.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761620918734" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Mình có một Activity trong Android (viết bằng Kotlin) dùng để tạo bitmap từ layout rồi chia sẻ ảnh.  &#10;Nhưng khi chia sẻ, ảnh bị dính cả phần viền stroke (hoặc border) của layout.  &#10;Mình chỉ muốn chia sẻ phần hình chính (nhân vật hoặc ảnh bên trong), không muốn có viền hoặc nền layout bao quanh.&#10;&#10;Đây là toàn bộ code ViewActivity của mình:&#10;]&#10;&#10;Nhờ bạn phân tích hàm shareImage() và giúp mình sửa lại sao cho:&#10;- Bitmap được tạo ra KHÔNG chứa phần background hay stroke của layout.&#10;- Chỉ lấy phần nội dung chính của ảnh (ví dụ ImageView imvImage).&#10;- Ảnh được chia sẻ phải sạch, không có viền trắng hoặc bóng mờ.&#10;&#10;Bạn có thể:&#10;- Chỉnh code để chỉ chụp phần ImageView cụ thể (thay vì toàn bộ layout).&#10;- Hoặc cắt bitmap (crop) để loại bỏ vùng nền/thừa.&#10;- Hoặc dùng Canvas/Bitmap để loại bỏ viền trắng hoặc trong suốt xung quanh.&#10;&#10;Cuối cùng, vui lòng viết lại hàm shareImage() hoàn chỉnh, gọn và tối ưu hiệu năng (tạo ảnh nhanh, không tốn RAM).">
           <value>
             <GhostTextMetaData>
@@ -70,6 +82,19 @@
               <option name="timestamps">
                 <list>
                   <option value="1761617200720" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Trong CustomizeActivity, khi load data lần đầu (hàm initData()), &#10;kiểm tra nếu item được selected trong rcvLayer là btnNone thì:&#10;- Disable rcvColor (alpha 0.4, không click được)&#10;- Giống như khi user click vào btnNone&#10;&#10;Logic:&#10;- Trong initData(), sau khi load xong customizeLayerAdapter.submitList()&#10;- Kiểm tra item nào có isSelected = true&#10;- Nếu item đó có path = AssetsKey.NONE_LAYER thì gọi setColorRecyclerViewEnabled(false)&#10;- Nếu không phải btnNone thì setColorRecyclerViewEnabled(true)&#10;&#10;Viết code xử lý.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="2.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761618668276" />
+                  <option value="1761618269729" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -159,6 +184,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="layoutRcvColor tôi muốn để backgroundTint mã màu 99FFFFFF nhưng k  mất stroke của layoutRcvColor thì như nào">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761619264906" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="làm cho tôi nếu trong rcvColor k có màu, thì phải ẩn layoutRcvColor và btnColor đi, có thì hiện lại promt cho toi">
           <value>
             <GhostTextMetaData>
@@ -166,6 +203,30 @@
               <option name="timestamps">
                 <list>
                   <option value="1761616808774" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="làm giúp tôi luôn">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761619416163" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="mới đầu vào nếu focus vào btnNone thì cũng phải disable các bút liên quan đến color đi, promt cho tôi">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761618240554" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -238,6 +299,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761615901148" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="ở phần select mode, khi ấn vào item_my_creation sẽ phải vào màn view, muốn chọn select thì phải click đúng checkImg, promt cho tôi">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761620850802" />
                 </list>
               </option>
             </GhostTextMetaData>

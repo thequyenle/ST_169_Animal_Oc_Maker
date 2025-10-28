@@ -47,15 +47,9 @@ class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationA
                 binding.btnSelect.gone()
             }
 
-            // Handle root click
+            // Handle root click - always open item for viewing
             binding.root.onSingleClick {
-                if (item.isShowSelection) {
-                    // In selection mode, clicking item toggles selection
-                    onItemTick?.invoke(position)
-                } else {
-                    // Normal mode, open item
-                    onItemClick?.invoke(item.path)
-                }
+                onItemClick?.invoke(item.path)
             }
 
             // Handle btnMore click (show popup menu)

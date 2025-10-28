@@ -18,6 +18,7 @@ import com.example.st169_animal_oc_maker.core.extensions.startIntent
 import com.example.st169_animal_oc_maker.core.extensions.visible
 import com.example.st169_animal_oc_maker.core.utils.SaveState
 import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
+import com.example.st169_animal_oc_maker.core.utils.key.AssetsKey
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
 import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
 import com.example.st169_animal_oc_maker.data.custom.ItemNavCustomModel
@@ -329,6 +330,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                                 binding.rcvColor.scrollToPosition(selectedColorIndex)
                             }
                         }
+                    }
+
+                    // ✅ Kiểm tra nếu item selected là btnNone thì disable rcvColor ngay từ đầu
+                    val selectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                        .firstOrNull { it.isSelected }
+                    if (selectedItem?.path == AssetsKey.NONE_LAYER) {
+                        setColorRecyclerViewEnabled(false)
+                    } else {
+                        setColorRecyclerViewEnabled(true)
                     }
 
                     checkStatusColor()
