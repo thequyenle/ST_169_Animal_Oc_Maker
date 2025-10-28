@@ -3,6 +3,18 @@
   <component name="GhostTextManager">
     <option name="inputs">
       <map>
+        <entry key=". tôi muốn kểm tra cho cả  từ android 8 -&gt; android 14">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761621298846" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="Bug trong applySuggestionPreset():&#10;&#10;VẤN ĐỀ:&#10;- Khi apply suggestion preset, items được set path đúng&#10;- NHƯNG focus state (isSelected) bị sai&#10;- Nhiều items cùng có isSelected = true&#10;- Gây ra focus sai vị trí, thậm chí focus lên btnRandom&#10;&#10;NGUYÊN NHÂN:&#10;Trong applySuggestionPreset(), khi set item selected:&#10;```kotlin&#10;_itemNavList.value[positionNav][itemIndex].isSelected = true&#10;```&#10;→ Chỉ set 1 item = true, KHÔNG reset các items khác = false&#10;&#10;GIẢI PHÁP:&#10;Thay đổi logic trong applySuggestionPreset():&#10;&#10;THAY VÌ:&#10;```kotlin&#10;_itemNavList.value[layer.positionNavigation][selection.itemIndex].isSelected = true&#10;```&#10;&#10;DÙNG METHOD CÓ SẴN:&#10;```kotlin&#10;setItemNavList(layer.positionNavigation, selection.itemIndex)&#10;```&#10;&#10;Vì setItemNavList() đã có logic:&#10;- Reset TẤT CẢ items trong layer = false&#10;- Chỉ set 1 item đúng = true&#10;&#10;CODE:&#10;Update method applySuggestionPreset() trong CustomizeViewModel.&#10;Thay thế việc set isSelected trực tiếp bằng gọi setItemNavList().&#10;```">
           <value>
             <GhostTextMetaData>
@@ -22,6 +34,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761615996624" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="Kiểm tra và sửa chức năng download ảnh để tương thích từ Android 8 đến Android 14.&#10;&#10;Yêu cầu hỗ trợ:&#10;- Android 8-9 (API 26-28): WRITE_EXTERNAL_STORAGE permission&#10;- Android 10 (API 29): Scoped Storage với MediaStore&#10;- Android 11+ (API 30+): Scoped Storage bắt buộc&#10;- Android 13+ (API 33+): READ_MEDIA_IMAGES permission&#10;- Android 14 (API 34): Latest scoped storage&#10;&#10;Các màn cần kiểm tra: ViewActivity, SuccessActivity, MycreationActivity&#10;&#10;Cần làm:&#10;1. AndroidManifest.xml:&#10;   - Thêm permissions phù hợp cho từng API level&#10;   - Kiểm tra file provider configuration&#10;&#10;2. Code download:&#10;   - API &lt; 29: Dùng File + WRITE_EXTERNAL_STORAGE&#10;   - API &gt;= 29: Dùng MediaStore.Images để lưu vào Pictures&#10;   - Runtime permission check cho từng API level&#10;&#10;3. Tìm và hiển thị code xử lý download hiện tại&#10;4. Sửa để tương thích tất cả Android 8-14&#10;&#10;Hãy tìm bug và viết code sửa.">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761621337250" />
                 </list>
               </option>
             </GhostTextMetaData>
@@ -244,6 +268,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="nếu ngươời dùng từ chối câấp quyền, thì phải  hiện dialog để đi tới settings">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761621916553" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="thêm chức năng xóa ở ic_delete trong activity_view nhé. Sử dụng dialog có sẵn là ConfirmDialog">
           <value>
             <GhostTextMetaData>
@@ -263,6 +299,18 @@
               <option name="timestamps">
                 <list>
                   <option value="1761573627696" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
+        <entry key="tại sao khi ấn download ở android 8, các màn có chức năng download như view, success, mycreation, thì lại bị lỗi nhỉ, vết promt cho chuẩn">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761621211791" />
                 </list>
               </option>
             </GhostTextMetaData>

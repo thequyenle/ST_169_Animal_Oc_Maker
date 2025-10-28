@@ -371,46 +371,13 @@ object MediaHelper {
 
         val state = withContext(Dispatchers.IO) {
             try {
-                val resolver = activity.contentResolver
-                val imageCollection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    // Android 10+ (API 29+): Use MediaStore with RELATIVE_PATH
+                    saveBitmapUsingMediaStore(activity, bitmap)
                 } else {
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                    // Android 8-9 (API 26-28): Use legacy method with File
+                    saveBitmapLegacy(activity, bitmap)
                 }
-
-                val contentValues = ContentValues().apply {
-                    put(
-                        MediaStore.Images.Media.DISPLAY_NAME,
-                        "image_${System.currentTimeMillis()}.png"
-                    )
-                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        put(
-                            MediaStore.Images.Media.RELATIVE_PATH,
-                            "Pictures/${ValueKey.DOWNLOAD_ALBUM}"
-                        )
-                    } else {
-                        val directory = File(
-                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                            ValueKey.DOWNLOAD_ALBUM
-                        )
-                        if (!directory.exists()) {
-                            directory.mkdirs()
-                        }
-                        val filePath =
-                            File(directory, "image_${System.currentTimeMillis()}.png").absolutePath
-                        put(MediaStore.Images.Media.DATA, filePath)
-                    }
-                }
-
-                val imageUri = resolver.insert(imageCollection, contentValues)
-                    ?: return@withContext HandleState.FAIL
-
-                resolver.openOutputStream(imageUri)?.use { outputStream ->
-                    val isSaved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                    if (isSaved) HandleState.SUCCESS else HandleState.FAIL
-                } ?: HandleState.FAIL
-
             } catch (e: Exception) {
                 e.printStackTrace()
                 Log.d("nbhieu", "download fail: ${e.message}")
@@ -419,6 +386,62 @@ object MediaHelper {
         }
 
         emit(state)
+    }
+
+    private fun saveBitmapUsingMediaStore(activity: Activity, bitmap: Bitmap): HandleState {
+        val resolver = activity.contentResolver
+        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
+
+        val contentValues = ContentValues().apply {
+            put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.png")
+            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${ValueKey.DOWNLOAD_ALBUM}")
+        }
+
+        val imageUri = resolver.insert(imageCollection, contentValues) ?: return HandleState.FAIL
+
+        return resolver.openOutputStream(imageUri)?.use { outputStream ->
+            val isSaved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            if (isSaved) HandleState.SUCCESS else HandleState.FAIL
+        } ?: HandleState.FAIL
+    }
+
+    private fun saveBitmapLegacy(activity: Activity, bitmap: Bitmap): HandleState {
+        // Create directory in Pictures
+        val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+        val albumDir = File(picturesDir, ValueKey.DOWNLOAD_ALBUM)
+
+        if (!albumDir.exists()) {
+            albumDir.mkdirs()
+        }
+
+        // Create image file
+        val fileName = "image_${System.currentTimeMillis()}.png"
+        val imageFile = File(albumDir, fileName)
+
+        return try {
+            // Save bitmap to file
+            FileOutputStream(imageFile).use { outputStream ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            }
+
+            // Add to MediaStore so it appears in gallery
+            val contentValues = ContentValues().apply {
+                put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
+                put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
+            }
+
+            activity.contentResolver.insert(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
+
+            HandleState.SUCCESS
+        } catch (e: Exception) {
+            e.printStackTrace()
+            HandleState.FAIL
+        }
     }
 
     // get image external storage

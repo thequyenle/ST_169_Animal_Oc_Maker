@@ -5,10 +5,18 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!-- Storage permissions for different Android versions -->
+    <!-- Android 8-12: Need WRITE_EXTERNAL_STORAGE -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
+
+    <!-- Android 13+: Need READ_MEDIA_IMAGES for reading, but writing uses MediaStore (no permission needed) -->
+    <uses-permission
+        android:name="android.permission.READ_MEDIA_IMAGES"
+        android:minSdkVersion="33" />
 
     <application
         android:allowBackup="true"

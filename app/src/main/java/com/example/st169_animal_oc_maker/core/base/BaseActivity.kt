@@ -1,6 +1,7 @@
 package com.example.st169_animal_oc_maker.core.base
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Paint
@@ -15,12 +16,19 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
+import com.example.st169_animal_oc_maker.R
 import com.example.st169_animal_oc_maker.core.custom.StrokeTextView
 import com.example.st169_animal_oc_maker.core.dialog.LoadingDialog
+import com.example.st169_animal_oc_maker.core.extensions.checkPermissions
+import com.example.st169_animal_oc_maker.core.extensions.goToSettings
 import com.example.st169_animal_oc_maker.core.extensions.handleBack
 import com.example.st169_animal_oc_maker.core.extensions.hideNavigation
+import com.example.st169_animal_oc_maker.core.extensions.requestPermission
 import com.example.st169_animal_oc_maker.core.extensions.select
+import com.example.st169_animal_oc_maker.core.extensions.showToast
 import com.example.st169_animal_oc_maker.core.utils.SystemUtils
 import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
 import kotlinx.coroutines.Dispatchers
@@ -31,6 +39,7 @@ import kotlin.let
 abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
     companion object {
         const val PERMISSION_REQUEST_CODE = 112
+        const val STORAGE_PERMISSION_REQUEST_CODE = 113
     }
 
     lateinit var binding: T
@@ -200,4 +209,54 @@ abstract class BaseActivity<T : ViewBinding> : AppCompatActivity() {
             }
         }
     }
+
+    /**
+     * Check if storage permission is granted based on Android version
+     */
+    protected fun hasStoragePermission(): Boolean {
+        return checkPermissions(SystemUtils.storagePermission)
+    }
+
+    /**
+     * Request storage permission based on Android version
+     */
+    protected fun requestStoragePermission() {
+        requestPermission(SystemUtils.storagePermission, STORAGE_PERMISSION_REQUEST_CODE)
+    }
+
+    /**
+     * Helper to execute download action with permission check
+     */
+    protected fun executeWithStoragePermission(onGranted: () -> Unit) {
+        if (hasStoragePermission()) {
+            onGranted()
+        } else {
+            pendingActionAfterPermission = onGranted
+            requestStoragePermission()
+        }
+    }
+
+    /**
+     * Handle storage permission denied
+     * Show dialog to go to Settings if permission is permanently denied
+     */
+    protected fun handleStoragePermissionDenied() {
+        val permissions = SystemUtils.storagePermission
+        val shouldShowRationale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            permissions.any { shouldShowRequestPermissionRationale(it) }
+        } else {
+            false
+        }
+
+        if (!shouldShowRationale && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Permission permanently denied, show dialog to go to Settings
+            goToSettings()
+        } else {
+            // Permission denied, just show toast
+            showToast(R.string.denied_storage)
+        }
+    }
+
+    // Variable to store pending action after permission granted
+    protected var pendingActionAfterPermission: (() -> Unit)? = null
 }

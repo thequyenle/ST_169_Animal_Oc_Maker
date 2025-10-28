@@ -85,7 +85,9 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
             // Download button - download selected items
             btnDownload.onSingleClick {
-                downloadSelectedItems()
+                executeWithStoragePermission {
+                    downloadSelectedItems()
+                }
             }
 
             // Share button - share selected items
@@ -167,7 +169,9 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         }
 
         myCreationAdapter.onDownloadClick = { path ->
-            downloadImage(path)
+            executeWithStoragePermission {
+                downloadImage(path)
+            }
         }
 
         // Handle long press to enter selection mode
@@ -517,4 +521,23 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, execute download
+                pendingActionAfterPermission?.invoke()
+                pendingActionAfterPermission = null
+            } else {
+                // Permission denied - show dialog to go to Settings
+                handleStoragePermissionDenied()
+                pendingActionAfterPermission = null
+            }
+        }
+    }
 }

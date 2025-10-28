@@ -54,7 +54,9 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
 
         // Add click listener for btnDownload to download the image
         binding.btnDownload.onSingleClick {
-            downloadImage()
+            executeWithStoragePermission {
+                downloadImage()
+            }
         }
 
         // Add click listener for btnShare to share the image
@@ -208,4 +210,23 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
 
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, execute download
+                pendingActionAfterPermission?.invoke()
+                pendingActionAfterPermission = null
+            } else {
+                // Permission denied - show dialog to go to Settings
+                handleStoragePermissionDenied()
+                pendingActionAfterPermission = null
+            }
+        }
+    }
 }

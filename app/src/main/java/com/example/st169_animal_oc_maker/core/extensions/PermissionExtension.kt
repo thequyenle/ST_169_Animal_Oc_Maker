@@ -52,6 +52,6 @@ internal fun Activity.goToSettings() {
     dialog.show()
     val positiveButton: Button = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
     val negativeButton: Button = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-    positiveButton.setTextColor(getColor(R.color.white))
+    positiveButton.setTextColor(getColor(R.color.black))
     negativeButton.setTextColor(getColor(R.color.black))
 }
