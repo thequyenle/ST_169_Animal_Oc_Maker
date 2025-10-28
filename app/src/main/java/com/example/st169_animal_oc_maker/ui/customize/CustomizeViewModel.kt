@@ -347,23 +347,23 @@ class CustomizeViewModel : ViewModel() {
         }
 
         var randomColor: Int? = null
-
         var isMoreColors = false
 
         if (itemNavList.value[positionNavSelected.value][positionStartLayer].listImageColor.isNotEmpty()) {
             isMoreColors = true
-            randomColor =
-                (0..<(itemNavList.value[positionNavSelected.value][positionStartLayer].listImageColor.size)).random()
+            randomColor = (0..<(itemNavList.value[positionNavSelected.value][positionStartLayer].listImageColor.size)).random()
         }
+
         var pathRandom = itemNavList.value[positionNavSelected.value][randomLayer].path
         setKeySelected(positionNavSelected.value, pathRandom)
 
         if (!isMoreColors) {
-            setPositionColorItem(positionCustom.value, 0)
+            setPositionColorItem(positionNavSelected.value, 0)  // ✅ SỬA: positionNavSelected thay vì positionCustom
         } else {
             pathRandom = itemNavList.value[positionNavSelected.value][randomLayer].listImageColor[randomColor!!].path
-            setPositionColorItem(positionCustom.value, randomColor)
+            setPositionColorItem(positionNavSelected.value, randomColor)  // ✅ SỬA: positionNavSelected thay vì positionCustom
         }
+
         setPathSelected(positionCustom.value, pathRandom)
         setItemNavList(_positionNavSelected.value, randomLayer)
         if (isMoreColors) {
@@ -371,7 +371,6 @@ class CustomizeViewModel : ViewModel() {
         }
         return pathRandom to isMoreColors
     }
-
     suspend fun setClickRandomFullLayer(): Boolean {
 //        countRandom++
 //        val isOutTurn = if (countRandom == 5) true else false
