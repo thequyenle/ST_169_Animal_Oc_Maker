@@ -42,11 +42,11 @@
         android:id="@+id/layoutCustomLayer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/layoutRcvColor"
+        app:layout_constraintBottom_toTopOf="@id/gl0625"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnReset"
-        android:layout_marginBottom="18dp"
+        android:layout_marginBottom="70dp"
         >
 
         <!-- Character layers will be added dynamically here -->

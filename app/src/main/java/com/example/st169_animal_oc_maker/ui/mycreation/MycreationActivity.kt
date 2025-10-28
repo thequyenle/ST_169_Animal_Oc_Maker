@@ -47,7 +47,7 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         // Click on ScrollView to exit selection mode
         // Click on ScrollView to exit selection mode
         // Click on ScrollView content to exit selection mode
-        binding.constraintLayoutInScroll.setOnClickListener {
+        binding.rcv.setOnClickListener {
             if (isSelectionMode) {
                 exitSelectionMode()
             }

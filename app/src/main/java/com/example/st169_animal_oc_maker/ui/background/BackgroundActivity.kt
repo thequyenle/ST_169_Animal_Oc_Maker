@@ -59,12 +59,11 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
 
         // Set background color for ivBackground based on category position
         categoryBackgroundColor = when(categoryPosition) {
-            0 -> "#F2AD77"
-            1 -> "#FFDFAD"
-            2 -> "#B5B5B5"
-            else -> "#FFFFFF"
+            0 -> "#00FFFFFF"
+            1 -> "#00FFFFFF"
+            2 -> "#00FFFFFF"
+            else -> "#00FFFFFF"
         }
-
         // Load danh sách background
         val list = viewModel.getListBackground(this)
         backgroundAdapter.submitList(list)

@@ -39,6 +39,18 @@
             </GhostTextMetaData>
           </value>
         </entry>
+        <entry key="Cho hỏi, có cách nào khi mà ở một navi không có màu thì làm thế nào để layoutCustomLayer luôn ở đúng vị trí nhỉ, vì lúc đó view nó bị kéo">
+          <value>
+            <GhostTextMetaData>
+              <option name="count" value="1.0" />
+              <option name="timestamps">
+                <list>
+                  <option value="1761652811007" />
+                </list>
+              </option>
+            </GhostTextMetaData>
+          </value>
+        </entry>
         <entry key="CustomizeActivity: Khi click btnNone trong rcvLayer thì disable rcvColor (không chọn được màu). &#10;Khi click item khác trong rcvLayer thì enable lại rcvColor. &#10;Viết code xử lý logic này.">
           <value>
             <GhostTextMetaData>

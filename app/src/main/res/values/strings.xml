@@ -97,7 +97,7 @@
     <string name="haven_t_saved_it_yet_do_you_want_to_exit">Do you want to exit?</string>
     <string name="save_failed_please_try_again">Save failed! Please try again.</string>
     <string name="reset_your_customize">Reset</string>
-    <string name="change_your_whole_design_are_you_sure">Change your whole design, are you sure?</string>
+    <string name="change_your_whole_design_are_you_sure">Do you want to reset?</string>
     <string name="view">View</string>
     <string name="do_you_like_the_app">Do you like the app?</string>
     <string name="let_us_know_your_experience">Let us know your experience</string>

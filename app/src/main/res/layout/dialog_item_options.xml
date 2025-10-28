@@ -38,9 +38,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Delete"
+                android:text="@string/delete"
                 android:textColor="@color/pink"
                 android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:fontFamily="@font/nunito_medium" />
         </LinearLayout>
 
@@ -70,9 +73,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Share"
+                android:text="@string/share"
                 android:textColor="@color/pink"
                 android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:fontFamily="@font/nunito_medium" />
         </LinearLayout>
 
@@ -101,9 +107,12 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                android:text="Download"
+                android:text="@string/download"
                 android:textColor="@color/pink"
                 android:textSize="14sp"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:singleLine="true"
                 android:fontFamily="@font/nunito_medium" />
         </LinearLayout>
 
