@@ -181,20 +181,44 @@ class CustomizeViewModel : ViewModel() {
     suspend fun applySuggestionPreset() {
         val preset = _suggestionState.value ?: return
 
-        Log.d("CustomizeViewModel", "========================================")
-        Log.d("CustomizeViewModel", "📊 APPLYING SUGGESTION PRESET")
-        Log.d("CustomizeViewModel", "========================================")
-        Log.d("CustomizeViewModel", "Preset has ${preset.layerSelections.size} layer selections")
+        Log.d("CustomizeViewModel", "📊 APPLYING SUGGESTION PRESET (${preset.layerSelections.size} layers)")
 
-        // ✅ LOG: In ra toàn bộ preset data
+        // 🎯 LOG: Chỉ log Miley keys
         preset.layerSelections.forEach { (key, sel) ->
-            Log.d("CustomizeViewModel", "Preset layer key=$key: itemIndex=${sel.itemIndex}, colorIndex=${sel.colorIndex}, path=${sel.path}")
+            if (key == 20 || key == 17 || key == 22 || sel.path.contains("18-21") || sel.path.contains("23-21") || sel.path.contains("21-18")) {
+                Log.d("CustomizeViewModel", "🎯 MILEY: key=$key, itemIndex=${sel.itemIndex}, path=${sel.path.substringAfterLast("/")}")
+            }
         }
-        Log.d("CustomizeViewModel", "")
+
+        // 🎯 LOG: Chỉ log Miley layers và duplicates
+        _dataCustomize.value?.layerList?.forEachIndexed { index, layer ->
+            if (layer.positionNavigation == 20) {
+                Log.d("CustomizeViewModel", "🎯 MILEY LAYER: index=$index, positionCustom=${layer.positionCustom}, items=${layer.layer.size}")
+            }
+        }
+
+        // 🎯 Check duplicates và missing
+        val layers = _dataCustomize.value?.layerList ?: return
+        val posNavs = layers.map { it.positionNavigation }.sorted()
+        val duplicates = layers.groupingBy { it.positionNavigation }.eachCount().filter { it.value > 1 }
+
+        duplicates.forEach { (posNav, count) ->
+            Log.e("CustomizeViewModel", "❌ DUPLICATE positionNav=$posNav ($count times)")
+        }
+
+        // Check missing positionNav
+        val expected = (0 until layers.size).toList()
+        val missing = expected - posNavs.toSet()
+        if (missing.isNotEmpty()) {
+            Log.e("CustomizeViewModel", "❌ MISSING positionNav: $missing")
+        }
 
         // Apply each layer selection
         preset.layerSelections.forEach { (storageKey, selection) ->
-            Log.d("CustomizeViewModel", "--- Processing storageKey=$storageKey ---")
+            // 🎯 LOG: Chỉ log Miley processing
+            if (storageKey == 20 || storageKey == 17 || storageKey == 22) {
+                Log.d("CustomizeViewModel", "🎯 PROCESSING MILEY: key=$storageKey, itemIndex=${selection.itemIndex}")
+            }
 
             // ✅ ULTIMATE FIX: Tìm layer theo positionNavigation thay vì positionCustom
             // Vì có thể có nhiều layers cùng positionCustom (Body và Ears đều có positionCustom=1)
@@ -214,6 +238,16 @@ class CustomizeViewModel : ViewModel() {
 
                 if (candidateLayers.isNullOrEmpty()) {
                     Log.e("CustomizeViewModel", "❌ No layer found with positionCustom=$storageKey")
+                    Log.e("CustomizeViewModel", "   Suggestion path: ${selection.path}")
+                    Log.e("CustomizeViewModel", "   Available positionCustom values: ${_dataCustomize.value?.layerList?.map { it.positionCustom }}")
+
+                    // 🎯 Special case for Miley
+                    if (storageKey == 20 || selection.path.contains("21-18")) {
+                        Log.e("CustomizeViewModel", "🎯🎯🎯 MILEY KEY=20 NOT FOUND! 🎯🎯🎯")
+                        Log.e("CustomizeViewModel", "   Suggestion wants positionCustom=20")
+                        Log.e("CustomizeViewModel", "   But customize doesn't have layer with positionCustom=20")
+                        Log.e("CustomizeViewModel", "   This is why Miley item doesn't show in customize!")
+                    }
                     return@forEach
                 }
 
@@ -241,22 +275,78 @@ class CustomizeViewModel : ViewModel() {
                 return@forEach
             }
 
-            Log.d("CustomizeViewModel", "Found layer: index=$layerIndex, positionNav=${layer.positionNavigation}, positionCustom=${layer.positionCustom}")
+            // 🎯 LOG: Chỉ log Miley matches
+            if (layer.positionNavigation == 20) {
+                Log.d("CustomizeViewModel", "🎯 MILEY MATCHED: positionCustom=${layer.positionCustom}, wants itemIndex=${selection.itemIndex}")
+            }
 
             // Validate item index
             if (selection.itemIndex >= layer.layer.size) {
-                Log.e("CustomizeViewModel", "❌ Invalid item index ${selection.itemIndex} for layer positionCustom=${layer.positionCustom} (storageKey=$storageKey)")
+                Log.e("CustomizeViewModel", "❌ SUGGESTION-CUSTOMIZE MISMATCH!")
+                Log.e("CustomizeViewModel", "   Suggestion itemIndex: ${selection.itemIndex}")
+                Log.e("CustomizeViewModel", "   Customize layer.size: ${layer.layer.size}")
+                Log.e("CustomizeViewModel", "   Layer positionNav: ${layer.positionNavigation}")
+                Log.e("CustomizeViewModel", "   Suggestion path: ${selection.path}")
+
+                // 🎯 LOG: Miley mismatch
+                if (layer.positionNavigation == 20) {
+                    Log.e("CustomizeViewModel", "🎯 MILEY MISMATCH: wants index ${selection.itemIndex}, has ${layer.layer.size} items")
+                }
+                Log.e("CustomizeViewModel", "   → Item không tồn tại trong Customize, fallback to item 0")
+
+                // 📊 Generate detailed report
+                val report = generateApiMismatchReport()
+                Log.e("CustomizeViewModel", "📊 FULL REPORT:")
+                report.lines().forEach { line ->
+                    Log.e("CustomizeViewModel", line)
+                }
+
+                // Fallback to first item (index 0) instead of crashing
+                val fallbackItem = layer.layer.firstOrNull()
+                if (fallbackItem == null) {
+                    Log.e("CustomizeViewModel", "❌ Layer has no items at all!")
+                    return@forEach
+                }
+
+                val item = fallbackItem
+                Log.d("CustomizeViewModel", "🔄 Using fallback item: index=0, path=${item.image}")
+
+                // Set UI focus to fallback item (index 0 + offset)
+                val rcvIndex = if (layerIndex == 0) 1 else 2  // 0 + offset for buttons
+                setItemNavList(layer.positionNavigation, rcvIndex)
+
+                // Use suggestion path (from thumbnail) instead of fallback item path
+                val pathIndex = getPathIndexForLayer(layer.positionNavigation)
+                _pathSelectedList.value[pathIndex] = selection.path
+                _keySelectedItemList.value[layer.positionNavigation] = selection.path
+                _isSelectedItemList.value[layer.positionNavigation] = true
+
+                Log.d("CustomizeViewModel", "✅ Applied fallback with suggestion path: ${selection.path}")
                 return@forEach
             }
 
             val item = layer.layer[selection.itemIndex]
-            Log.d("CustomizeViewModel", "Selected item: index=${selection.itemIndex}, path=${item.image}, isMoreColors=${item.isMoreColors}, colors=${item.listColor.size}")
 
-            // ✅ FIX: Dùng layerIndex đã tính ở dòng 238
-            _pathSelectedList.value[layerIndex] = selection.path
+            // 🎯 LOG: Miley success
+            if (layer.positionNavigation == 20) {
+                Log.d("CustomizeViewModel", "🎯 MILEY SUCCESS: index=${selection.itemIndex}, pathMatch=${item.image == selection.path}")
+            }
+
+            // 🎯 FIX: Tránh conflict cho positionNav=20 (chỉ khi backend chưa fix)
+            // Kiểm tra xem có duplicate positionNav=20 không
+            val duplicateCount = _dataCustomize.value?.layerList?.count { it.positionNavigation == 20 } ?: 0
+            if (duplicateCount > 1 && layer.positionNavigation == 20 && _keySelectedItemList.value[20].isNotEmpty()) {
+                Log.w("CustomizeViewModel", "⚠️ MILEY CONFLICT SKIP: key=$storageKey skipped (backend not fixed)")
+                return@forEach
+            }
+
+            // ✅ Set keySelectedItemList (for tracking)
             _keySelectedItemList.value[layer.positionNavigation] = selection.path
-            Log.d("CustomizeViewModel", "Set pathSelectedList[$layerIndex] = ${selection.path} (positionNav=${layer.positionNavigation}, positionCustom=${layer.positionCustom})")
-            Log.d("CustomizeViewModel", "Set keySelectedItemList[${layer.positionNavigation}] = ${selection.path}")
+
+            // 🎯 LOG: Miley conflict
+            if (layer.positionNavigation == 20) {
+                Log.d("CustomizeViewModel", "🎯 MILEY SET: key=$storageKey sets positionNav=20")
+            }
 
             // Set selected state
             _isSelectedItemList.value[layer.positionNavigation] = true
@@ -298,7 +388,24 @@ class CustomizeViewModel : ViewModel() {
 
             setItemNavList(layer.positionNavigation, rcvIndex)
 
-            Log.d("CustomizeViewModel", "✅ Applied layer storageKey=$storageKey → positionCustom=${layer.positionCustom}, positionNav=${layer.positionNavigation}: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex, color=${selection.colorIndex}")
+            // ✅ FIX: Trigger load ảnh cho item được focus từ suggestion
+            // Nếu không có màu hoặc dùng màu đầu tiên, load ảnh base
+            val finalPath = if (item.isMoreColors && item.listColor.isNotEmpty()) {
+                val validColorIndex = selection.colorIndex.coerceIn(0, item.listColor.size - 1)
+                item.listColor[validColorIndex].path
+            } else {
+                item.image
+            }
+
+            // Update pathSelectedList với ảnh đúng của item được focus
+            val pathIndex = getPathIndexForLayer(layer.positionNavigation)
+
+            // 🎯 LOG: Path conflict
+            if (layer.positionNavigation == 20) {
+                Log.w("CustomizeViewModel", "⚠️ MILEY PATH OVERWRITE: ${_pathSelectedList.value[pathIndex]} → $finalPath")
+            }
+
+            _pathSelectedList.value[pathIndex] = finalPath
         }
 
         // ✅ Set initial navigation to body layer (first layer)
@@ -309,7 +416,7 @@ class CustomizeViewModel : ViewModel() {
             Log.d("CustomizeViewModel", "Set initial position to body layer: positionCustom=${firstLayer.positionCustom}, positionNav=${firstLayer.positionNavigation}")
         }
 
-        Log.d("CustomizeViewModel", "Suggestion preset applied successfully")
+        Log.d("CustomizeViewModel", "✅ Suggestion preset applied")
     }
     /**
      * Get suggestion background
@@ -412,60 +519,44 @@ class CustomizeViewModel : ViewModel() {
         val path = item.path
         setKeySelected(positionNavSelected.value, path)
 
-        // ✅ LOG: Log chi tiết khi click item
+        // 🎯 LOG: Click item cho Dammy
         if (positionSelected == 1) {
-            Log.d("CustomizeViewModel", "========================================")
-            Log.d("CustomizeViewModel", "🖱️ setClickFillLayer - MILEY")
-            Log.d("CustomizeViewModel", "========================================")
-            Log.d("CustomizeViewModel", "Item position: $position")
-            Log.d("CustomizeViewModel", "Item path: $path")
-            Log.d("CustomizeViewModel", "Item colors count: ${item.listImageColor.size}")
-            Log.d("CustomizeViewModel", "positionNavSelected: ${positionNavSelected.value}")
-            Log.d("CustomizeViewModel", "positionCustom: ${positionCustom.value}")
+            Log.d("CustomizeViewModel", "🖱️ DAMMY CLICK: pos=$position, colors=${item.listImageColor.size}, nav=${positionNavSelected.value}")
         }
 
         val pathSelected = if (item.listImageColor.isEmpty()) {
-            // ✅ No colors - reset color index to 0
             _positionColorItemList.value[positionNavSelected.value] = 0
-            if (positionSelected == 1) {
-                Log.d("CustomizeViewModel", "No colors - using base path: $path")
-            }
+            if (positionSelected == 1) Log.d("CustomizeViewModel", "🎯 DAMMY: No colors")
             path
         } else {
-            // ✅ FIX: Reset color index if current item has fewer colors than previous
             val currentColorIndex = positionColorItemList.value[positionNavSelected.value]
             val safeColorIndex = currentColorIndex.coerceIn(0, item.listImageColor.size - 1)
 
-            // ✅ Log if index was out of bounds
             if (currentColorIndex != safeColorIndex) {
-                android.util.Log.w("CustomizeViewModel", "⚠️ Color index out of bounds: $currentColorIndex, list size: ${item.listImageColor.size}, reset to: $safeColorIndex")
-                // Reset to safe index
+                Log.w("CustomizeViewModel", "⚠️ DAMMY: Color index reset $currentColorIndex→$safeColorIndex")
                 _positionColorItemList.value[positionNavSelected.value] = safeColorIndex
             }
 
             val colorPath = item.listImageColor[safeColorIndex].path
-            if (positionSelected == 1) {
-                Log.d("CustomizeViewModel", "Has colors - using color[$safeColorIndex]: $colorPath")
-            }
+            if (positionSelected == 1) Log.d("CustomizeViewModel", "🎯 DAMMY: Color[$safeColorIndex]")
             colorPath
         }
 
-        if (positionSelected == 1) {
-            Log.d("CustomizeViewModel", "✅ Final pathSelected: $pathSelected")
-        }
-
-        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
+        val pathIndex = getPathIndexForLayer(positionNavSelected.value)
 
         if (positionSelected == 1) {
-            Log.d("CustomizeViewModel", "💾 SAVING PATH:")
-            Log.d("CustomizeViewModel", "positionNavSelected=${positionNavSelected.value}, positionCustom=${positionCustom.value}")
-            Log.d("CustomizeViewModel", "→ layerIndex=$layerIndex")
-            Log.d("CustomizeViewModel", "→ pathSelectedList[$layerIndex] = $pathSelected")
-            Log.d("CustomizeViewModel", "========================================")
+            Log.d("CustomizeViewModel", "💾 DAMMY SAVE: nav=${positionNavSelected.value}→pathIndex=$pathIndex")
         }
 
-        setPathSelected(layerIndex, pathSelected)
+        // 🎯 FIX: Save với pathIndex đã được fix
+        if (pathIndex != -1) {
+            setPathSelected(pathIndex, pathSelected)
+            if (positionSelected == 1) {
+                Log.d("CustomizeViewModel", "✅ DAMMY SAVED: pathIndex=$pathIndex")
+            }
+        } else {
+            Log.e("CustomizeViewModel", "❌ DAMMY: Cannot save - positionNav=${positionNavSelected.value} not found")
+        }
 
         setIsSelectedItem(positionNavSelected.value)
         setItemNavList(_positionNavSelected.value, position)
@@ -502,9 +593,15 @@ class CustomizeViewModel : ViewModel() {
             setPositionColorItem(positionNavSelected.value, randomColor)  // ✅ SỬA: positionNavSelected thay vì positionCustom
         }
 
-        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
-        setPathSelected(layerIndex, pathRandom)
+        // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+        val pathIndex = getPathIndexForLayer(positionNavSelected.value)
+
+        // 🎯 FIX: Chỉ save khi pathIndex hợp lệ
+        if (pathIndex != -1) {
+            setPathSelected(pathIndex, pathRandom)
+        } else {
+            Log.e("CustomizeViewModel", "❌ RANDOM: Cannot save - positionNav=${positionNavSelected.value} not found")
+        }
 
         setItemNavList(_positionNavSelected.value, randomLayer)
         if (isMoreColors) {
@@ -635,9 +732,15 @@ class CustomizeViewModel : ViewModel() {
                     if (position >= 0 && position < item.listColor.size) {
                         pathColor = item.listColor[position].path
 
-                        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-                        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
-                        _pathSelectedList.value[layerIndex] = pathColor
+                        // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+                        val pathIndex = getPathIndexForLayer(positionNavSelected.value)
+
+                        // 🎯 FIX: Chỉ save khi pathIndex hợp lệ
+                        if (pathIndex != -1) {
+                            _pathSelectedList.value[pathIndex] = pathColor
+                        } else {
+                            Log.e("CustomizeViewModel", "❌ COLOR: Cannot save - positionNav=${positionNavSelected.value} not found")
+                        }
                     } else {
                         android.util.Log.e("CustomizeViewModel", "❌ Color position out of bounds: $position, list size: ${item.listColor.size}")
                     }
@@ -791,5 +894,117 @@ class CustomizeViewModel : ViewModel() {
     }
 
     //----------------------------------------------------------------------------------------------------------------------
+
+    /**
+     * 📊 REPORT: Tạo báo cáo API mismatch để gửi Backend
+     */
+    fun generateApiMismatchReport(): String {
+        val report = StringBuilder()
+        report.appendLine("🐛 API MISMATCH REPORT")
+        report.appendLine("=".repeat(50))
+        report.appendLine("Character: ${_dataCustomize.value?.dataName ?: "Unknown"}")
+        report.appendLine("Timestamp: ${System.currentTimeMillis()}")
+        report.appendLine()
+
+        val preset = _suggestionState.value
+        if (preset != null) {
+            report.appendLine("📋 SUGGESTION DATA:")
+            preset.layerSelections.forEach { (storageKey, selection) ->
+                report.appendLine("  StorageKey: $storageKey")
+                report.appendLine("  ItemIndex: ${selection.itemIndex}")
+                report.appendLine("  ColorIndex: ${selection.colorIndex}")
+                report.appendLine("  Path: ${selection.path}")
+
+                // 🎯 Highlight Miley
+                if (storageKey == 20 || selection.path.contains("miley", ignoreCase = true)) {
+                    report.appendLine("  🎯 THIS IS MILEY!")
+                }
+                report.appendLine()
+            }
+        }
+
+        report.appendLine("📋 CUSTOMIZE DATA:")
+        _dataCustomize.value?.layerList?.forEachIndexed { index, layer ->
+            report.appendLine("  Layer $index:")
+            report.appendLine("    PositionNav: ${layer.positionNavigation}")
+            report.appendLine("    PositionCustom: ${layer.positionCustom}")
+            report.appendLine("    Items Count: ${layer.layer.size}")
+
+            // 🎯 Chi tiết đầy đủ cho Miley
+            if (layer.positionNavigation == 20) {
+                report.appendLine("    🎯 MILEY LAYER - ALL ITEMS:")
+                layer.layer.forEachIndexed { itemIdx, item ->
+                    report.appendLine("      [$itemIdx]: ${item.image}")
+                }
+            } else {
+                report.appendLine("    Items: ${layer.layer.take(3).map { it.image.substringAfterLast("/") }}")
+            }
+            report.appendLine()
+        }
+
+        return report.toString()
+    }
+
+    /**
+     * 💾 EXPORT: Lưu báo cáo ra file để gửi Backend
+     */
+    fun saveReportToFile(context: android.content.Context) {
+        try {
+            val report = generateApiMismatchReport()
+            val fileName = "api_mismatch_${System.currentTimeMillis()}.txt"
+            val file = java.io.File(context.getExternalFilesDir(null), fileName)
+            file.writeText(report)
+            Log.i("CustomizeViewModel", "📁 Report saved: ${file.absolutePath}")
+        } catch (e: Exception) {
+            Log.e("CustomizeViewModel", "❌ Failed to save report: ${e.message}")
+        }
+    }
+
+    /**
+     * ✅ HELPER: Tự động detect data structure và trả về pathIndex phù hợp
+     * - Nếu data ĐÚNG (positionCustom unique) → Dùng positionCustom
+     * - Nếu data SAI (positionCustom trùng) → Dùng layerIndex
+     */
+    fun getPathIndexForLayer(positionNavigation: Int): Int {
+        val layerList = _dataCustomize.value?.layerList ?: return 0
+
+        // 🎯 FIX: Map positionNav bị lỗi sang positionNav đúng
+        val actualPositionNav = when (positionNavigation) {
+            21 -> {
+                // positionNav=21 bị thiếu, nhưng có layer với positionCustom=22
+                // Tìm layer có positionCustom=22 và dùng layerIndex của nó
+                val layer22 = layerList.find { it.positionCustom == 22 }
+                if (layer22 != null) {
+                    val layer22Index = layerList.indexOf(layer22)
+                    Log.d("CustomizeViewModel", "🔧 FIX: positionNav=21 → use layer with positionCustom=22 (index=$layer22Index)")
+                    return layer22Index  // Dùng layerIndex thay vì positionNav
+                } else {
+                    Log.e("CustomizeViewModel", "❌ positionNav=21 NOT FOUND and no fallback layer")
+                    return -1
+                }
+            }
+            else -> positionNavigation
+        }
+
+        // Tìm layer với positionNav đã được fix
+        val layerIndex = layerList.indexOfFirst { it.positionNavigation == actualPositionNav }
+        if (layerIndex == -1) {
+            Log.e("CustomizeViewModel", "❌ positionNav=$actualPositionNav NOT FOUND! Cannot get pathIndex")
+            return -1
+        }
+
+        // Kiểm tra xem positionCustom có unique không
+        val positionCustomValues = layerList.map { it.positionCustom }
+        val hasUniquePositionCustom = positionCustomValues.size == positionCustomValues.distinct().size
+
+        return if (hasUniquePositionCustom) {
+            // Data ĐÚNG → Dùng positionCustom
+            val layer = layerList[layerIndex]
+            layer.positionCustom
+        } else {
+            // Data SAI → Dùng layerIndex (vị trí trong array)
+            layerIndex
+        }
+    }
 
 }

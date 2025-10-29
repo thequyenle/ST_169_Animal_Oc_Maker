@@ -553,10 +553,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         .firstOrNull { it.isSelected }
 
                     // Chỉ disable nếu là NONE_LAYER hoặc path rỗng
-                    // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-                    val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
+                    // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+                    val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
                     if (selectedItem?.path == AssetsKey.NONE_LAYER ||
-                        viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
+                        viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
                         setColorRecyclerViewEnabled(false)
                     } else {
                         // Enable nếu có path và không phải NONE
@@ -759,11 +759,25 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun handleNoneLayer(position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
-            // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-            val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
+            // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+            val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
+
+            // 🎯 FIX: Xử lý pathIndex với mapping fix
+            if (pathIndex == -1) {
+                Log.e("CustomizeActivity", "❌ Cannot clear layer: positionNav=${viewModel.positionNavSelected.value} not found")
+                withContext(Dispatchers.Main) {
+                    // Vẫn update UI để user thấy None được chọn
+                    viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
+                    customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
+                    setColorRecyclerViewEnabled(false)
+                }
+                return@launch
+            } else {
+                Log.d("CustomizeActivity", "✅ NONE: Clear pathIndex=$pathIndex")
+            }
 
             viewModel.setIsSelectedItem(viewModel.positionCustom.value)
-            viewModel.setPathSelected(layerIndex, "")
+            viewModel.setPathSelected(pathIndex, "")
             viewModel.setKeySelected(viewModel.positionNavSelected.value, "")
             viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
             withContext(Dispatchers.Main) {
@@ -854,10 +868,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 val selectedItem = viewModel.itemNavList.value[positionBottomNavigation]
                     .firstOrNull { it.isSelected }
 
-                // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-                val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
+                // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+                val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
                 if (selectedItem?.path == AssetsKey.NONE_LAYER ||
-                    viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
+                    viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
                     setColorRecyclerViewEnabled(false)
                 } else {
                     setColorRecyclerViewEnabled(true)
@@ -974,10 +988,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ CHECK: Nếu layer ở vị trí hiện tại không phải NONE thì enable rcvColor
                 val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
                     .firstOrNull { it.isSelected }
-                // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
-                val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
+                // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+                val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
                 if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
-                    !viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
+                    !viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
                     setColorRecyclerViewEnabled(true)
                 } else {
                     setColorRecyclerViewEnabled(false)
