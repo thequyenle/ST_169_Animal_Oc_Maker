@@ -62,13 +62,30 @@ class SuggestionViewModel : ViewModel() {
                     // ✅ DEBUG: Log chi tiết data của Miley (character 1)
                     logCharacterData(allData[1], "Miley", 1)
 
-                    suggestionsList.addAll(generateSuggestionsForCategory(
+                    val mileySuggestions = generateSuggestionsForCategory(
                         characterData = allData[1],
                         categoryPosition = 1,
                         characterIndex = 1,
                         categoryName = "Miley",
                         context = context
-                    ))
+                    )
+
+                    // ✅ LOG: Log chi tiết suggestions được tạo
+                    Log.d("SuggestionViewModel", "========================================")
+                    Log.d("SuggestionViewModel", "📊 MILEY SUGGESTIONS GENERATED")
+                    Log.d("SuggestionViewModel", "========================================")
+                    mileySuggestions.forEachIndexed { index, suggestion ->
+                        Log.d("SuggestionViewModel", "Suggestion $index:")
+                        Log.d("SuggestionViewModel", "  id: ${suggestion.id}")
+                        Log.d("SuggestionViewModel", "  background: ${suggestion.background}")
+                        Log.d("SuggestionViewModel", "  randomState layers: ${suggestion.randomState.layerSelections.size}")
+                        suggestion.randomState.layerSelections.forEach { (key, sel) ->
+                            Log.d("SuggestionViewModel", "    Layer key=$key: item=${sel.itemIndex}, color=${sel.colorIndex}, path=${sel.path}")
+                        }
+                    }
+                    Log.d("SuggestionViewModel", "========================================")
+
+                    suggestionsList.addAll(mileySuggestions)
                 }
 
                 if (allData.size > 2) {
@@ -281,16 +298,27 @@ class SuggestionViewModel : ViewModel() {
     private fun randomizeCharacter(character: CustomizeModel, categoryPosition: Int): RandomState {
         val layerSelections = mutableMapOf<Int, LayerSelection>()
 
+        if (categoryPosition == 1) {
+            Log.d("SuggestionViewModel", "========================================")
+            Log.d("SuggestionViewModel", "🎲 RANDOMIZING MILEY CHARACTER")
+            Log.d("SuggestionViewModel", "========================================")
+            Log.d("SuggestionViewModel", "Total layers to process: ${character.layerList.size}")
+        }
+
         character.layerList.forEachIndexed { index, layerListModel ->
             // ✅ DEBUG: Log tất cả layers được xử lý
             if (categoryPosition == 1) {
-                Log.d("SuggestionViewModel", "🔍 Processing layer $index: positionCustom=${layerListModel.positionCustom}, positionNav=${layerListModel.positionNavigation}, items=${layerListModel.layer.size}")
+                Log.d("SuggestionViewModel", "")
+                Log.d("SuggestionViewModel", "🔍 Processing layer $index:")
+                Log.d("SuggestionViewModel", "  positionCustom: ${layerListModel.positionCustom}")
+                Log.d("SuggestionViewModel", "  positionNavigation: ${layerListModel.positionNavigation}")
+                Log.d("SuggestionViewModel", "  items count: ${layerListModel.layer.size}")
             }
 
             // Bỏ qua layer rỗng
             if (layerListModel.layer.isEmpty()) {
                 if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "⚠️ Layer $index SKIPPED: Empty layer")
+                    Log.d("SuggestionViewModel", "  ⚠️ SKIPPED: Empty layer")
                 }
                 return@forEachIndexed
             }
@@ -301,13 +329,20 @@ class SuggestionViewModel : ViewModel() {
 
             if (availableItems <= startIndex) {
                 if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "⚠️ Layer $index SKIPPED: availableItems($availableItems) <= startIndex($startIndex)")
+                    Log.d("SuggestionViewModel", "  ⚠️ SKIPPED: availableItems($availableItems) <= startIndex($startIndex)")
                 }
                 return@forEachIndexed
             }
 
             val randomItemIndex = Random.nextInt(startIndex, availableItems)
             val randomItem = layerListModel.layer[randomItemIndex]
+
+            if (categoryPosition == 1) {
+                Log.d("SuggestionViewModel", "  Random item selected: index=$randomItemIndex")
+                Log.d("SuggestionViewModel", "  Item image: ${randomItem.image}")
+                Log.d("SuggestionViewModel", "  Item isMoreColors: ${randomItem.isMoreColors}")
+                Log.d("SuggestionViewModel", "  Item colors count: ${randomItem.listColor.size}")
+            }
 
             // ✅ WORKAROUND: Đối với category 1 (Miley) và layer 0, cần xử lý đặc biệt
             // Vì có bug khi load ảnh, ta cần đảm bảo path được set đúng
@@ -326,10 +361,12 @@ class SuggestionViewModel : ViewModel() {
                 val colorPath = randomItem.listColor[randomColorIndex].path
 
                 // ✅ LOG chi tiết cho layer 0 của category 1
-                if (categoryPosition == 1 && index == 0) {
-                    Log.d("SuggestionViewModel", "🔧 Miley Layer 0 - Item: $randomItemIndex, Color: $randomColorIndex")
-                    Log.d("SuggestionViewModel", "🔧 Miley Layer 0 - Path: $colorPath")
-                    Log.d("SuggestionViewModel", "🔧 Miley Layer 0 - Total colors: ${randomItem.listColor.size}")
+                if (categoryPosition == 1) {
+                    Log.d("SuggestionViewModel", "  ✅ Has colors - selected color index: $randomColorIndex")
+                    Log.d("SuggestionViewModel", "  ✅ Color path: $colorPath")
+                    if (index == 0) {
+                        Log.d("SuggestionViewModel", "  🔧 LAYER 0 (BODY) - Total colors: ${randomItem.listColor.size}")
+                    }
                 }
 
                 colorPath
@@ -337,8 +374,8 @@ class SuggestionViewModel : ViewModel() {
                 // Không có màu -> lấy image gốc
                 val imagePath = randomItem.image
 
-                if (categoryPosition == 1 && index == 0) {
-                    Log.d("SuggestionViewModel", "🔧 Miley Layer 0 (No Color) - Item: $randomItemIndex, Path: $imagePath")
+                if (categoryPosition == 1) {
+                    Log.d("SuggestionViewModel", "  ✅ No colors - using base image: $imagePath")
                 }
 
                 imagePath
@@ -349,16 +386,22 @@ class SuggestionViewModel : ViewModel() {
             // Ears layer: positionNavigation=2, positionCustom=1 (cùng positionCustom!)
             val storageKey = if (categoryPosition == 1 && layerListModel.positionNavigation == 0) {
                 // Body layer của Miley - dùng key âm để tránh conflict
+                if (categoryPosition == 1) {
+                    Log.d("SuggestionViewModel", "  🔧 BODY LAYER - Using special key=-1 to avoid conflict")
+                }
                 -1
             } else {
+                if (categoryPosition == 1) {
+                    Log.d("SuggestionViewModel", "  Using positionCustom=${layerListModel.positionCustom} as storage key")
+                }
                 layerListModel.positionCustom
             }
 
             // ✅ CRITICAL: Check duplicate positionCustom (multiple layers with same positionCustom)
             if (layerSelections.containsKey(storageKey)) {
                 if (categoryPosition == 1) {
-                    Log.w("SuggestionViewModel", "⚠️ DUPLICATE key=$storageKey at layer $index (nav=${layerListModel.positionNavigation})")
-                    Log.w("SuggestionViewModel", "   Previous layer will be OVERWRITTEN!")
+                    Log.w("SuggestionViewModel", "  ⚠️ DUPLICATE key=$storageKey at layer $index (nav=${layerListModel.positionNavigation})")
+                    Log.w("SuggestionViewModel", "     Previous layer will be OVERWRITTEN!")
                 }
             }
 
@@ -368,9 +411,18 @@ class SuggestionViewModel : ViewModel() {
                 colorIndex = randomColorIndex
             )
 
-            if (categoryPosition == 1 && layerListModel.positionNavigation == 0) {
-                Log.d("SuggestionViewModel", "✅ Body layer saved with key=$storageKey, path=$finalPath")
+            if (categoryPosition == 1) {
+                Log.d("SuggestionViewModel", "  ✅ Saved: key=$storageKey, itemIndex=$randomItemIndex, colorIndex=$randomColorIndex")
+                Log.d("SuggestionViewModel", "  ✅ Path: $finalPath")
             }
+        }
+
+        if (categoryPosition == 1) {
+            Log.d("SuggestionViewModel", "")
+            Log.d("SuggestionViewModel", "========================================")
+            Log.d("SuggestionViewModel", "✅ RANDOMIZATION COMPLETE")
+            Log.d("SuggestionViewModel", "Total layer selections: ${layerSelections.size}")
+            Log.d("SuggestionViewModel", "========================================")
         }
 
         return RandomState(layerSelections)

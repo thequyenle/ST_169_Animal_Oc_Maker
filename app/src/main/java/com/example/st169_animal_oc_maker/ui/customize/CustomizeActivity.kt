@@ -142,6 +142,11 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         intent.getIntExtra(IntentKey.INTENT_KEY, 0)
                     }
 
+                    // ✅ LOG: Character data khi load vào CustomizeActivity
+                    if (viewModel.positionSelected == 1) {
+                        logMileyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    }
+
                     viewModel.setDataCustomize(list[viewModel.positionSelected])
                     viewModel.setIsDataAPI(viewModel.positionSelected >= ValueKey.POSITION_API)
                     initData()
@@ -214,6 +219,54 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     override fun initText() {
 
+    }
+
+    /**
+     * ✅ LOG: Log chi tiết toàn bộ data của Miley character
+     */
+    private fun logMileyCharacterData(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "📊 MILEY CHARACTER DATA - $source")
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "Avatar: ${character.avatar}")
+        Log.d("CustomizeActivity", "Total layers: ${character.layerList.size}")
+        Log.d("CustomizeActivity", "")
+
+        character.layerList.forEachIndexed { layerIndex, layer ->
+            Log.d("CustomizeActivity", "--- Layer $layerIndex ---")
+            Log.d("CustomizeActivity", "  positionCustom: ${layer.positionCustom}")
+            Log.d("CustomizeActivity", "  positionNavigation: ${layer.positionNavigation}")
+            Log.d("CustomizeActivity", "  imageNavigation: ${layer.imageNavigation}")
+            Log.d("CustomizeActivity", "  Total items: ${layer.layer.size}")
+
+            // Log chi tiết layer 0 (body)
+            if (layerIndex == 0) {
+                Log.d("CustomizeActivity", "  ⚠️ LAYER 0 (BODY) DETAILS:")
+                layer.layer.forEachIndexed { itemIndex, item ->
+                    Log.d("CustomizeActivity", "    Item $itemIndex:")
+                    Log.d("CustomizeActivity", "      image: ${item.image}")
+                    Log.d("CustomizeActivity", "      isMoreColors: ${item.isMoreColors}")
+                    Log.d("CustomizeActivity", "      colors count: ${item.listColor.size}")
+                    if (item.isMoreColors && item.listColor.isNotEmpty()) {
+                        Log.d("CustomizeActivity", "      First 3 color paths:")
+                        item.listColor.take(3).forEachIndexed { colorIndex, color ->
+                            Log.d("CustomizeActivity", "        [$colorIndex] ${color.path}")
+                        }
+                        if (item.listColor.size > 3) {
+                            Log.d("CustomizeActivity", "        ... and ${item.listColor.size - 3} more colors")
+                        }
+                    }
+                }
+            } else {
+                // Log tóm tắt các layer khác
+                if (layer.layer.isNotEmpty()) {
+                    Log.d("CustomizeActivity", "  Sample item 0: ${layer.layer[0].image}")
+                    Log.d("CustomizeActivity", "  Has colors: ${layer.layer[0].isMoreColors}")
+                }
+            }
+            Log.d("CustomizeActivity", "")
+        }
+        Log.d("CustomizeActivity", "========================================")
     }
     private fun initRcv() {
         binding.apply {
@@ -370,6 +423,20 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         CoroutineScope(SupervisorJob() + Dispatchers.IO + handleExceptionCoroutine).launch {
             var pathImageDefault = ""
 
+            // ✅ LOG: Log suggestion preset nếu có
+            if (viewModel.positionSelected == 1 && viewModel.hasSuggestionPreset()) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "📊 MILEY - SUGGESTION PRESET DATA")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+                Log.d("CustomizeActivity", "========================================")
+            }
+
             // Get data from list
             val deferred1 = async {
                 viewModel.resetDataList()
@@ -381,6 +448,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 if (viewModel.hasSuggestionPreset()) {
                     // Apply preset selections (includes positionCustom, positionNav, etc.)
                     viewModel.applySuggestionPreset()
+
+                    // ✅ LOG: Log sau khi apply preset
+                    if (viewModel.positionSelected == 1) {
+                        Log.d("CustomizeActivity", "✅ MILEY - After applySuggestionPreset()")
+                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    }
                 } else {
                     // No preset: set defaults
                     viewModel.setFocusItemNavDefault()
@@ -418,7 +493,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                             // Tab 0 (body): load ảnh đầu tiên
                             pathImageDefault = viewModel.dataCustomize.value!!.layerList.first().layer.first().image
                             viewModel.setIsSelectedItem(viewModel.positionCustom.value)
-                            viewModel.setPathSelected(viewModel.positionCustom.value, pathImageDefault)
+
+                            // ✅ FIX: Body layer lưu vào index 0
+                            viewModel.setPathSelected(0, pathImageDefault)
                             viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
                         } else {
                             // Các tab khác: giữ nguyên NONE (không set path)
@@ -432,23 +509,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             withContext(Dispatchers.Main){
                 if (deferred1.await() && deferred2.await() && deferred3.await()){
-                    // ✅ Load all images from preset
-                    if (viewModel.hasSuggestionPreset()) {
-                        viewModel.pathSelectedList.value.forEachIndexed { index, path ->
-                            if (path.isNotEmpty()) {
-                                Glide.with(this@CustomizeActivity)
-                                    .load(path)
-                                    .into(viewModel.imageViewList.value[index])
-                            }
-                        }
-                    } else {
-                        // ✅ FIX: Chỉ load ảnh mặc định nếu có path (tab 0)
-                        if (pathImageDefault.isNotEmpty()) {
-                            Glide.with(this@CustomizeActivity)
-                                .load(pathImageDefault)
-                                .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
-                        }
-                    }
+                    // ✅ FIX: Render tất cả layers thay vì load từng ảnh
+                    renderAllLayers()
 
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
 
@@ -491,8 +553,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         .firstOrNull { it.isSelected }
 
                     // Chỉ disable nếu là NONE_LAYER hoặc path rỗng
+                    // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+                    val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
                     if (selectedItem?.path == AssetsKey.NONE_LAYER ||
-                        viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
+                        viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
                         setColorRecyclerViewEnabled(false)
                     } else {
                         // Enable nếu có path và không phải NONE
@@ -518,9 +582,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                                     lifecycleScope.launch(Dispatchers.IO) {
                                         val pathSelected = viewModel.setClickFillLayer(selectedItem, selectedItemPosition)
                                         withContext(Dispatchers.Main) {
-                                            Glide.with(this@CustomizeActivity)
-                                                .load(pathSelected)
-                                                .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                                            // ✅ FIX: Render lại tất cả layers
+                                            renderAllLayers()
                                             dLog("🔧 WORKAROUND: Re-triggered layer 0 for category $categoryPosition")
                                         }
                                     }
@@ -571,10 +634,32 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
+            // ✅ LOG: Log khi click vào item
+            if (categoryPosition == 1) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "🖱️ MILEY - handleFillLayer CLICKED")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "Item position: $position")
+                Log.d("CustomizeActivity", "Item path: ${item.path}")
+                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            }
+
             val pathSelected = viewModel.setClickFillLayer(item, position)
+
+            // ✅ LOG: Log path được chọn
+            if (categoryPosition == 1) {
+                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+                Log.d("CustomizeActivity", "========================================")
+            }
+
             withContext(Dispatchers.Main) {
-                Glide.with(this@CustomizeActivity).load(pathSelected)
-                    .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                // ✅ FIX: Render lại TẤT CẢ layers, không chỉ layer vừa click
+                // Vì Body và Ears cùng ImageView[1], cần load cả 2
+                renderAllLayers()
+
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
 
                 // ✅ FIX: Update color adapter to match new item's colors
@@ -604,14 +689,86 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
     }
 
+    /**
+     * ✅ Render tất cả layers theo đúng thứ tự
+     * Body dùng ImageView riêng, các layer khác dùng imageViewList
+     */
+    private fun renderAllLayers() {
+        if (categoryPosition == 1) {
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
+            }
+        }
+
+        viewModel.dataCustomize.value?.layerList?.forEachIndexed { index, layerListModel ->
+            // ✅ FIX: Mỗi layer dùng index riêng trong pathSelectedList
+            // Body (index=0) → pathSelectedList[0]
+            // Layer 1 → pathSelectedList[1]
+            // Layer 24 → pathSelectedList[24]
+            val pathIndex = index
+            val path = viewModel.pathSelectedList.value.getOrNull(pathIndex)
+
+            if (categoryPosition == 1) {
+                Log.d("CustomizeActivity", "---")
+                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
+                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
+
+                if (index == 0) {
+                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
+                } else {
+                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
+                }
+            }
+
+            if (index == 0) {
+                // ✅ FIX: Body layer → Dùng ImageView riêng
+                if (!path.isNullOrEmpty()) {
+                    viewModel.bodyImageView.value?.let { bodyImageView ->
+                        Glide.with(this@CustomizeActivity)
+                            .load(path)
+                            .into(bodyImageView)
+                    }
+                } else {
+                    // Clear body ImageView nếu rỗng
+                    viewModel.bodyImageView.value?.let { bodyImageView ->
+                        Glide.with(this@CustomizeActivity).clear(bodyImageView)
+                    }
+                }
+            } else {
+                // ✅ Các layer khác → Dùng imageViewList như cũ
+                if (!path.isNullOrEmpty()) {
+                    Glide.with(this@CustomizeActivity)
+                        .load(path)
+                        .into(viewModel.imageViewList.value[layerListModel.positionCustom])
+                } else {
+                    // Clear nếu path rỗng
+                    Glide.with(this@CustomizeActivity)
+                        .clear(viewModel.imageViewList.value[layerListModel.positionCustom])
+                }
+            }
+        }
+
+        if (categoryPosition == 1) {
+            Log.d("CustomizeActivity", "========================================")
+        }
+    }
+
     private fun handleNoneLayer(position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
+            // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+            val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
+
             viewModel.setIsSelectedItem(viewModel.positionCustom.value)
-            viewModel.setPathSelected(viewModel.positionCustom.value, "")
+            viewModel.setPathSelected(layerIndex, "")
             viewModel.setKeySelected(viewModel.positionNavSelected.value, "")
             viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
             withContext(Dispatchers.Main) {
-                Glide.with(this@CustomizeActivity).clear(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                // ✅ FIX: Render lại tất cả layers thay vì chỉ clear 1 ImageView
+                renderAllLayers()
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 // Disable rcvColor khi click btnNone
                 setColorRecyclerViewEnabled(false)
@@ -623,8 +780,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             val (pathRandom, isMoreColors) = viewModel.setClickRandomLayer()
             withContext(Dispatchers.Main) {
-                Glide.with(this@CustomizeActivity).load(pathRandom)
-                    .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                // ✅ FIX: Render lại tất cả layers thay vì chỉ load 1 ảnh
+                renderAllLayers()
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 if (isMoreColors) {
                     colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
@@ -645,7 +802,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             val pathColor = viewModel.setClickChangeColor(position)
             withContext(Dispatchers.Main) {
-                Glide.with(this@CustomizeActivity).load(pathColor).into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                // ✅ FIX: Render lại tất cả layers
+                renderAllLayers()
                 colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
             }
         }
@@ -696,8 +854,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 val selectedItem = viewModel.itemNavList.value[positionBottomNavigation]
                     .firstOrNull { it.isSelected }
 
+                // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+                val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
                 if (selectedItem?.path == AssetsKey.NONE_LAYER ||
-                    viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
+                    viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
                     setColorRecyclerViewEnabled(false)
                 } else {
                     setColorRecyclerViewEnabled(true)
@@ -765,10 +925,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     val pathDefault = viewModel.setClickReset()
                     withContext(Dispatchers.Main) {
-                        viewModel.imageViewList.value.forEach { imageView ->
-                            Glide.with(this@CustomizeActivity).clear(imageView)
-                        }
-                        Glide.with(this@CustomizeActivity).load(pathDefault).into(viewModel.imageViewList.value[viewModel.dataCustomize.value!!.layerList.first().positionCustom])
+                        // ✅ FIX: Render lại tất cả layers
+                        renderAllLayers()
                         customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                         colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
                         binding.rcvColor.post {
@@ -793,19 +951,18 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             withContext(Dispatchers.Main) {
                 // ✅ Load ảnh cho tất cả layers theo đúng thứ tự
-                viewModel.dataCustomize.value?.layerList?.forEach { layerListModel ->
-                    val positionCustom = layerListModel.positionCustom
-                    val path = viewModel.pathSelectedList.value.getOrNull(positionCustom)
-                    if (!path.isNullOrEmpty()) {
-                        Glide.with(this@CustomizeActivity)
-                            .load(path)
-                            .into(viewModel.imageViewList.value[positionCustom])
-                    } else {
-                        // Clear nếu path rỗng
-                        Glide.with(this@CustomizeActivity)
-                            .clear(viewModel.imageViewList.value[positionCustom])
+                if (viewModel.positionSelected == 1) {
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
                     }
                 }
+
+                // ✅ FIX: Render tất cả layers
+                renderAllLayers()
 
                 // ✅ Update adapter cho navigation hiện tại
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
@@ -817,8 +974,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ CHECK: Nếu layer ở vị trí hiện tại không phải NONE thì enable rcvColor
                 val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
                     .firstOrNull { it.isSelected }
+                // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+                val layerIndex = viewModel.dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == viewModel.positionNavSelected.value }
                 if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
-                    !viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
+                    !viewModel.pathSelectedList.value[layerIndex].isNullOrEmpty()) {
                     setColorRecyclerViewEnabled(true)
                 } else {
                     setColorRecyclerViewEnabled(false)
@@ -862,9 +1021,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                                 lifecycleScope.launch(Dispatchers.IO) {
                                     val pathSelected = viewModel.setClickFillLayer(selectedItem, selectedItemPosition)
                                     withContext(Dispatchers.Main) {
-                                        Glide.with(this@CustomizeActivity)
-                                            .load(pathSelected)
-                                            .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                                        // ✅ FIX: Render lại tất cả layers
+                                        renderAllLayers()
                                     }
                                 }
                             }

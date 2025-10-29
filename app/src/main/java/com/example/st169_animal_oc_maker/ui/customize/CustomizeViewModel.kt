@@ -106,6 +106,10 @@ class CustomizeViewModel : ViewModel() {
     private val _imageViewList = MutableStateFlow(arrayListOf<ImageView>())
     val imageViewList = _imageViewList.asStateFlow()
 
+    // ✅ FIX: ImageView riêng cho Body layer (để tránh conflict với Ears)
+    private val _bodyImageView = MutableStateFlow<ImageView?>(null)
+    val bodyImageView = _bodyImageView.asStateFlow()
+
     private val _colorListMost = MutableStateFlow(arrayListOf<String>())
     val colorListMost = _colorListMost.asStateFlow()
 
@@ -177,48 +181,82 @@ class CustomizeViewModel : ViewModel() {
     suspend fun applySuggestionPreset() {
         val preset = _suggestionState.value ?: return
 
-        Log.d("CustomizeViewModel", "Applying suggestion preset with ${preset.layerSelections.size} layers")
+        Log.d("CustomizeViewModel", "========================================")
+        Log.d("CustomizeViewModel", "📊 APPLYING SUGGESTION PRESET")
+        Log.d("CustomizeViewModel", "========================================")
+        Log.d("CustomizeViewModel", "Preset has ${preset.layerSelections.size} layer selections")
+
+        // ✅ LOG: In ra toàn bộ preset data
+        preset.layerSelections.forEach { (key, sel) ->
+            Log.d("CustomizeViewModel", "Preset layer key=$key: itemIndex=${sel.itemIndex}, colorIndex=${sel.colorIndex}, path=${sel.path}")
+        }
+        Log.d("CustomizeViewModel", "")
 
         // Apply each layer selection
         preset.layerSelections.forEach { (storageKey, selection) ->
-            // ✅ CRITICAL FIX: Handle special key -1 for Miley body layer
-            // Body layer của Miley được lưu với key=-1 để tránh conflict với ears layer
-            // Cần convert key=-1 → tìm layer có positionNavigation=0 (body tab)
-            val targetPositionCustom = if (storageKey == -1) {
-                // Find body layer (positionNavigation=0) and get its positionCustom
+            Log.d("CustomizeViewModel", "--- Processing storageKey=$storageKey ---")
+
+            // ✅ ULTIMATE FIX: Tìm layer theo positionNavigation thay vì positionCustom
+            // Vì có thể có nhiều layers cùng positionCustom (Body và Ears đều có positionCustom=1)
+            val layer = if (storageKey == -1) {
+                // Key=-1 là body layer (positionNavigation=0)
                 val bodyLayer = _dataCustomize.value?.layerList?.find { it.positionNavigation == 0 }
                 if (bodyLayer == null) {
-                    Log.e("CustomizeViewModel", "Body layer (positionNavigation=0) not found for key=-1")
+                    Log.e("CustomizeViewModel", "❌ Body layer (positionNavigation=0) not found for key=-1")
                     return@forEach
                 }
-                bodyLayer.positionCustom
+                Log.d("CustomizeViewModel", "✅ Found body layer: positionNav=0, positionCustom=${bodyLayer.positionCustom}")
+                bodyLayer
             } else {
-                storageKey
+                // Tìm layer có positionCustom = storageKey
+                // ⚠️ NHƯNG nếu có nhiều layers cùng positionCustom, cần tìm layer KHÔNG phải body
+                val candidateLayers = _dataCustomize.value?.layerList?.filter { it.positionCustom == storageKey }
+
+                if (candidateLayers.isNullOrEmpty()) {
+                    Log.e("CustomizeViewModel", "❌ No layer found with positionCustom=$storageKey")
+                    return@forEach
+                }
+
+                // Nếu có nhiều layers cùng positionCustom, chọn layer KHÔNG phải body (positionNav != 0)
+                val targetLayer = if (candidateLayers.size > 1) {
+                    val nonBodyLayer = candidateLayers.find { it.positionNavigation != 0 }
+                    if (nonBodyLayer != null) {
+                        Log.d("CustomizeViewModel", "⚠️ Multiple layers with positionCustom=$storageKey, choosing non-body layer: positionNav=${nonBodyLayer.positionNavigation}")
+                        nonBodyLayer
+                    } else {
+                        Log.d("CustomizeViewModel", "Using first layer with positionCustom=$storageKey")
+                        candidateLayers.first()
+                    }
+                } else {
+                    Log.d("CustomizeViewModel", "Found layer with positionCustom=$storageKey")
+                    candidateLayers.first()
+                }
+
+                targetLayer
             }
 
-            // Find the layer
-            val layerIndex = _dataCustomize.value?.layerList?.indexOfFirst {
-                it.positionCustom == targetPositionCustom
-            } ?: return@forEach
-
+            val layerIndex = _dataCustomize.value?.layerList?.indexOf(layer) ?: -1
             if (layerIndex < 0) {
-                Log.e("CustomizeViewModel", "Layer not found for positionCustom=$targetPositionCustom (storageKey=$storageKey)")
+                Log.e("CustomizeViewModel", "❌ Layer index not found")
                 return@forEach
             }
 
-            val layer = _dataCustomize.value?.layerList?.get(layerIndex) ?: return@forEach
+            Log.d("CustomizeViewModel", "Found layer: index=$layerIndex, positionNav=${layer.positionNavigation}, positionCustom=${layer.positionCustom}")
 
             // Validate item index
             if (selection.itemIndex >= layer.layer.size) {
-                Log.e("CustomizeViewModel", "Invalid item index ${selection.itemIndex} for layer positionCustom=$targetPositionCustom (storageKey=$storageKey)")
+                Log.e("CustomizeViewModel", "❌ Invalid item index ${selection.itemIndex} for layer positionCustom=${layer.positionCustom} (storageKey=$storageKey)")
                 return@forEach
             }
 
             val item = layer.layer[selection.itemIndex]
+            Log.d("CustomizeViewModel", "Selected item: index=${selection.itemIndex}, path=${item.image}, isMoreColors=${item.isMoreColors}, colors=${item.listColor.size}")
 
-            // Set path
-            _pathSelectedList.value[targetPositionCustom] = selection.path
+            // ✅ FIX: Dùng layerIndex đã tính ở dòng 238
+            _pathSelectedList.value[layerIndex] = selection.path
             _keySelectedItemList.value[layer.positionNavigation] = selection.path
+            Log.d("CustomizeViewModel", "Set pathSelectedList[$layerIndex] = ${selection.path} (positionNav=${layer.positionNavigation}, positionCustom=${layer.positionCustom})")
+            Log.d("CustomizeViewModel", "Set keySelectedItemList[${layer.positionNavigation}] = ${selection.path}")
 
             // Set selected state
             _isSelectedItemList.value[layer.positionNavigation] = true
@@ -228,6 +266,7 @@ class CustomizeViewModel : ViewModel() {
                 val validColorIndex = selection.colorIndex.coerceIn(0, item.listColor.size - 1)
                 _positionColorItemList.value[layer.positionNavigation] = validColorIndex
                 _isShowColorList.value[layer.positionNavigation] = true
+                Log.d("CustomizeViewModel", "Set color: positionNav=${layer.positionNavigation}, colorIndex=$validColorIndex")
 
                 // ✅ CRITICAL FIX: Update color list to match selected item's colors
                 // Rebuild color list from the selected item (not from layer.first())
@@ -244,7 +283,7 @@ class CustomizeViewModel : ViewModel() {
                 updatedColorItemNavList[layer.positionNavigation] = colorList
                 _colorItemNavList.value = updatedColorItemNavList
 
-                Log.d("CustomizeViewModel", "✅ Updated color list for positionNav=${layer.positionNavigation}, focused color=$validColorIndex")
+                Log.d("CustomizeViewModel", "✅ Updated color list for positionNav=${layer.positionNavigation}, focused color=$validColorIndex, total colors=${colorList.size}")
             }
 
             // ✅ CRITICAL FIX: Convert data model index → RecyclerView index
@@ -259,7 +298,7 @@ class CustomizeViewModel : ViewModel() {
 
             setItemNavList(layer.positionNavigation, rcvIndex)
 
-            Log.d("CustomizeViewModel", "Applied layer storageKey=$storageKey → positionCustom=$targetPositionCustom: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex, color=${selection.colorIndex}")
+            Log.d("CustomizeViewModel", "✅ Applied layer storageKey=$storageKey → positionCustom=${layer.positionCustom}, positionNav=${layer.positionNavigation}: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex, color=${selection.colorIndex}")
         }
 
         // ✅ Set initial navigation to body layer (first layer)
@@ -372,10 +411,25 @@ class CustomizeViewModel : ViewModel() {
     suspend fun setClickFillLayer(item: ItemNavCustomModel, position: Int): String {
         val path = item.path
         setKeySelected(positionNavSelected.value, path)
-        
+
+        // ✅ LOG: Log chi tiết khi click item
+        if (positionSelected == 1) {
+            Log.d("CustomizeViewModel", "========================================")
+            Log.d("CustomizeViewModel", "🖱️ setClickFillLayer - MILEY")
+            Log.d("CustomizeViewModel", "========================================")
+            Log.d("CustomizeViewModel", "Item position: $position")
+            Log.d("CustomizeViewModel", "Item path: $path")
+            Log.d("CustomizeViewModel", "Item colors count: ${item.listImageColor.size}")
+            Log.d("CustomizeViewModel", "positionNavSelected: ${positionNavSelected.value}")
+            Log.d("CustomizeViewModel", "positionCustom: ${positionCustom.value}")
+        }
+
         val pathSelected = if (item.listImageColor.isEmpty()) {
             // ✅ No colors - reset color index to 0
             _positionColorItemList.value[positionNavSelected.value] = 0
+            if (positionSelected == 1) {
+                Log.d("CustomizeViewModel", "No colors - using base path: $path")
+            }
             path
         } else {
             // ✅ FIX: Reset color index if current item has fewer colors than previous
@@ -388,10 +442,31 @@ class CustomizeViewModel : ViewModel() {
                 // Reset to safe index
                 _positionColorItemList.value[positionNavSelected.value] = safeColorIndex
             }
-            
-            item.listImageColor[safeColorIndex].path
+
+            val colorPath = item.listImageColor[safeColorIndex].path
+            if (positionSelected == 1) {
+                Log.d("CustomizeViewModel", "Has colors - using color[$safeColorIndex]: $colorPath")
+            }
+            colorPath
         }
-        
+
+        if (positionSelected == 1) {
+            Log.d("CustomizeViewModel", "✅ Final pathSelected: $pathSelected")
+        }
+
+        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
+
+        if (positionSelected == 1) {
+            Log.d("CustomizeViewModel", "💾 SAVING PATH:")
+            Log.d("CustomizeViewModel", "positionNavSelected=${positionNavSelected.value}, positionCustom=${positionCustom.value}")
+            Log.d("CustomizeViewModel", "→ layerIndex=$layerIndex")
+            Log.d("CustomizeViewModel", "→ pathSelectedList[$layerIndex] = $pathSelected")
+            Log.d("CustomizeViewModel", "========================================")
+        }
+
+        setPathSelected(layerIndex, pathSelected)
+
         setIsSelectedItem(positionNavSelected.value)
         setItemNavList(_positionNavSelected.value, position)
         return pathSelected
@@ -427,7 +502,10 @@ class CustomizeViewModel : ViewModel() {
             setPositionColorItem(positionNavSelected.value, randomColor)  // ✅ SỬA: positionNavSelected thay vì positionCustom
         }
 
-        setPathSelected(positionCustom.value, pathRandom)
+        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
+        setPathSelected(layerIndex, pathRandom)
+
         setItemNavList(_positionNavSelected.value, randomLayer)
         if (isMoreColors) {
             setColorItemNav(positionNavSelected.value, randomColor!!)
@@ -469,7 +547,10 @@ class CustomizeViewModel : ViewModel() {
                 _positionColorItemList.value[i] = randomColor
                 _itemNavList.value[i][randomLayer].listImageColor[randomColor].path
             }
-            _pathSelectedList.value[_dataCustomize.value!!.layerList[i].positionCustom] = pathItem
+
+            // ✅ FIX: Mỗi layer dùng index riêng = i (vị trí trong loop)
+            _pathSelectedList.value[i] = pathItem
+
             setItemNavList(i, randomLayer)
             if (isMoreColors) {
                 setColorItemNav(i, randomColor)
@@ -486,7 +567,9 @@ class CustomizeViewModel : ViewModel() {
             setColorItemNav(index, 0)
         }
         val pathDefault = _dataCustomize.value!!.layerList.first().layer.first().image
-        _pathSelectedList.value[_dataCustomize.value!!.layerList.first().positionCustom] = pathDefault
+
+        // ✅ FIX: Body layer (first layer) lưu vào index 0
+        _pathSelectedList.value[0] = pathDefault
         _keySelectedItemList.value[_dataCustomize.value!!.layerList.first().positionNavigation] = pathDefault
         _isSelectedItemList.value[_dataCustomize.value!!.layerList.first().positionNavigation] = true
         return pathDefault
@@ -551,7 +634,10 @@ class CustomizeViewModel : ViewModel() {
                     // ✅ FIX: Add bounds checking
                     if (position >= 0 && position < item.listColor.size) {
                         pathColor = item.listColor[position].path
-                        _pathSelectedList.value[_positionCustom.value] = pathColor
+
+                        // ✅ FIX: Mỗi layer dùng index riêng = vị trí trong layerList
+                        val layerIndex = _dataCustomize.value!!.layerList.indexOfFirst { it.positionNavigation == positionNavSelected.value }
+                        _pathSelectedList.value[layerIndex] = pathColor
                     } else {
                         android.util.Log.e("CustomizeViewModel", "❌ Color position out of bounds: $position, list size: ${item.listColor.size}")
                     }
@@ -566,6 +652,16 @@ class CustomizeViewModel : ViewModel() {
 // Extension other
 
     suspend fun setImageViewList(frameLayout: FrameLayout) {
+        // ✅ FIX: Tạo ImageView riêng cho Body layer (index 0, đặt đầu tiên)
+        val bodyImageView = ImageView(frameLayout.context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
+            )
+        }
+        frameLayout.addView(bodyImageView, 0)  // Thêm vào index 0 (dưới cùng)
+        _bodyImageView.value = bodyImageView
+
+        // Tạo các ImageView cho các layer khác
         _imageViewList.value.addAll(addImageViewToLayout(_dataCustomize.value!!.layerList.size, frameLayout))
     }
 
@@ -674,6 +770,9 @@ class CustomizeViewModel : ViewModel() {
         val isSelectedItemList = ArrayList<Boolean>(quantityLayer)
         val keySelectedItemList = ArrayList<String>(quantityLayer)
         val isShowColorList = ArrayList<Boolean>(quantityLayer)
+
+        // ✅ FIX: pathSelectedList size = số lượng layers
+        // Mỗi layer có 1 slot riêng: Layer 0 → [0], Layer 1 → [1], ..., Layer 24 → [24]
         val pathSelectedList = ArrayList<String>(quantityLayer)
 
         repeat(quantityLayer) {

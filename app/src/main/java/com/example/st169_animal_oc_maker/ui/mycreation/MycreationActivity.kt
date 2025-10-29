@@ -146,6 +146,7 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             rcv.itemAnimator = null
 
             // ✅ Thêm ItemDecoration ở đây
+            // ✅ ItemDecoration đã tối ưu
             rcv.addItemDecoration(object : RecyclerView.ItemDecoration() {
                 override fun getItemOffsets(
                     outRect: android.graphics.Rect,
@@ -153,24 +154,8 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                     parent: RecyclerView,
                     state: RecyclerView.State
                 ) {
-                    val position = parent.getChildAdapterPosition(view)
-                    val spanCount = 2
-                    val spacing = 14 // dp
-
-                    val spacingPx = (spacing * parent.context.resources.displayMetrics.density).toInt()
-
-                    if (position % spanCount == 0) {
-                        // Item bên trái
-                        outRect.right = spacingPx / 2
-                    } else {
-                        // Item bên phải
-                        outRect.left = spacingPx / 2
-                    }
-
-                    // Margin bottom giữa các hàng
-                    if (position >= spanCount) {
-                        outRect.top = spacingPx
-                    }
+                    // Không cần thêm offset vì đã dùng padding trong XML
+                    // ItemDecoration này chỉ để giữ cấu trúc nếu cần mở rộng sau
                 }
             })
 

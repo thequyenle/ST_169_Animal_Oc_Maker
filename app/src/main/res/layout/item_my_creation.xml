@@ -2,6 +2,10 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingStart="7dp"
+    android:paddingEnd="7dp"
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
@@ -18,14 +22,11 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_item_my_creation"
-            android:layout_marginHorizontal="0dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginBottom="1dp">
+            android:padding="2dp">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="2dp"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="3dp"
                 app:cardBackgroundColor="@android:color/transparent">
