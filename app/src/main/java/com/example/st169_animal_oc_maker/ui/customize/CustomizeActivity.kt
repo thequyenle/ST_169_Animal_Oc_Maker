@@ -186,6 +186,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 btnNext.onSingleClick { handleSave() }
             }
             btnRandom.onSingleClick {
+                // Check internet for Miley (1) and Dammy (2)
+                if (categoryPosition == 1 || categoryPosition == 2) {
+                    if (!InternetHelper.checkInternet(this@CustomizeActivity)) {
+                        showNoInternetDialog()
+                        return@onSingleClick
+                    }
+                }
+
                 if (viewModel.isDataAPI()) {
                     if (InternetHelper.checkInternet(this@CustomizeActivity)) {
                         handleRandomAllLayer()
@@ -236,7 +244,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
 
     private fun handleRcv() {
-        customizeLayerAdapter.onItemClick = { item, position ->
+        customizeLayerAdapter.onItemClick = onItemClick@{ item, position ->
+            // Check internet for Miley (1) and Dammy (2)
+            if (categoryPosition == 1 || categoryPosition == 2) {
+                if (!InternetHelper.checkInternet(this)) {
+                    showNoInternetDialog()
+                    return@onItemClick
+                }
+            }
+
             if (viewModel.isDataAPI()) {
                 if (InternetHelper.checkInternet(this)) {
                     handleFillLayer(item, position)
@@ -248,7 +264,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
 
-        customizeLayerAdapter.onNoneClick = { position ->
+        customizeLayerAdapter.onNoneClick = onNoneClick@{ position ->
+            // Check internet for Miley (1) and Dammy (2)
+            if (categoryPosition == 1 || categoryPosition == 2) {
+                if (!InternetHelper.checkInternet(this)) {
+                    showNoInternetDialog()
+                    return@onNoneClick
+                }
+            }
+
             if (viewModel.isDataAPI()) {
                 if (InternetHelper.checkInternet(this)) {
                     handleNoneLayer(position)
@@ -260,7 +284,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
 
-        customizeLayerAdapter.onRandomClick = {
+        customizeLayerAdapter.onRandomClick = onRandomClick@{
+            // Check internet for Miley (1) and Dammy (2)
+            if (categoryPosition == 1 || categoryPosition == 2) {
+                if (!InternetHelper.checkInternet(this)) {
+                    showNoInternetDialog()
+                    return@onRandomClick
+                }
+            }
+
             if (viewModel.isDataAPI()) {
                 if (InternetHelper.checkInternet(this)) {
                     handleRandomLayer()
@@ -272,7 +304,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
 
-        colorLayerAdapter.onItemClick = { position ->
+        colorLayerAdapter.onItemClick = colorItemClick@{ position ->
+            // Check internet for Miley (1) and Dammy (2)
+            if (categoryPosition == 1 || categoryPosition == 2) {
+                if (!InternetHelper.checkInternet(this)) {
+                    showNoInternetDialog()
+                    return@colorItemClick
+                }
+            }
+
             if (viewModel.isDataAPI()) {
                 if (InternetHelper.checkInternet(this)) {
                     handleChangeColorLayer(position)
@@ -284,7 +324,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
 
-        bottomNavigationAdapter.onItemClick = { positionBottomNavigation ->
+        bottomNavigationAdapter.onItemClick = navItemClick@{ positionBottomNavigation ->
+            // Check internet for Miley (1) and Dammy (2)
+            if (categoryPosition == 1 || categoryPosition == 2) {
+                if (!InternetHelper.checkInternet(this)) {
+                    showNoInternetDialog()
+                    return@navItemClick
+                }
+            }
+
             if (viewModel.isDataAPI()) {
                 if (InternetHelper.checkInternet(this)) {
                     handleClickBottomNavigation(positionBottomNavigation)

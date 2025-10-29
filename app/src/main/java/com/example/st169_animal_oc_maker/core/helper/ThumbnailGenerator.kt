@@ -87,31 +87,52 @@ object ThumbnailGenerator {
         width: Int,
         height: Int
     ): Bitmap? = suspendCancellableCoroutine { continuation ->
+        var target: CustomTarget<Bitmap>? = null
+
         try {
+            target = object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    transition: Transition<in Bitmap>?
+                ) {
+                    // Only resume if continuation is still active
+                    if (continuation.isActive) {
+                        continuation.resume(resource)
+                    }
+                }
+
+                override fun onLoadFailed(errorDrawable: Drawable?) {
+                    Log.e("ThumbnailGenerator", "Failed to load: $path")
+                    // Only resume if continuation is still active
+                    if (continuation.isActive) {
+                        continuation.resume(null)
+                    }
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {
+                    // Do nothing
+                }
+            }
+
             Glide.with(context)
                 .asBitmap()
                 .load(path)
                 .override(width, height)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        continuation.resume(resource)
-                    }
+                .into(target)
 
-                    override fun onLoadFailed(errorDrawable: Drawable?) {
-                        Log.e("ThumbnailGenerator", "Failed to load: $path")
-                        continuation.resume(null)
-                    }
-
-                    override fun onLoadCleared(placeholder: Drawable?) {
-                        // Do nothing
-                    }
-                })
+            // Clear Glide request when coroutine is cancelled
+            continuation.invokeOnCancellation {
+                try {
+                    target?.let { Glide.with(context).clear(it) }
+                } catch (e: Exception) {
+                    // Ignore cleanup errors
+                }
+            }
         } catch (e: Exception) {
             Log.e("ThumbnailGenerator", "Error loading bitmap: ${e.message}")
-            continuation.resumeWithException(e)
+            if (continuation.isActive) {
+                continuation.resumeWithException(e)
+            }
         }
     }
 

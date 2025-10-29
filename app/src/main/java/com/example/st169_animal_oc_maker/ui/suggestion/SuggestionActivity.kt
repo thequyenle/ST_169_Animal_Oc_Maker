@@ -10,6 +10,7 @@ import com.bumptech.glide.Glide
 import com.example.st169_animal_oc_maker.core.base.BaseActivity
 import com.example.st169_animal_oc_maker.core.extensions.handleBack
 import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
+import com.example.st169_animal_oc_maker.core.helper.InternetHelper
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
 import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
 import com.example.st169_animal_oc_maker.databinding.ActivitySuggestionBinding
@@ -236,6 +237,14 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
      * Open CustomizeActivity with suggestion preset
      */
     private fun openCustomizeWithSuggestion(suggestion: SuggestionModel) {
+        // Check internet for Miley (1) and Dammy (2)
+        if (suggestion.characterIndex == 1 || suggestion.characterIndex == 2) {
+            if (!InternetHelper.checkInternet(this)) {
+                showNoInternetDialog()
+                return
+            }
+        }
+
         val intent = Intent(this, CustomizeActivity::class.java).apply {
             putExtra(IntentKey.CATEGORY_POSITION_KEY, suggestion.categoryPosition)
             putExtra(IntentKey.CHARACTER_INDEX, suggestion.characterIndex)
