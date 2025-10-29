@@ -367,11 +367,26 @@ class CustomizeViewModel : ViewModel() {
     suspend fun setClickFillLayer(item: ItemNavCustomModel, position: Int): String {
         val path = item.path
         setKeySelected(positionNavSelected.value, path)
+        
         val pathSelected = if (item.listImageColor.isEmpty()) {
+            // ✅ No colors - reset color index to 0
+            _positionColorItemList.value[positionNavSelected.value] = 0
             path
         } else {
-            item.listImageColor[positionColorItemList.value[positionNavSelected.value]].path
+            // ✅ FIX: Reset color index if current item has fewer colors than previous
+            val currentColorIndex = positionColorItemList.value[positionNavSelected.value]
+            val safeColorIndex = currentColorIndex.coerceIn(0, item.listImageColor.size - 1)
+
+            // ✅ Log if index was out of bounds
+            if (currentColorIndex != safeColorIndex) {
+                android.util.Log.w("CustomizeViewModel", "⚠️ Color index out of bounds: $currentColorIndex, list size: ${item.listImageColor.size}, reset to: $safeColorIndex")
+                // Reset to safe index
+                _positionColorItemList.value[positionNavSelected.value] = safeColorIndex
+            }
+            
+            item.listImageColor[safeColorIndex].path
         }
+        
         setIsSelectedItem(positionNavSelected.value)
         setItemNavList(_positionNavSelected.value, position)
         return pathSelected
@@ -528,8 +543,13 @@ class CustomizeViewModel : ViewModel() {
             // Duyệt qua từng item trong bộ phận
             for (item in _dataCustomize.value!!.layerList[positionNavSelected.value].layer) {
                 if (item.image == _keySelectedItemList.value[positionNavSelected.value]) {
-                    pathColor = item.listColor[position].path
-                    _pathSelectedList.value[_positionCustom.value] = pathColor
+                    // ✅ FIX: Add bounds checking
+                    if (position >= 0 && position < item.listColor.size) {
+                        pathColor = item.listColor[position].path
+                        _pathSelectedList.value[_positionCustom.value] = pathColor
+                    } else {
+                        android.util.Log.e("CustomizeViewModel", "❌ Color position out of bounds: $position, list size: ${item.listColor.size}")
+                    }
                 }
             }
         }

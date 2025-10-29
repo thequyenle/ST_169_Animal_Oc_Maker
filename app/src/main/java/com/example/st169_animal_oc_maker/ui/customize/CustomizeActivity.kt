@@ -566,6 +566,28 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 Glide.with(this@CustomizeActivity).load(pathSelected)
                     .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
+
+                // ✅ FIX: Update color adapter to match new item's colors
+                if (item.listImageColor.isNotEmpty()) {
+                    // Rebuild color list for the new item
+                    val safeColorIndex = viewModel.positionColorItemList.value[viewModel.positionNavSelected.value]
+                        .coerceIn(0, item.listImageColor.size - 1)
+
+                    val colorList = ArrayList<com.example.st169_animal_oc_maker.data.custom.ItemColorModel>()
+                    item.listImageColor.forEachIndexed { index, colorItem ->
+                        colorList.add(com.example.st169_animal_oc_maker.data.custom.ItemColorModel(
+                            color = colorItem.color,
+                            isSelected = (index == safeColorIndex)
+                        ))
+                    }
+
+                    colorLayerAdapter.submitListWithLog(colorList)
+                    dLog("🎨 Updated color list for new item: ${colorList.size} colors, focused: $safeColorIndex")
+                } else {
+                    // No colors - clear color adapter
+                    colorLayerAdapter.submitListWithLog(emptyList())
+                }
+
                 // Enable lại rcvColor khi chọn item khác (không phải btnNone)
                 setColorRecyclerViewEnabled(true)
             }
