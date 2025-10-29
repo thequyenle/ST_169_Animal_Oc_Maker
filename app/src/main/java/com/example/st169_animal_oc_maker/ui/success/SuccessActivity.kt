@@ -13,7 +13,6 @@ import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
 import com.example.st169_animal_oc_maker.core.extensions.showToast
 import com.example.st169_animal_oc_maker.core.extensions.startIntent
 import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
-import com.example.st169_animal_oc_maker.core.helper.MediaHelper
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
 import com.example.st169_animal_oc_maker.databinding.ActivitySuccessBinding
 import com.example.st169_animal_oc_maker.ui.background.BackgroundActivity
@@ -124,16 +123,41 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
             try {
                 showLoading()
 
-                // ✅ Capture từ layoutShareCapture (không có viền, full background)
+                // ✅ FIX 1: Clear OLD cache files (keep only last 3 most recent)
+                withContext(Dispatchers.IO) {
+                    val cacheDir = cacheDir
+                    val shareFiles = cacheDir.listFiles()?.filter {
+                        it.name.startsWith("share_") && it.name.endsWith(".png")
+                    }?.sortedByDescending { it.lastModified() } ?: emptyList()
+
+                    // Delete all except the 2 most recent (keep current + previous)
+                    shareFiles.drop(2).forEach { it.delete() }
+                }
+
+                // ✅ FIX 2: Force layout to redraw before capturing
+                withContext(Dispatchers.Main) {
+                    binding.layoutShareCapture.invalidate()
+                    binding.layoutShareCapture.requestLayout()
+                }
+
+                //  Capture từ layoutShareCapture (không có viền, full background)
                 bitmap = withContext(Dispatchers.Default) {
                     BitmapHelper.createBimapFromView(binding.layoutShareCapture)
                 }
 
-                // Save bitmap to cache (on IO thread for better performance)
-                val file = withContext(Dispatchers.IO) {
-                    with(MediaHelper) {
-                        this@SuccessActivity.saveBitmapToCache(bitmap)
+                // ✅ FIX 3: Save bitmap with unique timestamp filename
+                val shareFile = withContext(Dispatchers.IO) {
+                    val timestamp = System.currentTimeMillis()
+                    val fileName = "share_${timestamp}.png"
+                    val file = java.io.File(cacheDir, fileName)
+
+                    // Save bitmap to file
+                    java.io.FileOutputStream(file).use { out ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+                        out.flush()
                     }
+
+                    file
                 }
 
                 dismissLoading(true)
@@ -142,7 +166,7 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
                 val contentUri = FileProvider.getUriForFile(
                     this@SuccessActivity,
                     "${applicationContext.packageName}.provider",
-                    file
+                    shareFile
                 )
 
                 // Create share intent
@@ -157,9 +181,14 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
                 val chooser = Intent.createChooser(shareIntent, getString(R.string.share))
                 startActivity(chooser)
 
+                // ✅ NOTE: We don't delete the file immediately anymore
+                // Let the system handle it, or it will be cleaned up on next share
+                // This ensures other apps can read the file even after we return
+
             } catch (e: Exception) {
                 dismissLoading(true)
                 showToast("Share failed: ${e.message}")
+                android.util.Log.e("SuccessActivity", "Share error", e)
             } finally {
                 // Clean up: Recycle bitmap to free memory
                 bitmap?.recycle()
