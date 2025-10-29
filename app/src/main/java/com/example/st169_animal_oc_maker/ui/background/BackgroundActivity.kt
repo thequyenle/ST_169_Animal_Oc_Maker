@@ -153,12 +153,14 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                     .into(binding.ivBackground)
 
                 // ✅ Load into My Creation layout
+                binding.layoutMyCreationCapture.setBackgroundColor(Color.TRANSPARENT)
                 binding.ivBackgroundMyCreation.setBackgroundColor(Color.TRANSPARENT)
                 Glide.with(this@BackgroundActivity)
                     .load(path)
                     .into(binding.ivBackgroundMyCreation)
 
                 // ✅ Load into Download layout
+                binding.layoutDownloadCapture.setBackgroundColor(Color.TRANSPARENT)
                 binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
                 Glide.with(this@BackgroundActivity)
                     .load(path)
@@ -191,14 +193,17 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             }
 
             // ✅ My Creation layout: WHITE background (#FFFFFF)
+            // Clear the ImageView and set WHITE background on the parent FrameLayout
             Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundMyCreation)
             binding.ivBackgroundMyCreation.setImageDrawable(null)
-            binding.ivBackgroundMyCreation.setBackgroundColor(Color.WHITE)
+            binding.ivBackgroundMyCreation.setBackgroundColor(Color.TRANSPARENT)
+            binding.layoutMyCreationCapture.setBackgroundColor(Color.WHITE)
 
             // ✅ Download layout: TRANSPARENT background
             Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundDownload)
             binding.ivBackgroundDownload.setImageDrawable(null)
             binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
+            binding.layoutDownloadCapture.setBackgroundColor(Color.TRANSPARENT)
 
             backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
         }
@@ -222,10 +227,22 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
             binding.ivBackground.setImageDrawable(null)
 
-            // Set background color based on category position
+            // Display: Set background color based on category position
             categoryBackgroundColor?.let { colorHex ->
                 binding.ivBackground.setBackgroundColor(Color.parseColor(colorHex))
             }
+
+            // ✅ My Creation layout: WHITE background
+            Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundMyCreation)
+            binding.ivBackgroundMyCreation.setImageDrawable(null)
+            binding.ivBackgroundMyCreation.setBackgroundColor(Color.TRANSPARENT)
+            binding.layoutMyCreationCapture.setBackgroundColor(Color.WHITE)
+
+            // ✅ Download layout: TRANSPARENT background
+            Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundDownload)
+            binding.ivBackgroundDownload.setImageDrawable(null)
+            binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
+            binding.layoutDownloadCapture.setBackgroundColor(Color.TRANSPARENT)
 
             // Refresh adapter to show border on None
             backgroundAdapter.notifyDataSetChanged()
@@ -254,10 +271,24 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                     binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
                     binding.ivBackground.background = null
 
-                    // Load background image
+                    // Load background image - Display layout
                     Glide.with(this@BackgroundActivity)
                         .load(backgroundPath)
                         .into(binding.ivBackground)
+
+                    // ✅ My Creation layout
+                    binding.layoutMyCreationCapture.setBackgroundColor(Color.TRANSPARENT)
+                    binding.ivBackgroundMyCreation.setBackgroundColor(Color.TRANSPARENT)
+                    Glide.with(this@BackgroundActivity)
+                        .load(backgroundPath)
+                        .into(binding.ivBackgroundMyCreation)
+
+                    // ✅ Download layout
+                    binding.layoutDownloadCapture.setBackgroundColor(Color.TRANSPARENT)
+                    binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
+                    Glide.with(this@BackgroundActivity)
+                        .load(backgroundPath)
+                        .into(binding.ivBackgroundDownload)
 
                     // Refresh adapter to show border
                     backgroundAdapter.notifyDataSetChanged()
@@ -272,8 +303,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private fun handleSave() {
         // Save to My Creation and navigate to SuccessActivity
         lifecycleScope.launch {
-            // ✅ Capture from layoutMyCreationCapture (white background for None)
-            val bitmap = BitmapHelper.createBimapFromView(binding.layoutMyCreationCapture)
+            // ✅ Capture from layoutDownloadCapture (transparent background for None - for download/share)
+            val bitmap = BitmapHelper.createBimapFromView(binding.layoutDownloadCapture)
             MediaHelper.saveBitmapToInternalStorage(this@BackgroundActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
                 .collect { result ->
                     when (result) {
