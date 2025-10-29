@@ -165,9 +165,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 if (bottomNavigationList.isNotEmpty()) {
                     bottomNavigationAdapter.submitList(bottomNavigationList)
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                    colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
-                    if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
-                        binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
+                    colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+
+                    // ✅ FIX: Force layout for Android 8
+                    binding.rcvColor.post {
+                        binding.rcvColor.requestLayout()
+                        if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+                            binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
+                        }
                     }
                 }
             }
@@ -210,8 +215,17 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
 
             rcvColor.apply {
+                // ✅ FIX: Ensure LinearLayoutManager is set with horizontal orientation for Android 8
+                layoutManager = androidx.recyclerview.widget.LinearLayoutManager(
+                    this@CustomizeActivity,
+                    androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
+                    false
+                )
                 adapter = colorLayerAdapter
                 itemAnimator = null
+                // ✅ FIX: Force measure and layout for Android 8
+                setHasFixedSize(true)
+                dLog("🔧 rcvColor initialized: layoutManager=${layoutManager}, adapter=${adapter}")
             }
 
             rcvNavigation.apply {
@@ -379,7 +393,19 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     }
 
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                    colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+
+                    // ✅ DEBUG: Log trước khi submit color list
+                    val colorList = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                    dLog("🎨 [initData] Submitting color list: size=${colorList.size}")
+
+                    colorLayerAdapter.submitListWithLog(colorList)
+
+                    // ✅ FIX: Force layout update for Android 8
+                    binding.rcvColor.post {
+                        binding.rcvColor.requestLayout()
+                        binding.rcvColor.invalidate()
+                        dLog("🔧 rcvColor forced layout update")
+                    }
 
                     // ✅ Scroll to selected item if has suggestion preset
                     if (viewModel.hasSuggestionPreset()) {
@@ -450,23 +476,33 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
     }
     private fun checkStatusColor() {
+        val colorListSize = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].size
+        val shouldShowColor = viewModel.isShowColorList.value[viewModel.positionNavSelected.value]
+
+        dLog("🎨 checkStatusColor: positionNav=${viewModel.positionNavSelected.value}")
+        dLog("🎨 colorListSize=$colorListSize, shouldShowColor=$shouldShowColor")
+
         if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
             // Có màu -> hiện btnColor
             binding.btnColor.visible()
+            dLog("🎨 Has colors -> show btnColor")
 
             if (viewModel.isShowColorList.value[viewModel.positionNavSelected.value]) {
                 // Mặc định hiển thị khi vào màn hình
                 isColorBarVisible = true
                 binding.layoutRcvColor.visible()
+                dLog("🎨 Should show colors -> layoutRcvColor VISIBLE")
             } else {
                 isColorBarVisible = false
                 binding.layoutRcvColor.invisible()
+                dLog("🎨 Should NOT show colors -> layoutRcvColor INVISIBLE")
             }
         } else {
             // Không có màu -> ẩn cả layoutRcvColor và btnColor
             isColorBarVisible = false
             binding.layoutRcvColor.invisible()
             binding.btnColor.invisible()
+            dLog("🎨 NO colors -> hide layoutRcvColor and btnColor")
         }
         updateColorIcon()
 
@@ -511,8 +547,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 if (isMoreColors) {
-                    colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
-                    binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
+                    colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                    binding.rcvColor.post {
+                        binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
+                    }
                 }
                 // Enable lại rcvColor khi click random
                 setColorRecyclerViewEnabled(true)
@@ -528,7 +566,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             val pathColor = viewModel.setClickChangeColor(position)
             withContext(Dispatchers.Main) {
                 Glide.with(this@CustomizeActivity).load(pathColor).into(viewModel.imageViewList.value[viewModel.positionCustom.value])
-                colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
             }
         }
     }
@@ -537,6 +575,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         isColorEnabled = enabled
         binding.rcvColor.alpha = if (enabled) 1.0f else 1.0f
         colorLayerAdapter.isEnabled = enabled
+
+        // ✅ DEBUG: Log chi tiết về rcvColor
+        dLog("🎨 setColorRecyclerViewEnabled: enabled=$enabled")
+        dLog("🎨 rcvColor visibility: ${binding.rcvColor.visibility}")
+        dLog("🎨 rcvColor alpha: ${binding.rcvColor.alpha}")
+        dLog("🎨 rcvColor width: ${binding.rcvColor.width}, height: ${binding.rcvColor.height}")
+        dLog("🎨 rcvColor adapter itemCount: ${binding.rcvColor.adapter?.itemCount ?: 0}")
+        dLog("🎨 layoutRcvColor visibility: ${binding.layoutRcvColor.visibility}")
+        dLog("🎨 layoutRcvColor width: ${binding.layoutRcvColor.width}, height: ${binding.layoutRcvColor.height}")
     }
 
     private fun handleClickBottomNavigation(positionBottomNavigation: Int) {
@@ -611,7 +658,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         }
                         Glide.with(this@CustomizeActivity).load(pathDefault).into(viewModel.imageViewList.value[viewModel.dataCustomize.value!!.layerList.first().positionCustom])
                         customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                        colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                        colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                        binding.rcvColor.post {
+                            binding.rcvColor.requestLayout()
+                        }
                         hideNavigation()
                     }
                 }
@@ -647,7 +697,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                 // ✅ Update adapter cho navigation hiện tại
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                colorLayerAdapter.submitList(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                binding.rcvColor.post {
+                    binding.rcvColor.requestLayout()
+                }
 
                 // ✅ CHECK: Nếu layer ở vị trí hiện tại không phải NONE thì enable rcvColor
                 val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
