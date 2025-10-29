@@ -10,12 +10,14 @@ import kotlin.apply
 
 class NoInternetDialog (val context: Activity) : BaseDialog<DialogNoInternetBinding>(context, maxWidth = true, maxHeight = true) {
     override val layoutId: Int = R.layout.dialog_no_internet
-    override val isCancel: Boolean = false
-    override val isBack: Boolean = false
+    override val isCancel: Boolean = false  // Disable back button
+    override val isBack: Boolean = false     //  Disable back gesture
     var onOkClick: (() -> Unit)? = null
-    var onDismissClick: (() -> Unit)? = null
 
     override fun initView() {
+        //  FIX: Make dialog non-cancelable - only closable via OK button
+        setCancelable(false)
+
         binding.apply {
 //            txtCheck.select()
         }
@@ -26,10 +28,9 @@ class NoInternetDialog (val context: Activity) : BaseDialog<DialogNoInternetBind
             onOkClick?.invoke()
             dismiss()
         }
-        binding.main.onSingleClick {
-            onDismissClick?.invoke()
-            dismiss()
-        }
+
+        //  REMOVED: binding.main.onSingleClick - no longer allow closing by clicking outside
+        // User must click OK button to close
     }
 
     override fun onDismissListener() {

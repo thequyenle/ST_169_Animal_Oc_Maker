@@ -381,10 +381,7 @@ fun Activity.checkInternetEvent(action: (() -> Unit), dialog: (((NoInternetDialo
             val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
             startActivity(intent)
         }
-        noInternetDialog.onDismissClick = {
-            noInternetDialog.dismiss()
-            hideNavigation(true)
-        }
+        // ✅ REMOVED: onDismissClick no longer exists - dialog can only be closed via OK button
     } else {
         action.invoke()
     }
@@ -406,10 +403,7 @@ fun Activity.checkInternetEvent1(action: (() -> Unit), dialog: (((NoInternetDial
             val intent = Intent(Settings.ACTION_WIRELESS_SETTINGS)
             startActivity(intent)
         }
-        noInternetDialog.onDismissClick = {
-            noInternetDialog.dismiss()
-            hideNavigation(false)
-        }
+        // ✅ REMOVED: onDismissClick no longer exists - dialog can only be closed via OK button
     } else {
         action.invoke()
     }
