@@ -228,6 +228,23 @@ class CustomizeViewModel : ViewModel() {
                 val validColorIndex = selection.colorIndex.coerceIn(0, item.listColor.size - 1)
                 _positionColorItemList.value[layer.positionNavigation] = validColorIndex
                 _isShowColorList.value[layer.positionNavigation] = true
+
+                // ✅ CRITICAL FIX: Update color list to match selected item's colors
+                // Rebuild color list from the selected item (not from layer.first())
+                val colorList = ArrayList<ItemColorModel>()
+                item.listColor.forEachIndexed { colorIndex, colorItem ->
+                    colorList.add(ItemColorModel(
+                        color = colorItem.color,
+                        isSelected = (colorIndex == validColorIndex) // Set focus on preset color
+                    ))
+                }
+
+                // Create new ArrayList to trigger StateFlow update
+                val updatedColorItemNavList = ArrayList(_colorItemNavList.value)
+                updatedColorItemNavList[layer.positionNavigation] = colorList
+                _colorItemNavList.value = updatedColorItemNavList
+
+                Log.d("CustomizeViewModel", "✅ Updated color list for positionNav=${layer.positionNavigation}, focused color=$validColorIndex")
             }
 
             // ✅ CRITICAL FIX: Convert data model index → RecyclerView index
