@@ -71,6 +71,53 @@
 
     </FrameLayout>
 
+    <!-- ✅ Hidden layout for MY CREATION - WHITE background when None selected -->
+    <FrameLayout
+        android:id="@+id/layoutMyCreationCapture"
+        android:layout_width="1080px"
+        android:layout_height="1080px"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivBackgroundMyCreation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name" />
+
+        <ImageView
+            android:id="@+id/ivPreviousImageMyCreation"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name" />
+    </FrameLayout>
+
+    <!-- ✅ Hidden layout for DOWNLOAD - TRANSPARENT background when None selected -->
+    <FrameLayout
+        android:id="@+id/layoutDownloadCapture"
+        android:layout_width="1080px"
+        android:layout_height="1080px"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivBackgroundDownload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name" />
+
+        <ImageView
+            android:id="@+id/ivPreviousImageDownload"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/app_name" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/layoutRcv"

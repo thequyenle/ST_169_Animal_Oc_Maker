@@ -9,15 +9,12 @@ import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.st169_animal_oc_maker.R
 import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
 import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
 import com.example.st169_animal_oc_maker.core.extensions.showToast
 import com.example.st169_animal_oc_maker.core.extensions.startIntent
 import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
 import com.example.st169_animal_oc_maker.core.helper.MediaHelper
-import com.example.st169_animal_oc_maker.core.utils.SaveState
 import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
 import com.example.st169_animal_oc_maker.databinding.ActivitySuccessBinding
 import com.example.st169_animal_oc_maker.ui.background.BackgroundActivity
 import com.example.st169_animal_oc_maker.ui.home.HomeActivity
@@ -44,26 +41,37 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
         categoryPosition = intent.getIntExtra(IntentKey.CATEGORY_POSITION_KEY, 0)
         isNoneSelected = intent.getBooleanExtra(IntentKey.IS_NONE_SELECTED, false)
 
-        // Load ảnh nhân vật
+        // Load ảnh nhân vật vào cả 2 layouts
         if (!previousImagePath.isNullOrEmpty()) {
             Glide.with(this).load(previousImagePath).into(binding.imvImage)
+            Glide.with(this).load(previousImagePath).into(binding.imvImageShare)
         }
 
         // Handle background
         if (isNoneSelected) {
-            // ✅ Show background color for None selection
+            // ✅ Display: Show background color for None selection
             backgroundColor = intent.getStringExtra(IntentKey.BACKGROUND_COLOR_KEY)
             backgroundColor?.let {
                 binding.ivBackground.setBackgroundColor(Color.parseColor(it))
             }
+
+            // ✅ Share layout: TRANSPARENT background khi None
+            binding.ivBackgroundShare.setBackgroundColor(Color.TRANSPARENT)
+            binding.ivBackgroundShare.setImageDrawable(null)
+
             backgroundPath = null  // No background image
         } else {
-            // ✅ Show background image
+            // ✅ Show background image trong cả 2 layouts
             backgroundPath = intent.getStringExtra(IntentKey.BACKGROUND_IMAGE_KEY)
             if (!backgroundPath.isNullOrEmpty()) {
+                // Display layout
                 binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
                 binding.ivBackground.background = null
                 Glide.with(this).load(backgroundPath).into(binding.ivBackground)
+
+                // Share layout
+                binding.ivBackgroundShare.setBackgroundColor(Color.TRANSPARENT)
+                Glide.with(this).load(backgroundPath).into(binding.ivBackgroundShare)
             }
         }
     }
@@ -116,9 +124,9 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
             try {
                 showLoading()
 
-                // Capture from layout
+                // ✅ Capture từ layoutShareCapture (không có viền, full background)
                 bitmap = withContext(Dispatchers.Default) {
-                    BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+                    BitmapHelper.createBimapFromView(binding.layoutShareCapture)
                 }
 
                 // Save bitmap to cache (on IO thread for better performance)

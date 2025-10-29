@@ -119,6 +119,30 @@
 
     </androidx.cardview.widget.CardView>
 
+    <!-- ✅ Hidden layout for sharing - NO BORDER, full background -->
+    <FrameLayout
+        android:id="@+id/layoutShareCapture"
+        android:layout_width="1080px"
+        android:layout_height="1080px"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/ivBackgroundShare"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/imvImageShare"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/app_name"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
+
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"

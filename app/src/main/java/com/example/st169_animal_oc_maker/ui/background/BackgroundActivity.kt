@@ -45,7 +45,14 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
         val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
 
         if (!previousImagePath.isNullOrEmpty()) {
+            // Display layout
             Glide.with(this).load(previousImagePath).into(binding.ivPreviousImage)
+
+            // ✅ My Creation layout
+            Glide.with(this).load(previousImagePath).into(binding.ivPreviousImageMyCreation)
+
+            // ✅ Download layout
+            Glide.with(this).load(previousImagePath).into(binding.ivPreviousImageDownload)
         }
 
         // Set background based on category position
@@ -140,10 +147,22 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                 binding.ivBackground.setBackgroundColor(Color.TRANSPARENT)
                 binding.ivBackground.background = null  // Clear any drawable
 
-                // Load background image
+                // Load background image - Display layout
                 Glide.with(this@BackgroundActivity)
                     .load(path)
                     .into(binding.ivBackground)
+
+                // ✅ Load into My Creation layout
+                binding.ivBackgroundMyCreation.setBackgroundColor(Color.TRANSPARENT)
+                Glide.with(this@BackgroundActivity)
+                    .load(path)
+                    .into(binding.ivBackgroundMyCreation)
+
+                // ✅ Load into Download layout
+                binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
+                Glide.with(this@BackgroundActivity)
+                    .load(path)
+                    .into(binding.ivBackgroundDownload)
 
                 backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border
             }
@@ -166,10 +185,20 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
             Glide.with(this@BackgroundActivity).clear(binding.ivBackground)
             binding.ivBackground.setImageDrawable(null)  // Clear any image
 
-            // Set background color based on category position
+            // Display: Set background color based on category position
             categoryBackgroundColor?.let { colorHex ->
                 binding.ivBackground.setBackgroundColor(Color.parseColor(colorHex))
             }
+
+            // ✅ My Creation layout: WHITE background (#FFFFFF)
+            Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundMyCreation)
+            binding.ivBackgroundMyCreation.setImageDrawable(null)
+            binding.ivBackgroundMyCreation.setBackgroundColor(Color.WHITE)
+
+            // ✅ Download layout: TRANSPARENT background
+            Glide.with(this@BackgroundActivity).clear(binding.ivBackgroundDownload)
+            binding.ivBackgroundDownload.setImageDrawable(null)
+            binding.ivBackgroundDownload.setBackgroundColor(Color.TRANSPARENT)
 
             backgroundAdapter.notifyDataSetChanged()  // Refresh adapter to show border on None
         }
@@ -243,7 +272,8 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private fun handleSave() {
         // Save to My Creation and navigate to SuccessActivity
         lifecycleScope.launch {
-            val bitmap = BitmapHelper.createBimapFromView(binding.layoutCustomLayer)
+            // ✅ Capture from layoutMyCreationCapture (white background for None)
+            val bitmap = BitmapHelper.createBimapFromView(binding.layoutMyCreationCapture)
             MediaHelper.saveBitmapToInternalStorage(this@BackgroundActivity, ValueKey.DOWNLOAD_ALBUM, bitmap)
                 .collect { result ->
                     when (result) {
