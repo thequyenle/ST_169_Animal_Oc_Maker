@@ -412,10 +412,18 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         // All paths already set in applySuggestionPreset()
                         pathImageDefault = ""  // Not needed for preset
                     } else {
-                        pathImageDefault = viewModel.dataCustomize.value!!.layerList.first().layer.first().image
-                        viewModel.setIsSelectedItem(viewModel.positionCustom.value)
-                        viewModel.setPathSelected(viewModel.positionCustom.value, pathImageDefault)
-                        viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
+                        // ✅ FIX: Chỉ load ảnh mặc định cho tab 0 (body)
+                        // Các tab khác không load ảnh (để NONE)
+                        if (viewModel.positionNavSelected.value == 0) {
+                            // Tab 0 (body): load ảnh đầu tiên
+                            pathImageDefault = viewModel.dataCustomize.value!!.layerList.first().layer.first().image
+                            viewModel.setIsSelectedItem(viewModel.positionCustom.value)
+                            viewModel.setPathSelected(viewModel.positionCustom.value, pathImageDefault)
+                            viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
+                        } else {
+                            // Các tab khác: giữ nguyên NONE (không set path)
+                            pathImageDefault = ""
+                        }
                     }
                     dLog("deferred5")
                 }
@@ -434,10 +442,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                             }
                         }
                     } else {
-                        // Load default image
-                        Glide.with(this@CustomizeActivity)
-                            .load(pathImageDefault)
-                            .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                        // ✅ FIX: Chỉ load ảnh mặc định nếu có path (tab 0)
+                        if (pathImageDefault.isNotEmpty()) {
+                            Glide.with(this@CustomizeActivity)
+                                .load(pathImageDefault)
+                                .into(viewModel.imageViewList.value[viewModel.positionCustom.value])
+                        }
                     }
 
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
@@ -662,7 +672,39 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             viewModel.setPositionNavSelected(positionBottomNavigation)
             viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList[positionBottomNavigation].positionCustom)
             viewModel.setClickBottomNavigation(positionBottomNavigation)
-            withContext(Dispatchers.Main) { checkStatusColor() }
+            withContext(Dispatchers.Main) {
+                // ✅ FIX: Update adapters with the correct lists for the new navigation tab
+                customizeLayerAdapter.submitList(viewModel.itemNavList.value[positionBottomNavigation])
+                colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[positionBottomNavigation])
+
+                // ✅ FIX: Force layout update for Android 8
+                binding.rcvColor.post {
+                    binding.rcvColor.requestLayout()
+                    binding.rcvColor.invalidate()
+
+                    // Scroll to selected color if exists
+                    if (viewModel.colorItemNavList.value[positionBottomNavigation].isNotEmpty()) {
+                        val selectedColorIndex = viewModel.colorItemNavList.value[positionBottomNavigation]
+                            .indexOfFirst { it.isSelected }
+                        if (selectedColorIndex >= 0) {
+                            binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                        }
+                    }
+                }
+
+                // Check if the selected item in this tab is NONE or empty, then disable color
+                val selectedItem = viewModel.itemNavList.value[positionBottomNavigation]
+                    .firstOrNull { it.isSelected }
+
+                if (selectedItem?.path == AssetsKey.NONE_LAYER ||
+                    viewModel.pathSelectedList.value[viewModel.positionCustom.value].isNullOrEmpty()) {
+                    setColorRecyclerViewEnabled(false)
+                } else {
+                    setColorRecyclerViewEnabled(true)
+                }
+
+                checkStatusColor()
+            }
         }
     }
 

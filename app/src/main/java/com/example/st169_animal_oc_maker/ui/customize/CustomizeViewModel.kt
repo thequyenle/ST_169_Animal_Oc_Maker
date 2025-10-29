@@ -349,13 +349,18 @@ class CustomizeViewModel : ViewModel() {
     }
 
     suspend fun setFocusItemNavDefault() {
-        for (itemParent in _itemNavList.value) {
-            itemParent.forEachIndexed { index, item ->
-                item.isSelected = index == 0
+        // ✅ FIX: Chỉ set selected cho tab đầu tiên (body tab - positionNavigation = 0)
+        // Các tab khác giữ nguyên trạng thái mặc định (NONE được chọn từ createListItem)
+
+        // Tab 0 (body): chọn item thứ 2 (index 1) vì item 0 là RANDOM button
+        if (_itemNavList.value.isNotEmpty() && _itemNavList.value[0].size > 1) {
+            _itemNavList.value[0].forEachIndexed { index, item ->
+                item.isSelected = (index == 1) // Chọn item đầu tiên thật sự, bỏ qua RANDOM button
             }
         }
-        _itemNavList.value.first()[0].isSelected = false
-        _itemNavList.value.first()[1].isSelected = true
+
+        // Các tab khác (1, 2, 3...): giữ nguyên NONE được chọn (đã set trong createListItem)
+        // Không cần thay đổi gì vì createListItem đã đặt NONE (index 0) là selected = true
     }
 
     suspend fun setItemNavList(positionNavigation: Int, position: Int) {
