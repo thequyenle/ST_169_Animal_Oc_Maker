@@ -158,83 +158,60 @@ class SuggestionViewModel : ViewModel() {
                     )
 
                     thumbnail?.let {
-                        // ✅ HACK: Nếu là Miley (category 1), manually composite layer 0 lên thumbnail
+                        // ✅ FULL RENDER: Vẽ TẤT CẢ các layer (không chỉ layer 0)
                         val finalThumbnail = if (suggestion.categoryPosition == 1) {
-                            Log.d("SuggestionViewModel", "🔧 HACK: Manually compositing layer 0 for Miley ${suggestion.id}")
+                            Log.d("SuggestionViewModel", "🎨 FULL RENDER: Compositing ALL layers for Miley ${suggestion.id}")
 
-                            // ✅ CRITICAL DEBUG: In ra TOÀN BỘ randomState để xem
+                            // ✅ DEBUG: In ra TOÀN BỘ randomState
                             Log.d("SuggestionViewModel", "🔍 DEBUG: randomState has ${suggestion.randomState.layerSelections.size} layers")
                             suggestion.randomState.layerSelections.forEach { (pos, sel) ->
-                                Log.d("SuggestionViewModel", "🔍 Layer $pos: item=${sel.itemIndex}, color=${sel.colorIndex}, path=${sel.path}")
+                                Log.d("SuggestionViewModel", "🔍 Layer key=$pos: item=${sel.itemIndex}, color=${sel.colorIndex}, path=${sel.path}")
                             }
 
-                            // ✅ ULTIMATE FIX: Tìm BODY layer bằng key=-1 (đã lưu với key đặc biệt)
-                            // Body layer của Miley được lưu với key=-1 để tránh conflict với ears layer (cùng positionCustom=1)
-                            val layer0Selection = suggestion.randomState.layerSelections[-1]
+                            try {
+                                // Create composite bitmap
+                                val compositeBitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888)
+                                val canvas = Canvas(compositeBitmap)
 
-                            if (layer0Selection != null && layer0Selection.path.isNotEmpty()) {
-                                try {
-                                    // ✅ DEBUG: Log path để verify
-                                    Log.d("SuggestionViewModel", "🔧 Layer 0 path from randomState: ${layer0Selection.path}")
-                                    Log.d("SuggestionViewModel", "🔧 Layer 0 itemIndex: ${layer0Selection.itemIndex}, colorIndex: ${layer0Selection.colorIndex}")
-
-                                    // Load layer 0 bitmap với path ĐÃ CÓ MÀU từ randomState
-                                    val layer0Bitmap = ThumbnailGenerator.loadBitmapSync(
-                                        context,
-                                        layer0Selection.path,  // Path này ĐÃ có màu từ randomizeCharacter()
-                                        400,
-                                        400
-                                    )
-
-                                    if (layer0Bitmap != null) {
-                                        // ✅ ULTRA HACK: CHỈ vẽ background + layer 0 THÔI
-                                        // Bỏ qua các layer khác để test xem layer 0 có hiện không
-
-                                        Log.d("SuggestionViewModel", "🔧 ULTRA HACK: Rendering ONLY background + layer 0")
-
-                                        // Lấy background path
-                                        val bgPath = suggestion.background
-
-                                        // Create new bitmap
-                                        val compositeBitmap = Bitmap.createBitmap(
-                                            400,
-                                            400,
-                                            Bitmap.Config.ARGB_8888
-                                        )
-                                        val canvas = Canvas(compositeBitmap)
-
-                                        // 1. Draw background nếu có
-                                        if (!bgPath.isNullOrEmpty()) {
-                                            Log.d("SuggestionViewModel", "🔧 Drawing background: $bgPath")
-                                            val bgBitmap = ThumbnailGenerator.loadBitmapSync(context, bgPath, 400, 400)
-                                            if (bgBitmap != null) {
-                                                canvas.drawBitmap(bgBitmap, 0f, 0f, null)
-                                                Log.d("SuggestionViewModel", "✅ Background drawn: ${bgBitmap.width}x${bgBitmap.height}")
-                                            } else {
-                                                Log.e("SuggestionViewModel", "❌ Background failed to load")
-                                            }
-                                        }
-
-                                        // 2. Draw layer 0 (body) ONLY
-                                        Log.d("SuggestionViewModel", "🔧 Drawing layer 0: ${layer0Selection.path}")
-                                        canvas.drawBitmap(layer0Bitmap, 0f, 0f, null)
-                                        Log.d("SuggestionViewModel", "✅ Layer 0 drawn: ${layer0Bitmap.width}x${layer0Bitmap.height}")
-
-                                        // ✅ SKIP other layers for testing
-                                        Log.d("SuggestionViewModel", "⚠️ SKIPPING other layers for testing - only BG + Layer 0")
-
-                                        Log.d("SuggestionViewModel", "✅ ULTRA HACK: Thumbnail with ONLY layer 0 completed")
-                                        compositeBitmap
-                                    } else {
-                                        Log.e("SuggestionViewModel", "❌ HACK: Failed to load layer 0 bitmap")
-                                        it
+                                // 1. Draw background
+                                val bgPath = suggestion.background
+                                if (!bgPath.isNullOrEmpty()) {
+                                    Log.d("SuggestionViewModel", "🎨 Drawing background: $bgPath")
+                                    val bgBitmap = ThumbnailGenerator.loadBitmapSync(context, bgPath, 400, 400)
+                                    if (bgBitmap != null) {
+                                        canvas.drawBitmap(bgBitmap, 0f, 0f, null)
+                                        Log.d("SuggestionViewModel", "✅ Background drawn")
                                     }
-                                } catch (e: Exception) {
-                                    Log.e("SuggestionViewModel", "❌ HACK: Error compositing layer 0: ${e.message}")
-                                    it
                                 }
-                            } else {
-                                Log.d("SuggestionViewModel", "⚠️ HACK: No layer 0 found in randomState")
+
+                                // 2. ✅ VẼ TẤT CẢ CÁC LAYER theo thứ tự positionCustom
+                                // Sort layers by key to draw in correct order
+                                val sortedLayers = suggestion.randomState.layerSelections.toSortedMap()
+
+                                sortedLayers.forEach { (key, selection) ->
+                                    if (selection.path.isNotEmpty()) {
+                                        Log.d("SuggestionViewModel", "🎨 Drawing layer key=$key: ${selection.path}")
+                                        val layerBitmap = ThumbnailGenerator.loadBitmapSync(
+                                            context,
+                                            selection.path,
+                                            400,
+                                            400
+                                        )
+
+                                        if (layerBitmap != null) {
+                                            canvas.drawBitmap(layerBitmap, 0f, 0f, null)
+                                            Log.d("SuggestionViewModel", "✅ Layer key=$key drawn successfully")
+                                        } else {
+                                            Log.e("SuggestionViewModel", "❌ Failed to load layer key=$key")
+                                        }
+                                    }
+                                }
+
+                                Log.d("SuggestionViewModel", "✅ FULL RENDER: All layers composited successfully")
+                                compositeBitmap
+                            } catch (e: Exception) {
+                                Log.e("SuggestionViewModel", "❌ Error compositing ALL layers: ${e.message}")
+                                e.printStackTrace()
                                 it
                             }
                         } else {
