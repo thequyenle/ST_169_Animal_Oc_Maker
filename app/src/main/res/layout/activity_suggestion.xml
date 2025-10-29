@@ -8,8 +8,6 @@
     android:background="@drawable/img_bg_app"
     tools:context=".ui.suggestion.SuggestionActivity">
 
-    <!-- Action Bar Background -->
-
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/hehe"
         android:layout_width="wrap_content"
@@ -64,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="27dp"
+                android:layout_marginTop="15dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
                 android:paddingBottom="7dp"
@@ -79,14 +77,19 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardTommy1"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="7dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/tommy">
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cardTommy2"
+                app:layout_constraintTop_toBottomOf="@id/tommy"
+                app:layout_constraintBottom_toBottomOf="@id/cardTommy2">
 
                 <ImageView
                     android:id="@+id/imvTommy1"
@@ -98,13 +101,16 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardTommy2"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="20dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/cardTommy1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tommy">
 
@@ -136,14 +142,19 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardMiley1"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="7dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/miley">
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cardMiley2"
+                app:layout_constraintTop_toBottomOf="@id/miley"
+                app:layout_constraintBottom_toBottomOf="@id/cardMiley2">
 
                 <ImageView
                     android:id="@+id/imvMiley1"
@@ -155,13 +166,16 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardMiley2"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="20dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/cardMiley1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/miley">
 
@@ -193,14 +207,19 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDammy1"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="7dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
-                app:layout_constraintStart_toStartOf="@id/tommy"
-                app:layout_constraintTop_toBottomOf="@id/dammy">
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/cardDammy2"
+                app:layout_constraintTop_toBottomOf="@id/dammy"
+                app:layout_constraintBottom_toBottomOf="@id/cardDammy2">
 
                 <ImageView
                     android:id="@+id/imvDammy1"
@@ -212,13 +231,16 @@
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardDammy2"
-                android:layout_width="151dp"
-                android:layout_height="151dp"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="13dp"
-                android:layout_marginEnd="24dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginEnd="20dp"
                 app:cardCornerRadius="16dp"
                 app:cardElevation="6dp"
                 app:cardBackgroundColor="@color/white"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintStart_toEndOf="@id/cardDammy1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/dammy">
 

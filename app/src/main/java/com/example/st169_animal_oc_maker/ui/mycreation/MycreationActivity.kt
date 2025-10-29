@@ -144,6 +144,36 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
         binding.apply {
             rcv.adapter = myCreationAdapter
             rcv.itemAnimator = null
+
+            // ✅ Thêm ItemDecoration ở đây
+            rcv.addItemDecoration(object : RecyclerView.ItemDecoration() {
+                override fun getItemOffsets(
+                    outRect: android.graphics.Rect,
+                    view: android.view.View,
+                    parent: RecyclerView,
+                    state: RecyclerView.State
+                ) {
+                    val position = parent.getChildAdapterPosition(view)
+                    val spanCount = 2
+                    val spacing = 14 // dp
+
+                    val spacingPx = (spacing * parent.context.resources.displayMetrics.density).toInt()
+
+                    if (position % spanCount == 0) {
+                        // Item bên trái
+                        outRect.right = spacingPx / 2
+                    } else {
+                        // Item bên phải
+                        outRect.left = spacingPx / 2
+                    }
+
+                    // Margin bottom giữa các hàng
+                    if (position >= spanCount) {
+                        outRect.top = spacingPx
+                    }
+                }
+            })
+
             myCreationAdapter.submitList(myCreationList)
 
             // Click on empty space in RecyclerView to exit selection mode
