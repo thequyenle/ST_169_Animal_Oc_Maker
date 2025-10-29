@@ -47,14 +47,6 @@ class ColorLayerAdapter(val context: Context) :
                 val colorInt = android.graphics.Color.parseColor(colorString)
                 imvImage.setBackgroundColor(colorInt)
 
-                // ✅ FIX: Apply corner radius to imvImage using ViewOutlineProvider
-                imvImage.clipToOutline = true
-                imvImage.outlineProvider = object : android.view.ViewOutlineProvider() {
-                    override fun getOutline(view: android.view.View, outline: android.graphics.Outline) {
-                        val cornerRadius = 16 * context.resources.displayMetrics.density // 16dp to px
-                        outline.setRoundRect(0, 0, view.width, view.height, cornerRadius)
-                    }
-                }
                 android.util.Log.d("ColorLayerAdapter", "✅ Color parsed: $colorString at position $position")
             } catch (e: Exception) {
                 // Fallback to white if color parsing fails

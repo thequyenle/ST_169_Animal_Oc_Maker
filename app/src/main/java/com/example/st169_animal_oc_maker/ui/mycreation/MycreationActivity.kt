@@ -322,10 +322,16 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
     override fun onResume() {
         super.onResume()
-        if (!isSelectionMode) {
-            loadSavedImages()
-            myCreationAdapter.submitList(myCreationList)
+
+        // ✅ Always exit selection mode when returning to this activity
+        // This ensures a clean state when coming back from ViewActivity
+        if (isSelectionMode) {
+            exitSelectionMode()
         }
+
+        // Reload images to reflect any changes
+        loadSavedImages()
+        myCreationAdapter.submitList(myCreationList)
     }
 
     // ==================== SELECTION MODE FUNCTIONS ====================
@@ -555,4 +561,6 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             }
         }
     }
+
+
 }
