@@ -180,26 +180,44 @@ class CustomizeViewModel : ViewModel() {
         Log.d("CustomizeViewModel", "Applying suggestion preset with ${preset.layerSelections.size} layers")
 
         // Apply each layer selection
-        preset.layerSelections.forEach { (positionCustom, selection) ->
+        preset.layerSelections.forEach { (storageKey, selection) ->
+            // ✅ CRITICAL FIX: Handle special key -1 for Miley body layer
+            // Body layer của Miley được lưu với key=-1 để tránh conflict với ears layer
+            // Cần convert key=-1 → tìm layer có positionNavigation=0 (body tab)
+            val targetPositionCustom = if (storageKey == -1) {
+                // Find body layer (positionNavigation=0) and get its positionCustom
+                val bodyLayer = _dataCustomize.value?.layerList?.find { it.positionNavigation == 0 }
+                if (bodyLayer == null) {
+                    Log.e("CustomizeViewModel", "Body layer (positionNavigation=0) not found for key=-1")
+                    return@forEach
+                }
+                bodyLayer.positionCustom
+            } else {
+                storageKey
+            }
+
             // Find the layer
             val layerIndex = _dataCustomize.value?.layerList?.indexOfFirst {
-                it.positionCustom == positionCustom
+                it.positionCustom == targetPositionCustom
             } ?: return@forEach
 
-            if (layerIndex < 0) return@forEach
+            if (layerIndex < 0) {
+                Log.e("CustomizeViewModel", "Layer not found for positionCustom=$targetPositionCustom (storageKey=$storageKey)")
+                return@forEach
+            }
 
             val layer = _dataCustomize.value?.layerList?.get(layerIndex) ?: return@forEach
 
             // Validate item index
             if (selection.itemIndex >= layer.layer.size) {
-                Log.e("CustomizeViewModel", "Invalid item index ${selection.itemIndex} for layer $positionCustom")
+                Log.e("CustomizeViewModel", "Invalid item index ${selection.itemIndex} for layer positionCustom=$targetPositionCustom (storageKey=$storageKey)")
                 return@forEach
             }
 
             val item = layer.layer[selection.itemIndex]
 
             // Set path
-            _pathSelectedList.value[positionCustom] = selection.path
+            _pathSelectedList.value[targetPositionCustom] = selection.path
             _keySelectedItemList.value[layer.positionNavigation] = selection.path
 
             // Set selected state
@@ -224,7 +242,15 @@ class CustomizeViewModel : ViewModel() {
 
             setItemNavList(layer.positionNavigation, rcvIndex)
 
-            Log.d("CustomizeViewModel", "Applied layer $positionCustom: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex")
+            Log.d("CustomizeViewModel", "Applied layer storageKey=$storageKey → positionCustom=$targetPositionCustom: dataIndex=${selection.itemIndex} → rcvIndex=$rcvIndex, color=${selection.colorIndex}")
+        }
+
+        // ✅ Set initial navigation to body layer (first layer)
+        val firstLayer = _dataCustomize.value?.layerList?.firstOrNull()
+        if (firstLayer != null) {
+            setPositionCustom(firstLayer.positionCustom)
+            setPositionNavSelected(firstLayer.positionNavigation)
+            Log.d("CustomizeViewModel", "Set initial position to body layer: positionCustom=${firstLayer.positionCustom}, positionNav=${firstLayer.positionNavigation}")
         }
 
         Log.d("CustomizeViewModel", "Suggestion preset applied successfully")

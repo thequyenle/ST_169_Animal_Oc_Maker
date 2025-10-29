@@ -313,15 +313,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 viewModel.resetDataList()
                 viewModel.addValueToItemNavList()
                 viewModel.setItemColorDefault()
-                viewModel.setFocusItemNavDefault()
-                viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList.first().positionCustom)
-                viewModel.setPositionNavSelected(viewModel.dataCustomize.value!!.layerList.first().positionNavigation)
+
+                // ✅ CRITICAL FIX: Apply suggestion preset BEFORE setFocusItemNavDefault
+                // If we have a preset, use it. Otherwise, set defaults.
+                if (viewModel.hasSuggestionPreset()) {
+                    // Apply preset selections (includes positionCustom, positionNav, etc.)
+                    viewModel.applySuggestionPreset()
+                } else {
+                    // No preset: set defaults
+                    viewModel.setFocusItemNavDefault()
+                    viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList.first().positionCustom)
+                    viewModel.setPositionNavSelected(viewModel.dataCustomize.value!!.layerList.first().positionNavigation)
+                }
+
                 viewModel.setBottomNavigationListDefault()
 
-                // ✅ Apply suggestion preset if exists
-                if (viewModel.hasSuggestionPreset()) {
-                    viewModel.applySuggestionPreset()
-                }
 
                 dLog("deferred1")
                 return@async true

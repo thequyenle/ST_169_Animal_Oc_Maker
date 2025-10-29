@@ -2,6 +2,7 @@ package com.example.st169_animal_oc_maker.ui.suggestion
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -88,6 +89,84 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     override fun viewListener() {
         binding.btnBack.onSingleClick {
             handleBack()
+        }
+
+        // ✅ DEBUG: Long click vào Miley thumbnail để xem data
+        binding.imvMiley1.setOnLongClickListener {
+            showMileyDataDebug()
+            true
+        }
+
+        binding.imvMiley2.setOnLongClickListener {
+            showMileyDataDebug()
+            true
+        }
+    }
+
+    /**
+     * ✅ DEBUG: Show Miley data information
+     */
+    private fun showMileyDataDebug() {
+        lifecycleScope.launch {
+            try {
+                val allData = dataViewModel.allData.first { it.isNotEmpty() }
+                if (allData.size > 1) {
+                    val mileyData = allData[1]
+                    val debugInfo = buildString {
+                        appendLine("📊 MILEY DATA DEBUG")
+                        appendLine("==================")
+                        appendLine("Avatar: ${mileyData.avatar}")
+                        appendLine("Total layers: ${mileyData.layerList.size}")
+                        appendLine("")
+                        appendLine("LAYER 0 (Body):")
+
+                        if (mileyData.layerList.isNotEmpty()) {
+                            val layer0 = mileyData.layerList[0]
+                            appendLine("- Total items: ${layer0.layer.size}")
+                            appendLine("- positionCustom: ${layer0.positionCustom}")
+                            appendLine("- positionNavigation: ${layer0.positionNavigation}")
+                            appendLine("")
+
+                            if (layer0.layer.size > 1) {
+                                val item1 = layer0.layer[1]
+                                appendLine("Item 1 (first selectable):")
+                                appendLine("  image: ${item1.image}")
+                                appendLine("  isMoreColors: ${item1.isMoreColors}")
+                                appendLine("  colors: ${item1.listColor.size}")
+
+                                if (item1.isMoreColors && item1.listColor.isNotEmpty()) {
+                                    appendLine("  First 3 color paths:")
+                                    item1.listColor.take(3).forEachIndexed { index, color ->
+                                        appendLine("    [$index] ${color.path}")
+                                    }
+                                }
+                            }
+                        }
+
+                        appendLine("")
+                        appendLine("Check Logcat for full details!")
+                    }
+
+                    // Show in dialog
+                    android.app.AlertDialog.Builder(this@SuggestionActivity)
+                        .setTitle("Miley Data Debug")
+                        .setMessage(debugInfo)
+                        .setPositiveButton("OK", null)
+                        .setNeutralButton("Copy Logcat Filter") { _, _ ->
+                            // Copy to clipboard
+                            val clipboard = getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+                            val clip = android.content.ClipData.newPlainText("logcat", "SuggestionViewModel")
+                            clipboard.setPrimaryClip(clip)
+                            android.widget.Toast.makeText(this@SuggestionActivity, "Copied: SuggestionViewModel", android.widget.Toast.LENGTH_SHORT).show()
+                        }
+                        .show()
+
+                    Log.d("SuggestionActivity", "📊 DEBUG: Miley data dialog shown")
+                }
+            } catch (e: Exception) {
+                android.widget.Toast.makeText(this@SuggestionActivity, "Error: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+                Log.e("SuggestionActivity", "Error showing debug: ${e.message}", e)
+            }
         }
     }
 

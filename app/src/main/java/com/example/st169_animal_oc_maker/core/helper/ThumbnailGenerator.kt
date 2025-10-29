@@ -50,16 +50,26 @@ object ThumbnailGenerator {
             val sortedSelections = randomState.layerSelections.toList()
                 .sortedBy { it.first } // Sort by positionCustom
 
-            for ((positionCustom, selection) in sortedSelections) {
-                if (selection.path.isEmpty()) continue
+            Log.d("ThumbnailGenerator", "🎨 Drawing ${sortedSelections.size} layers...")
 
+            for ((positionCustom, selection) in sortedSelections) {
+                if (selection.path.isEmpty()) {
+                    Log.d("ThumbnailGenerator", "⚠️ Layer $positionCustom: Empty path, skipping")
+                    continue
+                }
+
+                Log.d("ThumbnailGenerator", "🖼️ Layer $positionCustom: Loading ${selection.path}")
                 val layerBitmap = loadBitmapFromPath(context, selection.path, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT)
-                layerBitmap?.let {
-                    canvas.drawBitmap(it, 0f, 0f, null)
+
+                if (layerBitmap != null) {
+                    canvas.drawBitmap(layerBitmap, 0f, 0f, null)
+                    Log.d("ThumbnailGenerator", "✅ Layer $positionCustom: Drawn successfully (size: ${layerBitmap.width}x${layerBitmap.height})")
+                } else {
+                    Log.e("ThumbnailGenerator", "❌ Layer $positionCustom: Failed to load bitmap from ${selection.path}")
                 }
             }
 
-            Log.d("ThumbnailGenerator", "✅ Generated thumbnail successfully")
+            Log.d("ThumbnailGenerator", "✅ Generated thumbnail successfully with ${sortedSelections.size} layers")
             bitmap
 
         } catch (e: Exception) {
@@ -104,6 +114,16 @@ object ThumbnailGenerator {
             continuation.resumeWithException(e)
         }
     }
+
+    /**
+     * ✅ HACK: Load bitmap synchronously (public for SuggestionViewModel hack)
+     */
+    suspend fun loadBitmapSync(
+        context: Context,
+        path: String,
+        width: Int,
+        height: Int
+    ): Bitmap? = loadBitmapFromPath(context, path, width, height)
 
     /**
      * Tạo thumbnail từ list paths (theo thứ tự)
