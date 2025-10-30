@@ -94,12 +94,12 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
 
         // ✅ DEBUG: Long click vào Miley thumbnail để xem data
         binding.imvMiley1.setOnLongClickListener {
-            showMileyDataDebug()
+          //  showMileyDataDebug()
             true
         }
 
         binding.imvMiley2.setOnLongClickListener {
-            showMileyDataDebug()
+           // showMileyDataDebug()
             true
         }
     }

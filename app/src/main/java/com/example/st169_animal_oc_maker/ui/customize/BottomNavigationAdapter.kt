@@ -18,24 +18,45 @@ import com.facebook.shimmer.ShimmerDrawable
 class BottomNavigationAdapter(val context: Context) :
     BaseAdapter<NavigationModel, ItemNaviBinding>(ItemNaviBinding::inflate) {
     var onItemClick: ((Int) -> Unit) = {}
+
+    // ✅ PERFORMANCE: Cache ShimmerDrawable to avoid creating new instance on every bind
+    private val shimmerDrawable: ShimmerDrawable by lazy {
+        ShimmerDrawable().apply {
+            setShimmer(DataLocal.shimmer)
+        }
+    }
+
+    // ✅ PERFORMANCE: Cache colors to avoid repeated resource lookups
+    private val pinkColor: Int by lazy {
+        ContextCompat.getColor(context, R.color.pink)
+    }
+
+    private val whiteColor: Int by lazy {
+        ContextCompat.getColor(context, R.color.white)
+    }
+
     override fun onBind(
         binding: ItemNaviBinding, item: NavigationModel, position: Int
     ) {
-        val shimmerDrawable = ShimmerDrawable().apply {
-            setShimmer(DataLocal.shimmer)
-        }
         binding.apply {
-
             if (item.isSelected) {
                 // Khi selected: hiện stroke màu pink và background decoration
-                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.pink))
+                cvFocus.setCardBackgroundColor(pinkColor)
                 imvSelected.isVisible = true
             } else {
                 // Khi không selected: stroke màu white và ẩn background decoration
-                cvFocus.setCardBackgroundColor(ContextCompat.getColor(context, R.color.white))
+                cvFocus.setCardBackgroundColor(whiteColor)
                 imvSelected.gone()
             }
-            Glide.with(root).load(item.imageNavigation).placeholder(shimmerDrawable).into(imvImage)
+
+            // ✅ PERFORMANCE: Add Glide optimizations for faster loading
+            Glide.with(root)
+                .load(item.imageNavigation)
+                .placeholder(shimmerDrawable)
+                .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                .skipMemoryCache(false)
+                .into(imvImage)
+
             root.onSingleClick { onItemClick.invoke(position) }
         }
     }

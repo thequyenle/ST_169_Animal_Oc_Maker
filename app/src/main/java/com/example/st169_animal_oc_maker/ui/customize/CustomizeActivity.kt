@@ -143,16 +143,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         intent.getIntExtra(IntentKey.INTENT_KEY, 0)
                     }
 
-                    // ✅ LOG: Character data khi load vào CustomizeActivity
-                    if (viewModel.positionSelected == 0) {
-                        logCharacter0Data(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
-                    }
-                    if (viewModel.positionSelected == 1) {
-                        logMileyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
-                    }
-                    if (viewModel.positionSelected == 2) {
-                        logDammyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
-                    }
+                    // ✅ LOG: Character data khi load vào CustomizeActivity (disabled for performance)
+                    // if (viewModel.positionSelected == 0) {
+                    //     logCharacter0Data(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    // }
+                    // if (viewModel.positionSelected == 1) {
+                    //     logMileyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    // }
+                    // if (viewModel.positionSelected == 2) {
+                    //     logDammyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    // }
 
                     viewModel.setDataCustomize(list[viewModel.positionSelected])
                     viewModel.setIsDataAPI(viewModel.positionSelected >= ValueKey.POSITION_API)
@@ -179,9 +179,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                     colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
 
-                    // ✅ FIX: Force layout for Android 8
+                    // ✅ Optimized: Scroll to selected color if exists
                     binding.rcvColor.post {
-                        binding.rcvColor.requestLayout()
                         if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
                             binding.rcvColor.smoothScrollToPosition(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].indexOfFirst { it.isSelected })
                         }
@@ -376,6 +375,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             rcvLayer.apply {
                 adapter = customizeLayerAdapter
                 itemAnimator = null
+                // ✅ PERFORMANCE: Enable fixed size for better recycling
+                setHasFixedSize(true)
+                // ✅ PERFORMANCE: Increase view cache size to reduce re-binding
+                setItemViewCacheSize(20)
+                // ✅ PERFORMANCE: Enable nested scrolling optimization
+                isNestedScrollingEnabled = false
             }
 
             rcvColor.apply {
@@ -387,14 +392,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 )
                 adapter = colorLayerAdapter
                 itemAnimator = null
-                // ✅ FIX: Force measure and layout for Android 8
+                // ✅ PERFORMANCE: Enable fixed size and increase cache
                 setHasFixedSize(true)
+                setItemViewCacheSize(10)
+                isNestedScrollingEnabled = false
                 dLog("🔧 rcvColor initialized: layoutManager=${layoutManager}, adapter=${adapter}")
             }
 
             rcvNavigation.apply {
                 adapter = bottomNavigationAdapter
                 itemAnimator = null
+                //  PERFORMANCE: Enable fixed size for better recycling
+                setHasFixedSize(true)
+                //  PERFORMANCE: Small cache for bottom navigation (limited items)
+                setItemViewCacheSize(8)
+                isNestedScrollingEnabled = false
             }
         }
     }
@@ -526,43 +538,43 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         CoroutineScope(SupervisorJob() + Dispatchers.IO + handleExceptionCoroutine).launch {
             var pathImageDefault = ""
 
-            // ✅ LOG: Log suggestion preset nếu có
-            if (viewModel.positionSelected == 0 && viewModel.hasSuggestionPreset()) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "📊 CHARACTER 0 - SUGGESTION PRESET DATA")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
-                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
-                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
-                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
-                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
-                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
-                Log.d("CustomizeActivity", "========================================")
-            }
-            if (viewModel.positionSelected == 1 && viewModel.hasSuggestionPreset()) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "📊 MILEY - SUGGESTION PRESET DATA")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
-                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
-                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
-                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
-                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
-                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
-                Log.d("CustomizeActivity", "========================================")
-            }
-            if (viewModel.positionSelected == 2 && viewModel.hasSuggestionPreset()) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "📊 DAMMY - SUGGESTION PRESET DATA")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
-                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
-                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
-                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
-                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
-                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
-                Log.d("CustomizeActivity", "========================================")
-            }
+            // ✅ LOG: Log suggestion preset nếu có (disabled for performance)
+            // if (viewModel.positionSelected == 0 && viewModel.hasSuggestionPreset()) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "📊 CHARACTER 0 - SUGGESTION PRESET DATA")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+            //     Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+            //     val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+            //     val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+            //     Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+            //     Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
+            // if (viewModel.positionSelected == 1 && viewModel.hasSuggestionPreset()) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "📊 MILEY - SUGGESTION PRESET DATA")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+            //     Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+            //     val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+            //     val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+            //     Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+            //     Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
+            // if (viewModel.positionSelected == 2 && viewModel.hasSuggestionPreset()) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "📊 DAMMY - SUGGESTION PRESET DATA")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+            //     Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+            //     val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+            //     val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+            //     Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+            //     Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
 
             // Get data from list
             val deferred1 = async {
@@ -576,25 +588,25 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     // Apply preset selections (includes positionCustom, positionNav, etc.)
                     viewModel.applySuggestionPreset()
 
-                    // ✅ LOG: Log sau khi apply preset
-                    if (viewModel.positionSelected == 0) {
-                        Log.d("CustomizeActivity", "✅ CHARACTER 0 - After applySuggestionPreset()")
-                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
-                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-                    }
-                    if (viewModel.positionSelected == 1) {
-                        Log.d("CustomizeActivity", "✅ MILEY - After applySuggestionPreset()")
-                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
-                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-                    }
-                    if (viewModel.positionSelected == 2) {
-                        Log.d("CustomizeActivity", "✅ DAMMY - After applySuggestionPreset()")
-                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
-                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-                    }
+                    // ✅ LOG: Log sau khi apply preset (disabled for performance)
+                    // if (viewModel.positionSelected == 0) {
+                    //     Log.d("CustomizeActivity", "✅ CHARACTER 0 - After applySuggestionPreset()")
+                    //     Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                    //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                    //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    // }
+                    // if (viewModel.positionSelected == 1) {
+                    //     Log.d("CustomizeActivity", "✅ MILEY - After applySuggestionPreset()")
+                    //     Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                    //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                    //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    // }
+                    // if (viewModel.positionSelected == 2) {
+                    //     Log.d("CustomizeActivity", "✅ DAMMY - After applySuggestionPreset()")
+                    //     Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                    //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                    //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    // }
                 } else {
                     // No preset: set defaults
                     viewModel.setFocusItemNavDefault()
@@ -659,11 +671,11 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     colorLayerAdapter.submitListWithLog(colorList)
 
-                    // ✅ FIX: Force layout update for Android 8
-                    binding.rcvColor.post {
-                        binding.rcvColor.requestLayout()
-                        binding.rcvColor.invalidate()
-                        dLog("🔧 rcvColor forced layout update")
+                    // ✅ Optimized: Single layout pass only for Android 8
+                    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+                        binding.rcvColor.post {
+                            binding.rcvColor.requestLayout()
+                        }
                     }
 
                     // ✅ Scroll to selected item if has suggestion preset
@@ -735,19 +747,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
         }
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
-            // Delay 300ms để UI kịp render trên Android 8
+            // Reduced delay to 150ms for better performance on Android 8
             binding.root.postDelayed({
                 // Force refresh layout
                 binding.layoutCustomLayer.requestLayout()
-                binding.rcvLayer.requestLayout()
-                binding.rcvNavigation.requestLayout()
                 binding.rcvColor.requestLayout()
-
-                // Trigger re-render
-                binding.layoutCustomLayer.invalidate()
-
-                Log.d("CustomizeActivity", "✅ Android 8 workaround applied - force layout refresh")
-            }, 500)
+            }, 150)
         }
     }
     private fun checkStatusColor() {
@@ -788,56 +793,56 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
-            // ✅ LOG: Log khi click vào item
-            if (categoryPosition == 0) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "🖱️ CHARACTER 0 - handleFillLayer CLICKED")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "Item position: $position")
-                Log.d("CustomizeActivity", "Item path: ${item.path}")
-                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
-                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
-                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-            }
-            if (categoryPosition == 1) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "🖱️ MILEY - handleFillLayer CLICKED")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "Item position: $position")
-                Log.d("CustomizeActivity", "Item path: ${item.path}")
-                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
-                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
-                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-            }
-            if (categoryPosition == 2) {
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "🖱️ DAMMY - handleFillLayer CLICKED")
-                Log.d("CustomizeActivity", "========================================")
-                Log.d("CustomizeActivity", "Item position: $position")
-                Log.d("CustomizeActivity", "Item path: ${item.path}")
-                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
-                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
-                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-            }
+            // ✅ LOG: Log khi click vào item (disabled for performance)
+            // if (categoryPosition == 0) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "🖱️ CHARACTER 0 - handleFillLayer CLICKED")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "Item position: $position")
+            //     Log.d("CustomizeActivity", "Item path: ${item.path}")
+            //     Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+            //     Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+            //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+            //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            // }
+            // if (categoryPosition == 1) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "🖱️ MILEY - handleFillLayer CLICKED")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "Item position: $position")
+            //     Log.d("CustomizeActivity", "Item path: ${item.path}")
+            //     Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+            //     Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+            //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+            //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            // }
+            // if (categoryPosition == 2) {
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "🖱️ DAMMY - handleFillLayer CLICKED")
+            //     Log.d("CustomizeActivity", "========================================")
+            //     Log.d("CustomizeActivity", "Item position: $position")
+            //     Log.d("CustomizeActivity", "Item path: ${item.path}")
+            //     Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+            //     Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+            //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+            //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            // }
 
             val pathSelected = viewModel.setClickFillLayer(item, position)
 
-            // ✅ LOG: Log path được chọn
-            if (categoryPosition == 0) {
-                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-                Log.d("CustomizeActivity", "========================================")
-            }
-            if (categoryPosition == 1) {
-                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-                Log.d("CustomizeActivity", "========================================")
-            }
-            if (categoryPosition == 2) {
-                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-                Log.d("CustomizeActivity", "========================================")
-            }
+            // ✅ LOG: Log path được chọn (disabled for performance)
+            // if (categoryPosition == 0) {
+            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
+            // if (categoryPosition == 1) {
+            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
+            // if (categoryPosition == 2) {
+            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+            //     Log.d("CustomizeActivity", "========================================")
+            // }
 
             withContext(Dispatchers.Main) {
                 // ✅ FIX: Render lại TẤT CẢ layers, không chỉ layer vừa click
@@ -878,34 +883,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
      * Body dùng ImageView riêng, các layer khác dùng imageViewList
      */
     private fun renderAllLayers() {
-        if (categoryPosition == 0) {
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "🎨 CHARACTER 0 - RENDER ALL LAYERS")
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-            }
-        }
-        if (categoryPosition == 1) {
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-            }
-        }
-        if (categoryPosition == 2) {
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "🎨 DAMMY - RENDER ALL LAYERS")
-            Log.d("CustomizeActivity", "========================================")
-            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-            }
-        }
 
+
+        // LOG: Disabled for performance (removed all logging)
         viewModel.dataCustomize.value?.layerList?.forEachIndexed { index, layerListModel ->
             // ✅ FIX: Mỗi layer dùng index riêng trong pathSelectedList
             // Body (index=0) → pathSelectedList[0]
@@ -914,46 +894,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             val pathIndex = index
             val path = viewModel.pathSelectedList.value.getOrNull(pathIndex)
 
-            if (categoryPosition == 0) {
-                Log.d("CustomizeActivity", "---")
-                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
-                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
-
-                if (index == 0) {
-                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
-                } else {
-                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
-                }
-            }
-            if (categoryPosition == 1) {
-                Log.d("CustomizeActivity", "---")
-                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
-                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
-
-                if (index == 0) {
-                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
-                } else {
-                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
-                }
-            }
-            if (categoryPosition == 2) {
-                Log.d("CustomizeActivity", "---")
-                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
-                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
-
-                if (index == 0) {
-                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
-                } else {
-                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
-                }
-            }
-
             if (index == 0) {
                 // ✅ FIX: Body layer → Dùng ImageView riêng
                 if (!path.isNullOrEmpty()) {
                     viewModel.bodyImageView.value?.let { bodyImageView ->
                         Glide.with(this@CustomizeActivity)
                             .load(path)
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                            .skipMemoryCache(false)
                             .into(bodyImageView)
                     }
                 } else {
@@ -967,6 +915,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 if (!path.isNullOrEmpty()) {
                     Glide.with(this@CustomizeActivity)
                         .load(path)
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                        .skipMemoryCache(false)
                         .into(viewModel.imageViewList.value[layerListModel.positionCustom])
                 } else {
                     // Clear nếu path rỗng
@@ -974,16 +924,6 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         .clear(viewModel.imageViewList.value[layerListModel.positionCustom])
                 }
             }
-        }
-
-        if (categoryPosition == 0) {
-            Log.d("CustomizeActivity", "========================================")
-        }
-        if (categoryPosition == 1) {
-            Log.d("CustomizeActivity", "========================================")
-        }
-        if (categoryPosition == 2) {
-            Log.d("CustomizeActivity", "========================================")
         }
     }
 
@@ -1024,7 +964,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         lifecycleScope.launch(Dispatchers.IO) {
             val (pathRandom, isMoreColors) = viewModel.setClickRandomLayer()
             withContext(Dispatchers.Main) {
-                // ✅ FIX: Render lại tất cả layers thay vì chỉ load 1 ảnh
+                //  FIX: Render lại tất cả layers thay vì chỉ load 1 ảnh
                 renderAllLayers()
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 if (isMoreColors) {
@@ -1079,12 +1019,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[positionBottomNavigation])
                 colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[positionBottomNavigation])
 
-                // ✅ FIX: Force layout update for Android 8
+                // ✅ Optimized: Scroll to selected color if exists
                 binding.rcvColor.post {
-                    binding.rcvColor.requestLayout()
-                    binding.rcvColor.invalidate()
-
-                    // Scroll to selected color if exists
                     if (viewModel.colorItemNavList.value[positionBottomNavigation].isNotEmpty()) {
                         val selectedColorIndex = viewModel.colorItemNavList.value[positionBottomNavigation]
                             .indexOfFirst { it.isSelected }
@@ -1194,34 +1130,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             val isOutTurn = viewModel.setClickRandomFullLayer()
 
             withContext(Dispatchers.Main) {
-                // ✅ Load ảnh cho tất cả layers theo đúng thứ tự
-                if (viewModel.positionSelected == 0) {
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "🎨 CHARACTER 0 - RENDER ALL LAYERS")
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-                    }
-                }
-                if (viewModel.positionSelected == 1) {
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-                    }
-                }
-                if (viewModel.positionSelected == 2) {
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "🎨 DAMMY - RENDER ALL LAYERS")
-                    Log.d("CustomizeActivity", "========================================")
-                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
-                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
-                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
-                    }
-                }
+                // ✅ Load ảnh cho tất cả layers theo đúng thứ tự (logging disabled for performance)
 
                 // ✅ FIX: Render tất cả layers
                 renderAllLayers()

@@ -15,25 +15,23 @@ class ColorLayerAdapter(val context: Context) :
     var categoryPosition: Int = 0 // Thêm biến này
     var isEnabled: Boolean = true // Biến để kiểm soát enable/disable
 
+    // Cache dimension size to avoid repeated lookups
+    private val colorItemSize: Int by lazy {
+        context.resources.getDimensionPixelSize(R.dimen.color_item_size)
+    }
+
     fun submitListWithLog(list: List<ItemColorModel>) {
-        android.util.Log.d("ColorLayerAdapter", "📊 submitList called: size=${list.size}")
-        list.forEachIndexed { index, item ->
-            android.util.Log.d("ColorLayerAdapter", "  [$index] color=${item.color}, isSelected=${item.isSelected}")
-        }
+        // Logging disabled for performance
         submitList(list)
-        android.util.Log.d("ColorLayerAdapter", "✅ submitList completed")
     }
 
     override fun onBind(binding: ItemColorBinding, item: ItemColorModel, position: Int) {
         binding.apply {
-            // ✅ FIX: Ensure proper layout params for Android 8
+            // ✅ FIX: Ensure proper layout params for Android 8 (using cached size)
             root.layoutParams = root.layoutParams?.apply {
-                width = context.resources.getDimensionPixelSize(R.dimen.color_item_size)
-                height = context.resources.getDimensionPixelSize(R.dimen.color_item_size)
-            } ?: android.view.ViewGroup.LayoutParams(
-                context.resources.getDimensionPixelSize(R.dimen.color_item_size),
-                context.resources.getDimensionPixelSize(R.dimen.color_item_size)
-            )
+                width = colorItemSize
+                height = colorItemSize
+            } ?: android.view.ViewGroup.LayoutParams(colorItemSize, colorItemSize)
 
             // ✅ FIX: Add try-catch for Android 8 compatibility
             try {
@@ -46,11 +44,8 @@ class ColorLayerAdapter(val context: Context) :
 
                 val colorInt = android.graphics.Color.parseColor(colorString)
                 imvImage.setBackgroundColor(colorInt)
-
-                android.util.Log.d("ColorLayerAdapter", "✅ Color parsed: $colorString at position $position")
             } catch (e: Exception) {
-                // Fallback to white if color parsing fails
-                android.util.Log.e("ColorLayerAdapter", "❌ Failed to parse color: ${item.color} at position $position", e)
+                // Fallback to white if color parsing fails (logging disabled for performance)
                 imvImage.setBackgroundColor(android.graphics.Color.WHITE)
             }
 

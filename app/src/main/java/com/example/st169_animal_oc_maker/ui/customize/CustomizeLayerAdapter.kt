@@ -20,16 +20,20 @@ class CustomizeLayerAdapter(val context: Context) :
     var onNoneClick: ((Int) -> Unit) = {}
     var onRandomClick: (() -> Unit) = {}
 
+    // ✅ PERFORMANCE: Cache ShimmerDrawable to avoid creating new instance on every bind
+    private val shimmerDrawable: ShimmerDrawable by lazy {
+        ShimmerDrawable().apply {
+            setShimmer(DataLocal.shimmer)
+        }
+    }
+
     override fun onBind(
         binding: ItemCusBinding,
         item: ItemNavCustomModel,
         position: Int
     ) {
-        val shimmerDrawable = ShimmerDrawable().apply {
-            setShimmer(DataLocal.shimmer)
-        }
         binding.apply {
-
+            // ✅ PERFORMANCE: Set selection state first (cheaper operation)
             vFocus.isSelected = item.isSelected
 
             when (item.path) {
@@ -47,16 +51,20 @@ class CustomizeLayerAdapter(val context: Context) :
                     btnNone.gone()
                     imvImage.visible()
                     btnRandom.gone()
-                    Glide.with(root).load(item.path).placeholder(shimmerDrawable).into(imvImage)
+                    // ✅ PERFORMANCE: Add Glide optimizations for faster loading
+                    Glide.with(root)
+                        .load(item.path)
+                        .placeholder(shimmerDrawable)
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                        .skipMemoryCache(false)
+                        .into(imvImage)
                 }
             }
 
-            binding.imvImage.onSingleClick { onItemClick.invoke(item, position) }
-
-            binding.btnRandom.onSingleClick { onRandomClick.invoke() }
-
-            binding.btnNone.onSingleClick { onNoneClick.invoke(position) }
+            // ✅ PERFORMANCE: Set click listeners (these are cheap, no need to optimize)
+            imvImage.onSingleClick { onItemClick.invoke(item, position) }
+            btnRandom.onSingleClick { onRandomClick.invoke() }
+            btnNone.onSingleClick { onNoneClick.invoke(position) }
         }
-
     }
 }

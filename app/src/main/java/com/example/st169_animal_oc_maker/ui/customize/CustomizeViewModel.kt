@@ -113,6 +113,9 @@ class CustomizeViewModel : ViewModel() {
     private val _colorListMost = MutableStateFlow(arrayListOf<String>())
     val colorListMost = _colorListMost.asStateFlow()
 
+    // ✅ PERFORMANCE: Cache for layer index mapping (positionNavigation -> layerIndex)
+    private val _layerIndexCache = MutableStateFlow<Map<Int, Int>>(emptyMap())
+
     //----------------------------------------------------------------------------------------------------------------------
     // Base setter
     suspend fun setPositionNavSelected(position: Int) {
@@ -125,6 +128,17 @@ class CustomizeViewModel : ViewModel() {
 
     fun setDataCustomize(data: CustomizeModel) {
         _dataCustomize.value = data
+        // ✅ Build cache when data is set
+        buildLayerIndexCache()
+    }
+
+    private fun buildLayerIndexCache() {
+        val layerList = _dataCustomize.value?.layerList ?: return
+        val cache = mutableMapOf<Int, Int>()
+        layerList.forEachIndexed { index, layer ->
+            cache[layer.positionNavigation] = index
+        }
+        _layerIndexCache.value = cache
     }
 
     fun setIsDataAPI(isAPI: Boolean) {
@@ -967,6 +981,8 @@ class CustomizeViewModel : ViewModel() {
      * - Render vào ImageView[positionCustom]
      */
     fun getPathIndexForLayer(positionNavigation: Int): Int {
+        // ✅ PERFORMANCE: Use cached mapping instead of linear search
+        val cache = _layerIndexCache.value
         val layerList = _dataCustomize.value?.layerList ?: return 0
 
         // 🎯 FIX: Map positionNav bị lỗi sang positionNav đúng
@@ -977,20 +993,17 @@ class CustomizeViewModel : ViewModel() {
                 val layer22 = layerList.find { it.positionCustom == 22 }
                 if (layer22 != null) {
                     val layer22Index = layerList.indexOf(layer22)
-                    Log.d("CustomizeViewModel", "🔧 FIX: positionNav=21 → use layer with positionCustom=22 (index=$layer22Index)")
                     return layer22Index  // Dùng layerIndex thay vì positionNav
                 } else {
-                    Log.e("CustomizeViewModel", "❌ positionNav=21 NOT FOUND and no fallback layer")
                     return -1
                 }
             }
             else -> positionNavigation
         }
 
-        // Tìm layer với positionNav đã được fix
-        val layerIndex = layerList.indexOfFirst { it.positionNavigation == actualPositionNav }
+        // ✅ Use cache for O(1) lookup instead of O(n) search
+        val layerIndex = cache[actualPositionNav] ?: -1
         if (layerIndex == -1) {
-            Log.e("CustomizeViewModel", "❌ positionNav=$actualPositionNav NOT FOUND! Cannot get pathIndex")
             return -1
         }
 
