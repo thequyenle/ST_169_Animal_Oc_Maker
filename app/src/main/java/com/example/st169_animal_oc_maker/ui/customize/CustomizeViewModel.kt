@@ -390,7 +390,7 @@ class CustomizeViewModel : ViewModel() {
                 Log.d("CustomizeViewModel", "✅ Updated color list for positionNav=${layer.positionNavigation}, focused color=$validColorIndex, total colors=${colorList.size}")
             }
 
-            // ✅ CRITICAL FIX: Convert data model index → RecyclerView index
+            //  CRITICAL FIX: Convert data model index → RecyclerView index
             // RecyclerView có None/Random buttons ở đầu, cần cộng offset:
             // - Layer đầu (Body): chỉ có Random button → offset +1
             // - Các layer khác: có None + Random buttons → offset +2
@@ -402,7 +402,7 @@ class CustomizeViewModel : ViewModel() {
 
             setItemNavList(layer.positionNavigation, rcvIndex)
 
-            // ✅ FIX: Trigger load ảnh cho item được focus từ suggestion
+            //  FIX: Trigger load ảnh cho item được focus từ suggestion
             // Nếu không có màu hoặc dùng màu đầu tiên, load ảnh base
             val finalPath = if (item.isMoreColors && item.listColor.isNotEmpty()) {
                 val validColorIndex = selection.colorIndex.coerceIn(0, item.listColor.size - 1)
@@ -419,10 +419,25 @@ class CustomizeViewModel : ViewModel() {
                 Log.w("CustomizeViewModel", "⚠️ MILEY PATH OVERWRITE: ${_pathSelectedList.value[pathIndex]} → $finalPath")
             }
 
+            //  FIX DUPLICATE POSITION CUSTOM: Xóa các layers có cùng positionCustom
+            // Tìm tất cả layers có cùng positionCustom với layer hiện tại
+            val currentPositionCustom = layer.positionCustom
+            val allLayers = _dataCustomize.value?.layerList ?: emptyList()
+            allLayers.forEachIndexed { idx, otherLayer ->
+                if (otherLayer.positionCustom == currentPositionCustom &&
+                    otherLayer.positionNavigation != layer.positionNavigation) {
+                    // Xóa path của layer duplicate
+                    _pathSelectedList.value[idx] = ""
+                    _keySelectedItemList.value[otherLayer.positionNavigation] = ""
+                    _isSelectedItemList.value[otherLayer.positionNavigation] = false
+                    Log.d("CustomizeViewModel", "🧹 PRESET CLEAR DUPLICATE: Cleared positionNav=${otherLayer.positionNavigation} (same positionCustom=$currentPositionCustom)")
+                }
+            }
+
             _pathSelectedList.value[pathIndex] = finalPath
         }
 
-        // ✅ Set initial navigation to body layer (first layer)
+        //  Set initial navigation to body layer (first layer)
         val firstLayer = _dataCustomize.value?.layerList?.firstOrNull()
         if (firstLayer != null) {
             setPositionCustom(firstLayer.positionCustom)
@@ -473,6 +488,29 @@ class CustomizeViewModel : ViewModel() {
                 .toCollection(ArrayList())
     }
 
+    /**
+     * ✅ FIX DUPLICATE POSITION CUSTOM:
+     * Xóa tất cả paths của các layers có cùng positionCustom với layer hiện tại
+     * Ví dụ: Đuôi A và Đuôi B cùng positionCustom=21 → Khi chọn Đuôi B, xóa path của Đuôi A
+     */
+    private suspend fun clearLayersWithSamePositionCustom(positionNavigation: Int) {
+        val layerList = _dataCustomize.value?.layerList ?: return
+        val currentLayer = layerList.find { it.positionNavigation == positionNavigation } ?: return
+        val currentPositionCustom = currentLayer.positionCustom
+
+        // Tìm tất cả layers có cùng positionCustom (trừ layer hiện tại)
+        layerList.forEachIndexed { index, layer ->
+            if (layer.positionCustom == currentPositionCustom && layer.positionNavigation != positionNavigation) {
+                // Xóa path và reset state của layer này
+                _pathSelectedList.value[index] = ""
+                _keySelectedItemList.value[layer.positionNavigation] = ""
+                _isSelectedItemList.value[layer.positionNavigation] = false
+
+                Log.d("CustomizeViewModel", "🧹 CLEAR DUPLICATE: Cleared layer positionNav=${layer.positionNavigation} (same positionCustom=$currentPositionCustom)")
+            }
+        }
+    }
+
     //----------------------------------------------------------------------------------------------------------------------
     // Bottom Navigation
     suspend fun setBottomNavigationList(bottomNavList: ArrayList<NavigationModel>) {
@@ -509,7 +547,7 @@ class CustomizeViewModel : ViewModel() {
     }
 
     suspend fun setFocusItemNavDefault() {
-        // ✅ FIX: Chỉ set selected cho tab đầu tiên (body tab - positionNavigation = 0)
+        //  FIX: Chỉ set selected cho tab đầu tiên (body tab - positionNavigation = 0)
         // Các tab khác giữ nguyên trạng thái mặc định (NONE được chọn từ createListItem)
 
         // Tab 0 (body): chọn item thứ 2 (index 1) vì item 0 là RANDOM button
@@ -562,6 +600,9 @@ class CustomizeViewModel : ViewModel() {
             Log.d("CustomizeViewModel", "💾 DAMMY SAVE: nav=${positionNavSelected.value}→pathIndex=$pathIndex")
         }
 
+        // ✅ FIX: Xóa các layers có cùng positionCustom trước khi set layer mới
+        clearLayersWithSamePositionCustom(positionNavSelected.value)
+
         // 🎯 FIX: Save với pathIndex đã được fix
         if (pathIndex != -1) {
             setPathSelected(pathIndex, pathSelected)
@@ -610,6 +651,9 @@ class CustomizeViewModel : ViewModel() {
         // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
         val pathIndex = getPathIndexForLayer(positionNavSelected.value)
 
+        // ✅ FIX: Xóa các layers có cùng positionCustom trước khi set layer mới
+        clearLayersWithSamePositionCustom(positionNavSelected.value)
+
         // 🎯 FIX: Chỉ save khi pathIndex hợp lệ
         if (pathIndex != -1) {
             setPathSelected(pathIndex, pathRandom)
@@ -627,13 +671,35 @@ class CustomizeViewModel : ViewModel() {
 //        countRandom++
 //        val isOutTurn = if (countRandom == 5) true else false
 
+        // ✅ FIX DUPLICATE POSITION CUSTOM:
+        // Step 1: Tạo map để track positionCustom đã được random
+        val layerList = _dataCustomize.value?.layerList ?: return false
+        val positionCustomMap = mutableMapOf<Int, Int>() // positionCustom -> positionNavigation đã chọn
+
         val colorCode =
             if (colorListMost.value.isNotEmpty()) _colorListMost.value[(0..<colorListMost.value.size).random()] else "#123456"
+
         for (i in 0 until _bottomNavigationList.value.size) {
             val minSize = if (i == 0) 1 else 2
             if (_itemNavList.value[i].size <= minSize) {
                 continue
             }
+
+            val currentLayer = layerList[i]
+            val currentPositionCustom = currentLayer.positionCustom
+
+            // ✅ Kiểm tra xem positionCustom này đã được random chưa
+            if (positionCustomMap.containsKey(currentPositionCustom)) {
+                // Đã có layer khác cùng positionCustom được random → Skip layer này
+                Log.d("CustomizeViewModel", "🧹 RANDOM ALL SKIP: positionNav=$i (positionCustom=$currentPositionCustom already assigned)")
+
+                // Xóa path của layer này để tránh hiển thị duplicate
+                _pathSelectedList.value[i] = ""
+                _keySelectedItemList.value[i] = ""
+                _isSelectedItemList.value[i] = false
+                continue
+            }
+
             val randomLayer = (minSize..<_itemNavList.value[i].size).random()
 
             var randomColor: Int = 0
@@ -661,6 +727,10 @@ class CustomizeViewModel : ViewModel() {
 
             // ✅ FIX: Mỗi layer dùng index riêng = i (vị trí trong loop)
             _pathSelectedList.value[i] = pathItem
+
+            // ✅ Đánh dấu positionCustom này đã được random
+            positionCustomMap[currentPositionCustom] = i
+            Log.d("CustomizeViewModel", "✅ RANDOM ALL SET: positionNav=$i (positionCustom=$currentPositionCustom)")
 
             setItemNavList(i, randomLayer)
             if (isMoreColors) {
