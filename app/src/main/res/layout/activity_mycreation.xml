@@ -36,39 +36,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-    <!-- ScrollView chứa RecyclerView -->
-<!--    <ScrollView-->
-<!--        android:id="@+id/scrollView"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:fillViewport="true"-->
-<!--        android:scrollbars="none"-->
-<!--        android:layout_marginTop="55dp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@id/btnBack">-->
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:id="@+id/constraintLayoutInScroll"-->
-
-<!--            android:layout_height="wrap_content">-->
-
-<!--            &lt;!&ndash; RecyclerView &ndash;&gt;-->
-<!--          -->
-
-<!--&lt;!&ndash;            <androidx.constraintlayout.widget.Guideline&ndash;&gt;-->
-<!--&lt;!&ndash;                android:id="@+id/gl0625"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_width="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:layout_height="wrap_content"&ndash;&gt;-->
-<!--&lt;!&ndash;                android:orientation="horizontal"&ndash;&gt;-->
-<!--&lt;!&ndash;                app:layout_constraintGuide_percent="0.71" />&ndash;&gt;-->
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-
-<!--    </ScrollView>-->
-
     <!-- No Item Layout -->
     <RelativeLayout
         android:id="@+id/layoutNoItem"
@@ -106,10 +73,13 @@
         android:id="@+id/rcv"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="22dp"
-        android:layout_marginEnd="22dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="9dp"
+        android:paddingBottom="9dp"
+        android:clipToPadding="false"
+        android:clipChildren="false"
         android:nestedScrollingEnabled="false"
-        android:layout_marginBottom="10dp"
         app:layout_constraintBottom_toTopOf="@id/btnDownload"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintEnd_toEndOf="parent"
@@ -118,6 +88,7 @@
         app:layout_constraintTop_toBottomOf="@id/btnBack"
         app:spanCount="2"
         tools:listitem="@layout/item_my_creation" />
+
     <!-- Hidden views for compatibility with existing code -->
     <ImageView
         android:id="@+id/btnExit"
@@ -198,9 +169,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="8dp"
         android:visibility="gone"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="24dp"
         app:layout_constraintTop_toBottomOf="@id/txtTitle">
 
         <TextView
@@ -225,6 +196,5 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

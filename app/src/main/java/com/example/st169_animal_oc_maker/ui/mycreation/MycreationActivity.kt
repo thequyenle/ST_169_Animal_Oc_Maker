@@ -44,14 +44,6 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
 
         loadSavedImages()
         initRcv()
-        // Click on ScrollView to exit selection mode
-        // Click on ScrollView to exit selection mode
-        // Click on ScrollView content to exit selection mode
-        binding.rcv.setOnClickListener {
-            if (isSelectionMode) {
-                exitSelectionMode()
-            }
-        }
     }
 
     override fun viewListener() {
@@ -77,8 +69,6 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                     }
                 }
             }
-
-
 
             // Delete button - delete selected items
             delete.onSingleClick {
@@ -145,42 +135,26 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             rcv.adapter = myCreationAdapter
             rcv.itemAnimator = null
 
-            // ✅ Thêm ItemDecoration ở đây
-            // ✅ ItemDecoration đã tối ưu
-            rcv.addItemDecoration(object : RecyclerView.ItemDecoration() {
-                override fun getItemOffsets(
-                    outRect: android.graphics.Rect,
-                    view: android.view.View,
-                    parent: RecyclerView,
-                    state: RecyclerView.State
-                ) {
-                    // Không cần thêm offset vì đã dùng padding trong XML
-                    // ItemDecoration này chỉ để giữ cấu trúc nếu cần mở rộng sau
-                }
-            })
-
             myCreationAdapter.submitList(myCreationList)
 
-            // Click on empty space in RecyclerView to exit selection mode
-            rcv.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
-                override fun onInterceptTouchEvent(rv: RecyclerView, e: android.view.MotionEvent): Boolean {
-                    if (isSelectionMode && e.action == android.view.MotionEvent.ACTION_UP) {
-                        val child = rv.findChildViewUnder(e.x, e.y)
-                        if (child == null) {
-                            // Clicked on empty space
-                            exitSelectionMode()
-                            return true
-                        }
+            // ✅ Handle clicking on empty space (between items) to exit selection mode
+            rcv.setOnTouchListener { v, event ->
+                if (event.action == android.view.MotionEvent.ACTION_UP) {
+                    val child = rcv.findChildViewUnder(event.x, event.y)
+                    if (child == null && isSelectionMode) {
+                        // Clicked on empty space (padding/spacing between items)
+                        exitSelectionMode()
+                        return@setOnTouchListener true
                     }
-                    return false
                 }
-            })
+                false // Let RecyclerView handle normal item clicks and scrolling
+            }
         }
     }
 
     private fun handleRcv() {
         myCreationAdapter.onItemClick = { path ->
-            // Navigate to ViewActivity with the image path
+            // ✅ Navigate to ViewActivity regardless of selection mode
             val intent = Intent(this, ViewActivity::class.java).apply {
                 putExtra(IntentKey.IMAGE_PATH_KEY, path)
             }
@@ -576,6 +550,4 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             }
         }
     }
-
-
 }

@@ -143,8 +143,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     }
 
                     // ✅ LOG: Character data khi load vào CustomizeActivity
+                    if (viewModel.positionSelected == 0) {
+                        logCharacter0Data(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    }
                     if (viewModel.positionSelected == 1) {
                         logMileyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
+                    }
+                    if (viewModel.positionSelected == 2) {
+                        logDammyCharacterData(list[viewModel.positionSelected], "CUSTOMIZE - dataObservable")
                     }
 
                     viewModel.setDataCustomize(list[viewModel.positionSelected])
@@ -222,11 +228,107 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
 
     /**
+     * ✅ LOG: Log chi tiết toàn bộ data của Character 0
+     */
+    private fun logCharacter0Data(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "📊 CHARACTER 0 DATA - $source")
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "Avatar: ${character.avatar}")
+        Log.d("CustomizeActivity", "Total layers: ${character.layerList.size}")
+        Log.d("CustomizeActivity", "")
+
+        character.layerList.forEachIndexed { layerIndex, layer ->
+            Log.d("CustomizeActivity", "--- Layer $layerIndex ---")
+            Log.d("CustomizeActivity", "  positionCustom: ${layer.positionCustom}")
+            Log.d("CustomizeActivity", "  positionNavigation: ${layer.positionNavigation}")
+            Log.d("CustomizeActivity", "  imageNavigation: ${layer.imageNavigation}")
+            Log.d("CustomizeActivity", "  Total items: ${layer.layer.size}")
+
+            // Log chi tiết layer 0 (body)
+            if (layerIndex == 0) {
+                Log.d("CustomizeActivity", "  ⚠️ LAYER 0 (BODY) DETAILS:")
+                layer.layer.forEachIndexed { itemIndex, item ->
+                    Log.d("CustomizeActivity", "    Item $itemIndex:")
+                    Log.d("CustomizeActivity", "      image: ${item.image}")
+                    Log.d("CustomizeActivity", "      isMoreColors: ${item.isMoreColors}")
+                    Log.d("CustomizeActivity", "      colors count: ${item.listColor.size}")
+                    if (item.isMoreColors && item.listColor.isNotEmpty()) {
+                        Log.d("CustomizeActivity", "      First 3 color paths:")
+                        item.listColor.take(3).forEachIndexed { colorIndex, color ->
+                            Log.d("CustomizeActivity", "        [$colorIndex] ${color.path}")
+                        }
+                        if (item.listColor.size > 3) {
+                            Log.d("CustomizeActivity", "        ... and ${item.listColor.size - 3} more colors")
+                        }
+                    }
+                }
+            } else {
+                // Log tóm tắt các layer khác
+                if (layer.layer.isNotEmpty()) {
+                    Log.d("CustomizeActivity", "  Sample item 0: ${layer.layer[0].image}")
+                    Log.d("CustomizeActivity", "  Has colors: ${layer.layer[0].isMoreColors}")
+                }
+            }
+            Log.d("CustomizeActivity", "")
+        }
+        Log.d("CustomizeActivity", "========================================")
+    }
+
+    /**
      * ✅ LOG: Log chi tiết toàn bộ data của Miley character
      */
     private fun logMileyCharacterData(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
         Log.d("CustomizeActivity", "========================================")
         Log.d("CustomizeActivity", "📊 MILEY CHARACTER DATA - $source")
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "Avatar: ${character.avatar}")
+        Log.d("CustomizeActivity", "Total layers: ${character.layerList.size}")
+        Log.d("CustomizeActivity", "")
+
+        character.layerList.forEachIndexed { layerIndex, layer ->
+            Log.d("CustomizeActivity", "--- Layer $layerIndex ---")
+            Log.d("CustomizeActivity", "  positionCustom: ${layer.positionCustom}")
+            Log.d("CustomizeActivity", "  positionNavigation: ${layer.positionNavigation}")
+            Log.d("CustomizeActivity", "  imageNavigation: ${layer.imageNavigation}")
+            Log.d("CustomizeActivity", "  Total items: ${layer.layer.size}")
+
+            // Log chi tiết layer 0 (body)
+            if (layerIndex == 0) {
+                Log.d("CustomizeActivity", "  ⚠️ LAYER 0 (BODY) DETAILS:")
+                layer.layer.forEachIndexed { itemIndex, item ->
+                    Log.d("CustomizeActivity", "    Item $itemIndex:")
+                    Log.d("CustomizeActivity", "      image: ${item.image}")
+                    Log.d("CustomizeActivity", "      isMoreColors: ${item.isMoreColors}")
+                    Log.d("CustomizeActivity", "      colors count: ${item.listColor.size}")
+                    if (item.isMoreColors && item.listColor.isNotEmpty()) {
+                        Log.d("CustomizeActivity", "      First 3 color paths:")
+                        item.listColor.take(3).forEachIndexed { colorIndex, color ->
+                            Log.d("CustomizeActivity", "        [$colorIndex] ${color.path}")
+                        }
+                        if (item.listColor.size > 3) {
+                            Log.d("CustomizeActivity", "        ... and ${item.listColor.size - 3} more colors")
+                        }
+                    }
+                }
+            } else {
+                // Log tóm tắt các layer khác
+                if (layer.layer.isNotEmpty()) {
+                    Log.d("CustomizeActivity", "  Sample item 0: ${layer.layer[0].image}")
+                    Log.d("CustomizeActivity", "  Has colors: ${layer.layer[0].isMoreColors}")
+                }
+            }
+            Log.d("CustomizeActivity", "")
+        }
+        Log.d("CustomizeActivity", "========================================")
+    }
+
+    /**
+     * ✅ LOG: Log chi tiết toàn bộ data của Dammy character
+     */
+    private fun logDammyCharacterData(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+        Log.d("CustomizeActivity", "========================================")
+        Log.d("CustomizeActivity", "📊 DAMMY CHARACTER DATA - $source")
         Log.d("CustomizeActivity", "========================================")
         Log.d("CustomizeActivity", "Avatar: ${character.avatar}")
         Log.d("CustomizeActivity", "Total layers: ${character.layerList.size}")
@@ -424,9 +526,33 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             var pathImageDefault = ""
 
             // ✅ LOG: Log suggestion preset nếu có
+            if (viewModel.positionSelected == 0 && viewModel.hasSuggestionPreset()) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "📊 CHARACTER 0 - SUGGESTION PRESET DATA")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+                Log.d("CustomizeActivity", "========================================")
+            }
             if (viewModel.positionSelected == 1 && viewModel.hasSuggestionPreset()) {
                 Log.d("CustomizeActivity", "========================================")
                 Log.d("CustomizeActivity", "📊 MILEY - SUGGESTION PRESET DATA")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
+                Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
+                val suggestionStateJson = intent.getStringExtra(IntentKey.SUGGESTION_STATE)
+                val suggestionBackground = intent.getStringExtra(IntentKey.SUGGESTION_BACKGROUND)
+                Log.d("CustomizeActivity", "suggestionStateJson: $suggestionStateJson")
+                Log.d("CustomizeActivity", "suggestionBackground: $suggestionBackground")
+                Log.d("CustomizeActivity", "========================================")
+            }
+            if (viewModel.positionSelected == 2 && viewModel.hasSuggestionPreset()) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "📊 DAMMY - SUGGESTION PRESET DATA")
                 Log.d("CustomizeActivity", "========================================")
                 Log.d("CustomizeActivity", "isSuggestion: $isSuggestion")
                 Log.d("CustomizeActivity", "categoryPosition: $categoryPosition")
@@ -450,8 +576,20 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     viewModel.applySuggestionPreset()
 
                     // ✅ LOG: Log sau khi apply preset
+                    if (viewModel.positionSelected == 0) {
+                        Log.d("CustomizeActivity", "✅ CHARACTER 0 - After applySuggestionPreset()")
+                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    }
                     if (viewModel.positionSelected == 1) {
                         Log.d("CustomizeActivity", "✅ MILEY - After applySuggestionPreset()")
+                        Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
+                        Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                        Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+                    }
+                    if (viewModel.positionSelected == 2) {
+                        Log.d("CustomizeActivity", "✅ DAMMY - After applySuggestionPreset()")
                         Log.d("CustomizeActivity", "pathSelectedList: ${viewModel.pathSelectedList.value}")
                         Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
                         Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
@@ -635,9 +773,31 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     private fun handleFillLayer(item: ItemNavCustomModel, position: Int) {
         lifecycleScope.launch(Dispatchers.IO) {
             // ✅ LOG: Log khi click vào item
+            if (categoryPosition == 0) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "🖱️ CHARACTER 0 - handleFillLayer CLICKED")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "Item position: $position")
+                Log.d("CustomizeActivity", "Item path: ${item.path}")
+                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            }
             if (categoryPosition == 1) {
                 Log.d("CustomizeActivity", "========================================")
                 Log.d("CustomizeActivity", "🖱️ MILEY - handleFillLayer CLICKED")
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "Item position: $position")
+                Log.d("CustomizeActivity", "Item path: ${item.path}")
+                Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
+                Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+                Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+                Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
+            }
+            if (categoryPosition == 2) {
+                Log.d("CustomizeActivity", "========================================")
+                Log.d("CustomizeActivity", "🖱️ DAMMY - handleFillLayer CLICKED")
                 Log.d("CustomizeActivity", "========================================")
                 Log.d("CustomizeActivity", "Item position: $position")
                 Log.d("CustomizeActivity", "Item path: ${item.path}")
@@ -650,7 +810,15 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             val pathSelected = viewModel.setClickFillLayer(item, position)
 
             // ✅ LOG: Log path được chọn
+            if (categoryPosition == 0) {
+                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+                Log.d("CustomizeActivity", "========================================")
+            }
             if (categoryPosition == 1) {
+                Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
+                Log.d("CustomizeActivity", "========================================")
+            }
+            if (categoryPosition == 2) {
                 Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
                 Log.d("CustomizeActivity", "========================================")
             }
@@ -694,9 +862,27 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
      * Body dùng ImageView riêng, các layer khác dùng imageViewList
      */
     private fun renderAllLayers() {
+        if (categoryPosition == 0) {
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "🎨 CHARACTER 0 - RENDER ALL LAYERS")
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
+            }
+        }
         if (categoryPosition == 1) {
             Log.d("CustomizeActivity", "========================================")
             Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+            viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
+            }
+        }
+        if (categoryPosition == 2) {
+            Log.d("CustomizeActivity", "========================================")
+            Log.d("CustomizeActivity", "🎨 DAMMY - RENDER ALL LAYERS")
             Log.d("CustomizeActivity", "========================================")
             Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
             viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
@@ -712,7 +898,29 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             val pathIndex = index
             val path = viewModel.pathSelectedList.value.getOrNull(pathIndex)
 
+            if (categoryPosition == 0) {
+                Log.d("CustomizeActivity", "---")
+                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
+                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
+
+                if (index == 0) {
+                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
+                } else {
+                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
+                }
+            }
             if (categoryPosition == 1) {
+                Log.d("CustomizeActivity", "---")
+                Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
+                Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
+
+                if (index == 0) {
+                    Log.d("CustomizeActivity", "Render to BODY ImageView (dedicated)")
+                } else {
+                    Log.d("CustomizeActivity", "Render to ImageView[${layerListModel.positionCustom}]")
+                }
+            }
+            if (categoryPosition == 2) {
                 Log.d("CustomizeActivity", "---")
                 Log.d("CustomizeActivity", "Layer $index: positionNav=${layerListModel.positionNavigation}, positionCustom=${layerListModel.positionCustom}")
                 Log.d("CustomizeActivity", "pathIndex=$pathIndex, path=$path")
@@ -752,7 +960,13 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
         }
 
+        if (categoryPosition == 0) {
+            Log.d("CustomizeActivity", "========================================")
+        }
         if (categoryPosition == 1) {
+            Log.d("CustomizeActivity", "========================================")
+        }
+        if (categoryPosition == 2) {
             Log.d("CustomizeActivity", "========================================")
         }
     }
@@ -965,9 +1179,27 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
             withContext(Dispatchers.Main) {
                 // ✅ Load ảnh cho tất cả layers theo đúng thứ tự
+                if (viewModel.positionSelected == 0) {
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "🎨 CHARACTER 0 - RENDER ALL LAYERS")
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
+                    }
+                }
                 if (viewModel.positionSelected == 1) {
                     Log.d("CustomizeActivity", "========================================")
                     Log.d("CustomizeActivity", "🎨 MILEY - RENDER ALL LAYERS")
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
+                    viewModel.pathSelectedList.value.forEachIndexed { idx, p ->
+                        Log.d("CustomizeActivity", "pathSelectedList[$idx] = $p")
+                    }
+                }
+                if (viewModel.positionSelected == 2) {
+                    Log.d("CustomizeActivity", "========================================")
+                    Log.d("CustomizeActivity", "🎨 DAMMY - RENDER ALL LAYERS")
                     Log.d("CustomizeActivity", "========================================")
                     Log.d("CustomizeActivity", "pathSelectedList size: ${viewModel.pathSelectedList.value.size}")
                     viewModel.pathSelectedList.value.forEachIndexed { idx, p ->

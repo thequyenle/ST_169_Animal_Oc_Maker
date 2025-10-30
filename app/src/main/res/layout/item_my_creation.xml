@@ -4,14 +4,18 @@
     android:layout_height="wrap_content"
     android:paddingStart="7dp"
     android:paddingEnd="7dp"
-    android:paddingTop="7dp"
-    android:paddingBottom="7dp"
+    android:paddingTop="9dp"
+    android:paddingBottom="9dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         app:layout_constraintDimensionRatio="1:1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,19 +26,20 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_item_my_creation"
-            android:padding="2dp">
+            android:padding="2dp"
+            android:clipChildren="false"
+            android:clipToPadding="false">
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:cardCornerRadius="15dp"
-                app:cardElevation="3dp"
-                app:cardBackgroundColor="@android:color/transparent">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="#FFFFFF">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="#FFFFFF">
+                    android:layout_height="match_parent">
 
                     <ImageView
                         android:id="@+id/imvImage"

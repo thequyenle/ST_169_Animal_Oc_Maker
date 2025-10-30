@@ -961,9 +961,10 @@ class CustomizeViewModel : ViewModel() {
     }
 
     /**
-     * ✅ HELPER: Tự động detect data structure và trả về pathIndex phù hợp
-     * - Nếu data ĐÚNG (positionCustom unique) → Dùng positionCustom
-     * - Nếu data SAI (positionCustom trùng) → Dùng layerIndex
+     * ✅ HELPER: Trả về pathIndex dựa trên layerIndex
+     * Logic đúng (theo Miley): pathIndex = layerIndex (KHÔNG phải positionCustom)
+     * - pathSelectedList[layerIndex] = path của layer đó
+     * - Render vào ImageView[positionCustom]
      */
     fun getPathIndexForLayer(positionNavigation: Int): Int {
         val layerList = _dataCustomize.value?.layerList ?: return 0
@@ -993,18 +994,10 @@ class CustomizeViewModel : ViewModel() {
             return -1
         }
 
-        // Kiểm tra xem positionCustom có unique không
-        val positionCustomValues = layerList.map { it.positionCustom }
-        val hasUniquePositionCustom = positionCustomValues.size == positionCustomValues.distinct().size
-
-        return if (hasUniquePositionCustom) {
-            // Data ĐÚNG → Dùng positionCustom
-            val layer = layerList[layerIndex]
-            layer.positionCustom
-        } else {
-            // Data SAI → Dùng layerIndex (vị trí trong array)
-            layerIndex
-        }
+        // ✅ LUÔN dùng layerIndex (theo logic của Miley)
+        // Vì Miley có positionCustom trùng nhau (Layer 0 và Layer 2 đều có positionCustom=1)
+        // Nên pathIndex PHẢI = layerIndex để tránh conflict
+        return layerIndex
     }
 
 }
