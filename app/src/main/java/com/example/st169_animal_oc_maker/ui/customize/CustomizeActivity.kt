@@ -1,6 +1,7 @@
 package com.example.st169_animal_oc_maker.ui.customize
 
 import android.content.Intent
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.viewModels
@@ -732,6 +733,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 }
             }
 
+        }
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O_MR1) {
+            // Delay 300ms để UI kịp render trên Android 8
+            binding.root.postDelayed({
+                // Force refresh layout
+                binding.layoutCustomLayer.requestLayout()
+                binding.rcvLayer.requestLayout()
+                binding.rcvNavigation.requestLayout()
+                binding.rcvColor.requestLayout()
+
+                // Trigger re-render
+                binding.layoutCustomLayer.invalidate()
+
+                Log.d("CustomizeActivity", "✅ Android 8 workaround applied - force layout refresh")
+            }, 500)
         }
     }
     private fun checkStatusColor() {
