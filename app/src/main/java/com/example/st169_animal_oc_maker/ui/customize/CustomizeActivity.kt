@@ -154,7 +154,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     }
 
                     viewModel.setDataCustomize(list[viewModel.positionSelected])
-                    viewModel.setIsDataAPI(viewModel.positionSelected >= ValueKey.POSITION_API)
+                    // ✅ FIX: Character 0 = assets (false), Character 1 & 2 = API (true)
+                    viewModel.setIsDataAPI(categoryPosition == 1 || categoryPosition == 2)
                     initData()
                 }
             }
@@ -708,8 +709,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     // 1. Mở từ CHARACTER_INDEX = 1 (category Miley)
                     // 2. HOẶC mở từ suggestion
                     // 3. VÀ đang ở tab 0 (positionNavSelected == 0)
+                    // 4. KHÔNG áp dụng cho character 0 (để tránh lag trên Android 8)
                     if ((categoryPosition == 1 || (isSuggestion && viewModel.hasSuggestionPreset()))
-                        && viewModel.positionNavSelected.value == 0) {
+                        && viewModel.positionNavSelected.value == 0
+                        && categoryPosition != 0) {
                         // Delay ngắn để đảm bảo UI đã render xong
                         binding.rcvLayer.postDelayed({
                             val selectedItemPosition = viewModel.itemNavList.value[0].indexOfFirst { it.isSelected }
@@ -1256,7 +1259,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ WORKAROUND: Auto-click lại item đã focus ở tab 0 nếu:
                 // 1. Mở từ CHARACTER_INDEX = 1 (category)
                 // 2. HOẶC mở từ suggestion (Miley)
-                if ((categoryPosition == 1 || isSuggestion) && viewModel.positionNavSelected.value == 0) {
+                // 3. KHÔNG áp dụng cho character 0 (để tránh lag trên Android 8)
+                if ((categoryPosition == 1 || isSuggestion) && viewModel.positionNavSelected.value == 0 && categoryPosition != 0) {
                     // Delay ngắn để đảm bảo adapter đã update xong
                     binding.rcvLayer.postDelayed({
                         val selectedItemPosition = viewModel.itemNavList.value[0].indexOfFirst { it.isSelected }
