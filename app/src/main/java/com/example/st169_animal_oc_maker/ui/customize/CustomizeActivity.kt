@@ -823,26 +823,26 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             //     Log.d("CustomizeActivity", "Item position: $position")
             //     Log.d("CustomizeActivity", "Item path: ${item.path}")
             //     Log.d("CustomizeActivity", "Item isSelected: ${item.isSelected}")
-            //     Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
-            //     Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
-            //     Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
-            // }
+
+            Log.d("CustomizeActivity", "")
+            Log.d("CustomizeActivity", "👆 USER CLICKED ITEM")
+            Log.d("CustomizeActivity", "Item: ${item.path.substringAfterLast("/")}")
+            Log.d("CustomizeActivity", "Position in RCV: $position")
+            Log.d("CustomizeActivity", "Item colors count: ${item.listImageColor.size}")
+            Log.d("CustomizeActivity", "positionCustom: ${viewModel.positionCustom.value}")
+            Log.d("CustomizeActivity", "positionNavSelected: ${viewModel.positionNavSelected.value}")
 
             val pathSelected = viewModel.setClickFillLayer(item, position)
 
-            // ✅ LOG: Log path được chọn (disabled for performance)
-            // if (categoryPosition == 0) {
-            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-            //     Log.d("CustomizeActivity", "========================================")
-            // }
-            // if (categoryPosition == 1) {
-            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-            //     Log.d("CustomizeActivity", "========================================")
-            // }
-            // if (categoryPosition == 2) {
-            //     Log.d("CustomizeActivity", "✅ pathSelected: $pathSelected")
-            //     Log.d("CustomizeActivity", "========================================")
-            // }
+            Log.d("CustomizeActivity", "✅ pathSelected: ${pathSelected.substringAfterLast("/")}")
+            Log.d("CustomizeActivity", "pathSelectedList after click:")
+            viewModel.pathSelectedList.value.forEachIndexed { idx, path ->
+                if (path.isNotEmpty()) {
+                    Log.d("CustomizeActivity", "  [$idx] = ${path.substringAfterLast("/")}")
+                } else {
+                    Log.d("CustomizeActivity", "  [$idx] = EMPTY")
+                }
+            }
 
             withContext(Dispatchers.Main) {
                 // ✅ FIX: Render lại TẤT CẢ layers, không chỉ layer vừa click
@@ -883,20 +883,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
      * Body dùng ImageView riêng, các layer khác dùng imageViewList
      */
     private fun renderAllLayers() {
+        Log.d("CustomizeActivity", "═══════════════════════════════════════��")
+        Log.d("CustomizeActivity", "🎨 RENDER ALL LAYERS START")
+        Log.d("CustomizeActivity", "════════════════════════════════════════")
 
-
-        // LOG: Disabled for performance (removed all logging)
         viewModel.dataCustomize.value?.layerList?.forEachIndexed { index, layerListModel ->
-            // ✅ FIX: Mỗi layer dùng index riêng trong pathSelectedList
-            // Body (index=0) → pathSelectedList[0]
-            // Layer 1 → pathSelectedList[1]
-            // Layer 24 → pathSelectedList[24]
             val pathIndex = index
             val path = viewModel.pathSelectedList.value.getOrNull(pathIndex)
+
+            // 🔍 LOG: Chi tiết từng layer
+            Log.d("CustomizeActivity", "Layer[$index]: posNav=${layerListModel.positionNavigation}, posCus=${layerListModel.positionCustom}, path=${if(path.isNullOrEmpty()) "EMPTY" else path.substringAfterLast("/")}")
 
             if (index == 0) {
                 // ✅ FIX: Body layer → Dùng ImageView riêng
                 if (!path.isNullOrEmpty()) {
+                    Log.d("CustomizeActivity", "  → RENDER to BODY ImageView")
                     viewModel.bodyImageView.value?.let { bodyImageView ->
                         Glide.with(this@CustomizeActivity)
                             .load(path)
@@ -905,26 +906,33 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                             .into(bodyImageView)
                     }
                 } else {
+                    Log.d("CustomizeActivity", "  → CLEAR BODY ImageView")
                     // Clear body ImageView nếu rỗng
                     viewModel.bodyImageView.value?.let { bodyImageView ->
                         Glide.with(this@CustomizeActivity).clear(bodyImageView)
                     }
                 }
             } else {
-                // ✅ Các layer khác → Dùng imageViewList như cũ
+                // ✅ Các layer khác → Dùng imageViewList theo positionCustom
                 if (!path.isNullOrEmpty()) {
+                    Log.d("CustomizeActivity", "  → RENDER to ImageView[${layerListModel.positionCustom}]")
                     Glide.with(this@CustomizeActivity)
                         .load(path)
                         .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                         .skipMemoryCache(false)
                         .into(viewModel.imageViewList.value[layerListModel.positionCustom])
                 } else {
+                    Log.d("CustomizeActivity", "  → CLEAR ImageView[${layerListModel.positionCustom}]")
                     // Clear nếu path rỗng
                     Glide.with(this@CustomizeActivity)
                         .clear(viewModel.imageViewList.value[layerListModel.positionCustom])
                 }
             }
         }
+
+        Log.d("CustomizeActivity", "════════════════════════════════════════")
+        Log.d("CustomizeActivity", "🎨 RENDER ALL LAYERS END")
+        Log.d("CustomizeActivity", "════════════════════════════════════════")
     }
 
     private fun handleNoneLayer(position: Int) {
@@ -1126,8 +1134,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun handleRandomAllLayer() {
         lifecycleScope.launch(Dispatchers.IO) {
+            Log.d("CustomizeActivity", "")
+            Log.d("CustomizeActivity", "🎲 RANDOM ALL CLICKED")
+
             val timeStart = System.currentTimeMillis()
             val isOutTurn = viewModel.setClickRandomFullLayer()
+
+            Log.d("CustomizeActivity", "pathSelectedList after Random All:")
+            viewModel.pathSelectedList.value.forEachIndexed { idx, path ->
+                if (path.isNotEmpty()) {
+                    val layer = viewModel.dataCustomize.value?.layerList?.getOrNull(idx)
+                    Log.d("CustomizeActivity", "  [$idx] posNav=${layer?.positionNavigation}, posCus=${layer?.positionCustom}, path=${path.substringAfterLast("/")}")
+                } else {
+                    Log.d("CustomizeActivity", "  [$idx] = EMPTY")
+                }
+            }
 
             withContext(Dispatchers.Main) {
                 // ✅ Load ảnh cho tất cả layers theo đúng thứ tự (logging disabled for performance)
