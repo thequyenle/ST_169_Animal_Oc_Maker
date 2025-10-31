@@ -174,6 +174,15 @@ class DataViewModel : ViewModel() {
             )
             allDataAPI.add(dataApi)
         }
+
+        // ✅ FIX: Backend trả về character index bị đảo (1↔2), swap lại cho đúng
+        if (allDataAPI.size >= 2) {
+            val temp = allDataAPI[0]
+            allDataAPI[0] = allDataAPI[1]
+            allDataAPI[1] = temp
+            Log.d("nbhieu", "✅ Swapped character index 0 ↔ 1 to fix backend order")
+        }
+
         MediaHelper.writeListToFile(context, ValueKey.DATA_FILE_API_INTERNAL, allDataAPI)
         allDataAPI.forEach {
             Log.d("nbhieu", "avatar: ${it.avatar}")
