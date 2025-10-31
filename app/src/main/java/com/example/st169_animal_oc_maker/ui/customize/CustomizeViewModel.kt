@@ -135,10 +135,36 @@ class CustomizeViewModel : ViewModel() {
     private fun buildLayerIndexCache() {
         val layerList = _dataCustomize.value?.layerList ?: return
         val cache = mutableMapOf<Int, Int>()
+
         layerList.forEachIndexed { index, layer ->
-            cache[layer.positionNavigation] = index
+            // 🔧 HARDFIX: Character 1 & 2, Layer[21] có posNav=20 trong data
+            // → Bỏ qua duplicate warning và thêm vào cache với posNav=21
+            if ((positionSelected == 1 || positionSelected == 2) && index == 21 && layer.positionNavigation == 20) {
+                cache[21] = index  // Thêm vào cache với key=21
+                Log.d("CustomizeViewModel", "🔧 HARDFIX Character $positionSelected: Layer[21] mapped to posNav=21 (actual posNav=20, posCus=${layer.positionCustom})")
+                return@forEachIndexed
+            }
+
+            // ⚠️ Detect duplicate positionNavigation
+            if (cache.containsKey(layer.positionNavigation)) {
+                Log.e("CustomizeViewModel", "⚠️ DUPLICATE positionNavigation=${layer.positionNavigation}!")
+                Log.e("CustomizeViewModel", "   Layer[${cache[layer.positionNavigation]}]: posNav=${layer.positionNavigation}")
+                Log.e("CustomizeViewModel", "   Layer[$index]: posNav=${layer.positionNavigation}, posCus=${layer.positionCustom}")
+                Log.e("CustomizeViewModel", "   → Using FIRST occurrence (Layer[${cache[layer.positionNavigation]}])")
+                // ✅ KHÔNG ghi đè - giữ layer đầu tiên
+            } else {
+                cache[layer.positionNavigation] = index
+            }
         }
+
         _layerIndexCache.value = cache
+
+        // 🔍 LOG: Full cache for debugging
+        Log.d("CustomizeViewModel", "📋 Layer Index Cache built: ${cache.size} entries (Character $positionSelected)")
+        cache.entries.sortedBy { it.key }.forEach { (posNav, layerIndex) ->
+            val layer = layerList[layerIndex]
+            Log.d("CustomizeViewModel", "   posNav=$posNav → Layer[$layerIndex] (posCus=${layer.positionCustom})")
+        }
     }
 
     fun setIsDataAPI(isAPI: Boolean) {
@@ -596,6 +622,13 @@ class CustomizeViewModel : ViewModel() {
 
         val pathIndex = getPathIndexForLayer(positionNavSelected.value)
 
+        // 🔍 LOG CHI TIẾT: Debug pathIndex calculation
+        Log.d("CustomizeViewModel", "📍 setClickFillLayer:")
+        Log.d("CustomizeViewModel", "   positionSelected: $positionSelected")
+        Log.d("CustomizeViewModel", "   positionNavSelected: ${positionNavSelected.value}")
+        Log.d("CustomizeViewModel", "   pathIndex returned: $pathIndex")
+        Log.d("CustomizeViewModel", "   pathSelected: ${pathSelected.substringAfterLast("/")}")
+
         if (positionSelected == 1) {
             Log.d("CustomizeViewModel", "💾 DAMMY SAVE: nav=${positionNavSelected.value}→pathIndex=$pathIndex")
         }
@@ -606,11 +639,12 @@ class CustomizeViewModel : ViewModel() {
         // 🎯 FIX: Save với pathIndex đã được fix
         if (pathIndex != -1) {
             setPathSelected(pathIndex, pathSelected)
+            Log.d("CustomizeViewModel", "✅ SAVED: pathSelectedList[$pathIndex] = ${pathSelected.substringAfterLast("/")}")
             if (positionSelected == 1) {
                 Log.d("CustomizeViewModel", "✅ DAMMY SAVED: pathIndex=$pathIndex")
             }
         } else {
-            Log.e("CustomizeViewModel", "❌ DAMMY: Cannot save - positionNav=${positionNavSelected.value} not found")
+            Log.e("CustomizeViewModel", "❌ Cannot save - positionNav=${positionNavSelected.value} not found")
         }
 
         setIsSelectedItem(positionNavSelected.value)
@@ -1051,15 +1085,35 @@ class CustomizeViewModel : ViewModel() {
      * - Render vào ImageView[positionCustom]
      */
     fun getPathIndexForLayer(positionNavigation: Int): Int {
+        // 🔍 LOG: Entry point
+        Log.d("CustomizeViewModel", "🔍 getPathIndexForLayer($positionNavigation)")
+        Log.d("CustomizeViewModel", "   positionSelected: $positionSelected")
+
         // ✅ PERFORMANCE: Use cached mapping instead of linear search
         val cache = _layerIndexCache.value
         val layerList = _dataCustomize.value?.layerList ?: return 0
 
+        // 🎯 FIX CỨNG: Đối với Character 1 & 2 (Miley & Dammy), Layer[21] có posNav=20 trong data
+        // → Fix cứng: khi request posNav=21, trả về Layer[21]
+        if ((positionSelected == 1 || positionSelected == 2) && positionNavigation == 21) {
+            Log.d("CustomizeViewModel", "   ✅ HARDFIX triggered for Character $positionSelected, posNav=21")
+            // Tìm Layer[21] (index 21 trong layerList)
+            if (layerList.size > 21) {
+                Log.d("CustomizeViewModel", "🔧 HARDFIX Character $positionSelected: posNav=21 → Layer[21] (actual posNav=${layerList[21].positionNavigation}, posCus=${layerList[21].positionCustom})")
+                Log.d("CustomizeViewModel", "   → Returning: 21")
+                return 21  // Trả về layerIndex = 21
+            } else {
+                Log.e("CustomizeViewModel", "❌ HARDFIX failed: Layer[21] not found in layerList")
+                return -1
+            }
+        } else {
+            Log.d("CustomizeViewModel", "   ⏩ HARDFIX skipped (positionSelected=$positionSelected, posNav=$positionNavigation)")
+        }
+
         // 🎯 FIX: Map positionNav bị lỗi sang positionNav đúng
         val actualPositionNav = when (positionNavigation) {
             21 -> {
-                // positionNav=21 bị thiếu, nhưng có layer với positionCustom=22
-                // Tìm layer có positionCustom=22 và dùng layerIndex của nó
+                // Fallback: nếu không phải character 1, tìm layer có positionCustom=22
                 val layer22 = layerList.find { it.positionCustom == 22 }
                 if (layer22 != null) {
                     val layer22Index = layerList.indexOf(layer22)

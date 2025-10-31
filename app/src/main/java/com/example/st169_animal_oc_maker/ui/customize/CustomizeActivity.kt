@@ -1036,7 +1036,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     // Vẫn update UI để user thấy None được chọn
                     viewModel.setItemNavList(viewModel.positionNavSelected.value, position)
                     customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                    setColorRecyclerViewEnabled(false)
+                    // ✅ FIX: Vẫn enable color picker để user có thể scroll và select
                 }
                 return@launch
             } else {
@@ -1051,8 +1051,8 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ FIX: Render lại tất cả layers thay vì chỉ clear 1 ImageView
                 renderAllLayers()
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                // Disable rcvColor khi click btnNone
-                setColorRecyclerViewEnabled(false)
+                // ✅ FIX: Vẫn enable color picker để user có thể scroll và select màu
+                // Màu sẽ được apply khi user click vào màu (sẽ tự động chuyển từ None sang item có màu)
             }
         }
     }
@@ -1077,14 +1077,28 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
 
     private fun handleChangeColorLayer(position: Int) {
-        // Chỉ cho phép thay đổi màu nếu rcvColor đang enabled
-        if (!isColorEnabled) return
-
         lifecycleScope.launch(Dispatchers.IO) {
+            // ✅ FIX: Kiểm tra nếu đang ở trạng thái None
+            val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                .firstOrNull { it.isSelected }
+
+            if (currentSelectedItem?.path == AssetsKey.NONE_LAYER) {
+                // ✅ CHỈ update UI để hiển thị màu được chọn, KHÔNG apply màu lên character
+                viewModel.setColorItemNav(viewModel.positionNavSelected.value, position)
+                withContext(Dispatchers.Main) {
+                    // Chỉ cập nhật color adapter để highlight màu được chọn
+                    colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                    Log.d("CustomizeActivity", "🎨 Color selected in None mode (position=$position) - No change applied")
+                }
+                return@launch
+            }
+
+            // ✅ Nếu KHÔNG phải None, apply màu bình thường
             val pathColor = viewModel.setClickChangeColor(position)
             withContext(Dispatchers.Main) {
                 // ✅ FIX: Render lại tất cả layers
                 renderAllLayers()
+                customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
                 colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
             }
         }
@@ -1092,8 +1106,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun setColorRecyclerViewEnabled(enabled: Boolean) {
         isColorEnabled = enabled
-        binding.rcvColor.alpha = if (enabled) 1.0f else 1.0f
-        colorLayerAdapter.isEnabled = enabled
+        // ✅ FIX: Luôn giữ alpha = 1.0f và cho phép tương tác với color picker
+        binding.rcvColor.alpha = 1.0f
+        // ✅ FIX: Luôn enable adapter để cho phép scroll và select
+        colorLayerAdapter.isEnabled = true
 
         // ✅ DEBUG: Log chi tiết về rcvColor
         dLog("🎨 setColorRecyclerViewEnabled: enabled=$enabled")

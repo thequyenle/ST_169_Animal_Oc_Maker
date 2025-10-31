@@ -60,11 +60,9 @@ class ColorLayerAdapter(val context: Context) :
             }
             layoutFocus.setImageResource(focusBackground)
 
-            // Chỉ cho phép click nếu isEnabled = true
+            // ✅ FIX: Luôn cho phép click để select màu (kể cả khi None được chọn)
             root.onSingleClick {
-                if (isEnabled) {
-                    onItemClick.invoke(position)
-                }
+                onItemClick.invoke(position)
             }
         }
     }

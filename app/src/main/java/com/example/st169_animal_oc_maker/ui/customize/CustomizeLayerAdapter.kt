@@ -20,7 +20,6 @@ class CustomizeLayerAdapter(val context: Context) :
     var onNoneClick: ((Int) -> Unit) = {}
     var onRandomClick: (() -> Unit) = {}
 
-    // ✅ PERFORMANCE: Cache ShimmerDrawable to avoid creating new instance on every bind
     private val shimmerDrawable: ShimmerDrawable by lazy {
         ShimmerDrawable().apply {
             setShimmer(DataLocal.shimmer)
