@@ -898,13 +898,55 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ FIX: Body layer → Dùng ImageView riêng
                 if (!path.isNullOrEmpty()) {
                     Log.d("CustomizeActivity", "  → RENDER to BODY ImageView")
-                    viewModel.bodyImageView.value?.let { bodyImageView ->
+
+                    // 🔍 DEBUG: Chi tiết body layer
+                    val bodyImageView = viewModel.bodyImageView.value
+                    Log.d("CustomizeActivity", "     ├─ Path: $path")
+                    Log.d("CustomizeActivity", "     ├─ BodyImageView: $bodyImageView")
+                    Log.d("CustomizeActivity", "     ├─ BodyImageView ID: ${bodyImageView?.id}")
+                    Log.d("CustomizeActivity", "     ├─ BodyImageView Visibility: ${bodyImageView?.visibility}")
+                    Log.d("CustomizeActivity", "     ├─ BodyImageView Alpha: ${bodyImageView?.alpha}")
+                    Log.d("CustomizeActivity", "     ├─ BodyImageView Size: ${bodyImageView?.width}x${bodyImageView?.height}")
+
+                    // Kiểm tra file tồn tại trong assets
+                    val fileExists = try {
+                        assets.open(path).use { true }
+                    } catch (e: Exception) {
+                        Log.e("CustomizeActivity", "     └─ ✗ File NOT found in assets: ${e.message}")
+                        false
+                    }
+                    Log.d("CustomizeActivity", "     ├─ File exists in assets: $fileExists")
+
+                    bodyImageView?.let { imgView ->
                         Glide.with(this@CustomizeActivity)
                             .load(path)
                             .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                             .skipMemoryCache(false)
-                            .into(bodyImageView)
-                    }
+                            .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                override fun onLoadFailed(
+                                    e: com.bumptech.glide.load.engine.GlideException?,
+                                    model: Any?,
+                                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.e("CustomizeActivity", "     └─ ✗ BODY GLIDE LOAD FAILED: ${e?.message}")
+                                    e?.logRootCauses("CustomizeActivity")
+                                    return false
+                                }
+
+                                override fun onResourceReady(
+                                    resource: android.graphics.drawable.Drawable,
+                                    model: Any,
+                                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                    dataSource: com.bumptech.glide.load.DataSource,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.d("CustomizeActivity", "     └─ ✓ BODY GLIDE SUCCESS: ${resource.intrinsicWidth}x${resource.intrinsicHeight}")
+                                    return false
+                                }
+                            })
+                            .into(imgView)
+                    } ?: Log.e("CustomizeActivity", "     └─ ✗ BodyImageView is NULL")
                 } else {
                     Log.d("CustomizeActivity", "  → CLEAR BODY ImageView")
                     // Clear body ImageView nếu rỗng
@@ -916,11 +958,58 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ Các layer khác → Dùng imageViewList theo positionCustom
                 if (!path.isNullOrEmpty()) {
                     Log.d("CustomizeActivity", "  → RENDER to ImageView[${layerListModel.positionCustom}]")
-                    Glide.with(this@CustomizeActivity)
-                        .load(path)
-                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
-                        .skipMemoryCache(false)
-                        .into(viewModel.imageViewList.value[layerListModel.positionCustom])
+
+                    // 🔍 DEBUG: Chi tiết load ảnh
+                    val imageView = viewModel.imageViewList.value.getOrNull(layerListModel.positionCustom)
+                    Log.d("CustomizeActivity", "     ├─ Path: $path")
+                    Log.d("CustomizeActivity", "     ├─ ImageView: $imageView")
+                    Log.d("CustomizeActivity", "     ├─ ImageView ID: ${imageView?.id}")
+                    Log.d("CustomizeActivity", "     ├─ ImageView Visibility: ${imageView?.visibility}")
+                    Log.d("CustomizeActivity", "     ├─ ImageView Alpha: ${imageView?.alpha}")
+                    Log.d("CustomizeActivity", "     ├─ ImageView Size: ${imageView?.width}x${imageView?.height}")
+                    Log.d("CustomizeActivity", "     ├─ ImageView Parent: ${imageView?.parent}")
+
+                    // Kiểm tra file tồn tại trong assets
+                    val fileExists = try {
+                        assets.open(path).use { true }
+                    } catch (e: Exception) {
+                        Log.e("CustomizeActivity", "     └─ ✗ File NOT found in assets: ${e.message}")
+                        false
+                    }
+                    Log.d("CustomizeActivity", "     ├─ File exists in assets: $fileExists")
+
+                    if (imageView != null) {
+                        Glide.with(this@CustomizeActivity)
+                            .load(path)
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                            .skipMemoryCache(false)
+                            .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
+                                override fun onLoadFailed(
+                                    e: com.bumptech.glide.load.engine.GlideException?,
+                                    model: Any?,
+                                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.e("CustomizeActivity", "     └─ ✗ GLIDE LOAD FAILED: ${e?.message}")
+                                    e?.logRootCauses("CustomizeActivity")
+                                    return false
+                                }
+
+                                override fun onResourceReady(
+                                    resource: android.graphics.drawable.Drawable,
+                                    model: Any,
+                                    target: com.bumptech.glide.request.target.Target<android.graphics.drawable.Drawable>,
+                                    dataSource: com.bumptech.glide.load.DataSource,
+                                    isFirstResource: Boolean
+                                ): Boolean {
+                                    Log.d("CustomizeActivity", "     └─ ✓ GLIDE SUCCESS: ${resource.intrinsicWidth}x${resource.intrinsicHeight}")
+                                    return false
+                                }
+                            })
+                            .into(imageView)
+                    } else {
+                        Log.e("CustomizeActivity", "     └─ ✗ ImageView is NULL at position ${layerListModel.positionCustom}")
+                    }
                 } else {
                     Log.d("CustomizeActivity", "  → CLEAR ImageView[${layerListModel.positionCustom}]")
                     // Clear nếu path rỗng
