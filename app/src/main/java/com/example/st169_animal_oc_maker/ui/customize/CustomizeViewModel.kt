@@ -110,6 +110,10 @@ class CustomizeViewModel : ViewModel() {
     private val _bodyImageView = MutableStateFlow<ImageView?>(null)
     val bodyImageView = _bodyImageView.asStateFlow()
 
+    // 🔧 HARDFIX: ImageView riêng cho Layer[24] của Character 1 (Miley) (render trước Body)
+    private val _layer24ImageView = MutableStateFlow<ImageView?>(null)
+    val layer24ImageView = _layer24ImageView.asStateFlow()
+
     private val _colorListMost = MutableStateFlow(arrayListOf<String>())
     val colorListMost = _colorListMost.asStateFlow()
 
@@ -181,6 +185,11 @@ class CustomizeViewModel : ViewModel() {
 
     fun setPositionColorItemList(positionList: ArrayList<Int>) {
         _positionColorItemList.value = positionList
+    }
+
+    fun setPositionColorForLayer(layerPosition: Int, colorPosition: Int) {
+        _positionColorItemList.value[layerPosition] = colorPosition
+        Log.d("CustomizeViewModel", "🎨 setPositionColorForLayer: layer=$layerPosition, color=$colorPosition")
     }
 
     fun setIsSelectedItemList(selectedList: ArrayList<Boolean>) {
@@ -649,6 +658,33 @@ class CustomizeViewModel : ViewModel() {
 
         setIsSelectedItem(positionNavSelected.value)
         setItemNavList(_positionNavSelected.value, position)
+
+        // ✅ FIX: Rebuild colorItemNavList từ item mới để giữ màu đã chọn
+        if (item.listImageColor.isNotEmpty()) {
+            val currentColorIndex = positionColorItemList.value[positionNavSelected.value]
+            val safeColorIndex = currentColorIndex.coerceIn(0, item.listImageColor.size - 1)
+
+            // ✅ REBUILD colorList từ item MỚI
+            val newColorList = ArrayList<ItemColorModel>()
+            item.listImageColor.forEachIndexed { index, colorItem ->
+                newColorList.add(ItemColorModel(
+                    color = colorItem.color,
+                    isSelected = (index == safeColorIndex)
+                ))
+            }
+            _colorItemNavList.value[positionNavSelected.value] = newColorList
+
+            // ✅ Cập nhật positionColorItemList
+            if (currentColorIndex != safeColorIndex) {
+                _positionColorItemList.value[positionNavSelected.value] = safeColorIndex
+            }
+
+            Log.d("CustomizeViewModel", "🎨 Rebuilt colorItemNavList: ${newColorList.size} colors, selected=$safeColorIndex")
+        } else {
+            // Item không có màu → clear colorItemNavList
+            _colorItemNavList.value[positionNavSelected.value] = arrayListOf()
+        }
+
         return pathSelected
     }
 
@@ -696,9 +732,31 @@ class CustomizeViewModel : ViewModel() {
         }
 
         setItemNavList(_positionNavSelected.value, randomLayer)
+
+        // ✅ FIX: Rebuild colorItemNavList từ item được random (giống logic setClickFillLayer)
         if (isMoreColors) {
-            setColorItemNav(positionNavSelected.value, randomColor!!)
+            val randomItem = itemNavList.value[positionNavSelected.value][randomLayer]
+            if (randomItem.listImageColor.isNotEmpty()) {
+                val safeColorIndex = randomColor!!.coerceIn(0, randomItem.listImageColor.size - 1)
+
+                // Rebuild colorList từ item MỚI
+                val newColorList = ArrayList<ItemColorModel>()
+                randomItem.listImageColor.forEachIndexed { index, colorItem ->
+                    newColorList.add(ItemColorModel(
+                        color = colorItem.color,
+                        isSelected = (index == safeColorIndex)
+                    ))
+                }
+                _colorItemNavList.value[positionNavSelected.value] = newColorList
+
+                if (randomColor != safeColorIndex) {
+                    _positionColorItemList.value[positionNavSelected.value] = safeColorIndex
+                }
+
+                Log.d("CustomizeViewModel", "🎲 RANDOM: Rebuilt colorItemNavList: ${newColorList.size} colors, selected=$safeColorIndex")
+            }
         }
+
         return pathRandom to isMoreColors
     }
     suspend fun setClickRandomFullLayer(): Boolean {
@@ -767,8 +825,29 @@ class CustomizeViewModel : ViewModel() {
             Log.d("CustomizeViewModel", "✅ RANDOM ALL SET: positionNav=$i (positionCustom=$currentPositionCustom)")
 
             setItemNavList(i, randomLayer)
+
+            // ✅ FIX: Rebuild colorItemNavList từ item được random (giống logic setClickFillLayer)
             if (isMoreColors) {
-                setColorItemNav(i, randomColor)
+                val randomItem = _itemNavList.value[i][randomLayer]
+                if (randomItem.listImageColor.isNotEmpty()) {
+                    val safeColorIndex = randomColor.coerceIn(0, randomItem.listImageColor.size - 1)
+
+                    // Rebuild colorList từ item MỚI
+                    val newColorList = ArrayList<ItemColorModel>()
+                    randomItem.listImageColor.forEachIndexed { index, colorItem ->
+                        newColorList.add(ItemColorModel(
+                            color = colorItem.color,
+                            isSelected = (index == safeColorIndex)
+                        ))
+                    }
+                    _colorItemNavList.value[i] = newColorList
+
+                    if (randomColor != safeColorIndex) {
+                        _positionColorItemList.value[i] = safeColorIndex
+                    }
+
+                    Log.d("CustomizeViewModel", "🎲 RANDOM ALL: Rebuilt colorItemNavList[$i]: ${newColorList.size} colors, selected=$safeColorIndex")
+                }
             }
         }
         return false
@@ -779,7 +858,24 @@ class CustomizeViewModel : ViewModel() {
         _bottomNavigationList.value.forEachIndexed { index, model ->
             val positionSelected = if (index == 0) 1 else 0
             setItemNavList(index, positionSelected)
-            setColorItemNav(index, 0)
+
+            // ✅ FIX: Rebuild colorItemNavList từ item default (giống logic setClickFillLayer)
+            val defaultItem = _itemNavList.value[index][positionSelected]
+            if (defaultItem.listImageColor.isNotEmpty()) {
+                val newColorList = ArrayList<ItemColorModel>()
+                defaultItem.listImageColor.forEachIndexed { colorIndex, colorItem ->
+                    newColorList.add(ItemColorModel(
+                        color = colorItem.color,
+                        isSelected = (colorIndex == 0)  // Reset về màu đầu tiên
+                    ))
+                }
+                _colorItemNavList.value[index] = newColorList
+                _positionColorItemList.value[index] = 0
+
+                Log.d("CustomizeViewModel", "🔄 RESET: Rebuilt colorItemNavList[$index]: ${newColorList.size} colors, selected=0")
+            } else {
+                _colorItemNavList.value[index] = arrayListOf()
+            }
         }
         val pathDefault = _dataCustomize.value!!.layerList.first().layer.first().image
 
@@ -873,13 +969,25 @@ class CustomizeViewModel : ViewModel() {
 // Extension other
 
     suspend fun setImageViewList(frameLayout: FrameLayout) {
-        // ✅ FIX: Tạo ImageView riêng cho Body layer (index 0, đặt đầu tiên)
+        // 🔧 HARDFIX Character 1: Tạo ImageView riêng cho Layer[24] (đặt đầu tiên - dưới cùng)
+        if (positionSelected == 1) {
+            val layer24ImageView = ImageView(frameLayout.context).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
+                )
+            }
+            frameLayout.addView(layer24ImageView, 0)  // Thêm vào index 0 (dưới cùng, z-index thấp nhất)
+            _layer24ImageView.value = layer24ImageView
+            Log.d("CustomizeViewModel", "🔧 HARDFIX Miley: Created Layer24ImageView at index 0")
+        }
+
+        // ✅ FIX: Tạo ImageView riêng cho Body layer (đặt sau Layer24)
         val bodyImageView = ImageView(frameLayout.context).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT
             )
         }
-        frameLayout.addView(bodyImageView, 0)  // Thêm vào index 0 (dưới cùng)
+        frameLayout.addView(bodyImageView)  // Thêm sau Layer24 (z-index cao hơn Layer24)
         _bodyImageView.value = bodyImageView
 
         // Tạo các ImageView cho các layer khác

@@ -90,14 +90,6 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
         binding.main.setBackgroundResource(backgroundDrawable)
 
-        // Set background cho layoutRcvColor dựa trên category position
-        val colorBarBackground = when(categoryPosition) {
-            0 -> R.drawable.bg_color_cus_1
-            1 -> R.drawable.bg_color_cus_2
-            2 -> R.drawable.bg_color_cus_3
-            else -> R.drawable.bg_color_cus_1
-        }
-        binding.layoutRcvColor.setBackgroundResource(colorBarBackground)
 
         // Set icon color tương ứng
         updateColorIcon()
@@ -649,7 +641,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                             viewModel.setPathSelected(0, pathImageDefault)
                             viewModel.setKeySelected(viewModel.positionNavSelected.value, pathImageDefault)
                         } else {
-                            // Các tab khác: giữ nguyên NONE (không set path)
+                            // Các tab khác: giữ nguyên NONE (không load ảnh)
                             pathImageDefault = ""
                         }
                     }
@@ -851,25 +843,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                 customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
 
-                // ✅ FIX: Update color adapter to match new item's colors
-                if (item.listImageColor.isNotEmpty()) {
-                    // Rebuild color list for the new item
-                    val safeColorIndex = viewModel.positionColorItemList.value[viewModel.positionNavSelected.value]
-                        .coerceIn(0, item.listImageColor.size - 1)
+                // ✅ FIX: Dùng colorItemNavList từ ViewModel (đã được cập nhật đúng màu trong setClickFillLayer)
+                colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
 
-                    val colorList = ArrayList<com.example.st169_animal_oc_maker.data.custom.ItemColorModel>()
-                    item.listImageColor.forEachIndexed { index, colorItem ->
-                        colorList.add(com.example.st169_animal_oc_maker.data.custom.ItemColorModel(
-                            color = colorItem.color,
-                            isSelected = (index == safeColorIndex)
-                        ))
+                // Scroll to selected color if needed
+                val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                    .indexOfFirst { it.isSelected }
+                if (selectedColorIndex >= 0) {
+                    binding.rcvColor.post {
+                        binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
                     }
-
-                    colorLayerAdapter.submitListWithLog(colorList)
-                    dLog("🎨 Updated color list for new item: ${colorList.size} colors, focused: $safeColorIndex")
-                } else {
-                    // No colors - clear color adapter
-                    colorLayerAdapter.submitListWithLog(emptyList())
                 }
 
                 // Enable lại rcvColor khi chọn item khác (không phải btnNone)
@@ -883,9 +866,31 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
      * Body dùng ImageView riêng, các layer khác dùng imageViewList
      */
     private fun renderAllLayers() {
-        Log.d("CustomizeActivity", "═══════════════════════════════════════��")
+        Log.d("CustomizeActivity", "════════════════════════════════════════")
         Log.d("CustomizeActivity", "🎨 RENDER ALL LAYERS START")
         Log.d("CustomizeActivity", "════════════════════════════════════════")
+
+        // 🔧 HARDFIX Character 1: Render Layer[24] vào Layer24ImageView riêng (z-index 0 - dưới cùng)
+        if (categoryPosition == 1) {
+            val layer24 = viewModel.dataCustomize.value?.layerList?.getOrNull(24)
+            if (layer24 != null && layer24.positionNavigation == 24) {
+                val path24 = viewModel.pathSelectedList.value.getOrNull(24)
+                val layer24ImageView = viewModel.layer24ImageView.value
+
+                if (!path24.isNullOrEmpty() && layer24ImageView != null) {
+                    Log.d("CustomizeActivity", "🔧 HARDFIX Miley: Render Layer[24] to Layer24ImageView (z-index 0)")
+                    Glide.with(this@CustomizeActivity)
+                        .load(path24)
+                        .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                        .skipMemoryCache(false)
+                        .into(layer24ImageView)
+                } else if (layer24ImageView != null) {
+                    // Clear Layer24ImageView nếu path rỗng
+                    Log.d("CustomizeActivity", "🔧 HARDFIX Miley: Clear Layer24ImageView")
+                    Glide.with(this@CustomizeActivity).clear(layer24ImageView)
+                }
+            }
+        }
 
         viewModel.dataCustomize.value?.layerList?.forEachIndexed { index, layerListModel ->
             val pathIndex = index
@@ -955,6 +960,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     }
                 }
             } else {
+                // 🔧 HARDFIX Character 1: Skip Layer[24] vì đã render riêng
+                if (categoryPosition == 1 && index == 24) {
+                    Log.d("CustomizeActivity", "  → SKIP Layer[24] (already rendered to Layer24ImageView)")
+                    return@forEachIndexed
+                }
+
                 // ✅ Các layer khác → Dùng imageViewList theo positionCustom
                 if (!path.isNullOrEmpty()) {
                     Log.d("CustomizeActivity", "  → RENDER to ImageView[${layerListModel.positionCustom}]")
@@ -1083,12 +1094,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 .firstOrNull { it.isSelected }
 
             if (currentSelectedItem?.path == AssetsKey.NONE_LAYER) {
-                // ✅ CHỈ update UI để hiển thị màu được chọn, KHÔNG apply màu lên character
-                viewModel.setColorItemNav(viewModel.positionNavSelected.value, position)
-                withContext(Dispatchers.Main) {
-                    // Chỉ cập nhật color adapter để highlight màu được chọn
-                    colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
-                    Log.d("CustomizeActivity", "🎨 Color selected in None mode (position=$position) - No change applied")
+                // ✅ CHỈ lưu positionColorItemList, KHÔNG update colorItemNavList
+                // Vì đang ở None, colorItemNavList có thể chứa màu của item cũ (không chính xác)
+                lifecycleScope.launch(Dispatchers.IO) {
+                    viewModel.setPositionColorForLayer(viewModel.positionNavSelected.value, position)
+                    withContext(Dispatchers.Main) {
+                        // Update UI để hiển thị màu được chọn
+                        viewModel.setColorItemNav(viewModel.positionNavSelected.value, position)
+                        colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+                        Log.d("CustomizeActivity", "🎨 Color selected in None mode (position=$position) - Will apply when item selected")
+                    }
                 }
                 return@launch
             }
@@ -1307,6 +1322,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 // ✅ WORKAROUND: Auto-click lại item đã focus ở tab 0 nếu:
                 // 1. Mở từ CHARACTER_INDEX = 1 (category)
                 // 2. HOẶC mở từ suggestion (Miley)
+                // 3. VÀ đang ở tab 0 (positionNavSelected == 0)
                 if ((categoryPosition == 1 || isSuggestion) && viewModel.positionNavSelected.value == 0) {
                     // Delay ngắn để đảm bảo adapter đã update xong
                     binding.rcvLayer.postDelayed({
