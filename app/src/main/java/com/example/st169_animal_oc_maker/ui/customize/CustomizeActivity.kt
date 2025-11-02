@@ -508,6 +508,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 // Update initData() trong CustomizeActivity.kt
 
     private fun initData(){
+        // ✅ PERFORMANCE: Track loading time
+        val startTime = System.currentTimeMillis()
+
         val handleExceptionCoroutine = CoroutineExceptionHandler { _, throwable ->
             eLog("initData: ${throwable.message}")
             CoroutineScope(Dispatchers.Main).launch {
@@ -734,6 +737,21 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                             }
                         }, 100) // 100ms delay để đảm bảo UI đã render
                     }
+
+                    // ✅ PERFORMANCE: Log loading time
+                    val loadTime = System.currentTimeMillis() - startTime
+                    Log.d("Performance", "════════════════════════════════════════")
+                    Log.d("Performance", "📊 CHARACTER $categoryPosition LOAD COMPLETE")
+                    Log.d("Performance", "⏱️  Total time: ${loadTime}ms")
+                    Log.d("Performance", "📱 Device: ${Build.MODEL} (Android ${Build.VERSION.SDK_INT})")
+                    Log.d("Performance", "💾 RAM: ${getRamInfo()}")
+                    Log.d("Performance", "════════════════════════════════════════")
+
+                    // Warning nếu quá chậm
+                    if (loadTime > 3000) {
+                        Log.w("Performance", "⚠️ SLOW LOADING DETECTED: ${loadTime}ms")
+                        Log.w("Performance", "   Consider testing on lower-end device")
+                    }
                 }
             }
 
@@ -746,6 +764,18 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 binding.rcvColor.requestLayout()
             }, 150)
         }
+    }
+
+    /**
+     * ✅ PERFORMANCE: Get device RAM info for logging
+     */
+    private fun getRamInfo(): String {
+        val memoryInfo = android.app.ActivityManager.MemoryInfo()
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as android.app.ActivityManager
+        activityManager.getMemoryInfo(memoryInfo)
+        val totalRamGB = memoryInfo.totalMem / (1024 * 1024 * 1024).toFloat()
+        val availRamGB = memoryInfo.availMem / (1024 * 1024 * 1024).toFloat()
+        return String.format("%.1fGB total, %.1fGB avail", totalRamGB, availRamGB)
     }
     private fun checkStatusColor() {
         val colorListSize = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].size
@@ -881,6 +911,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     Log.d("CustomizeActivity", "🔧 HARDFIX Miley: Render Layer[24] to Layer24ImageView (z-index 0)")
                     Glide.with(this@CustomizeActivity)
                         .load(path24)
+                        .override(512, 512)  // ✅ PERFORMANCE: Limit decode size
                         .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                         .skipMemoryCache(false)
                         .into(layer24ImageView)
@@ -925,6 +956,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     bodyImageView?.let { imgView ->
                         Glide.with(this@CustomizeActivity)
                             .load(path)
+                            .override(512, 512)  // ✅ PERFORMANCE: Limit decode size for low-end devices
                             .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                             .skipMemoryCache(false)
                             .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
@@ -992,6 +1024,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                     if (imageView != null) {
                         Glide.with(this@CustomizeActivity)
                             .load(path)
+                            .override(512, 512)  // ✅ PERFORMANCE: Limit decode size for low-end devices
                             .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
                             .skipMemoryCache(false)
                             .listener(object : com.bumptech.glide.request.RequestListener<android.graphics.drawable.Drawable> {
@@ -1344,5 +1377,47 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 }
             }
         }
+    }
+
+    /**
+     * ✅ PERFORMANCE: Handle low memory situations
+     * Clear Glide cache when system is running low on memory
+     */
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        when (level) {
+            android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW,
+            android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL -> {
+                Log.w("Performance", "⚠️ LOW MEMORY DETECTED (level=$level)")
+                Log.w("Performance", "   RAM: ${getRamInfo()}")
+                Log.w("Performance", "   Clearing Glide memory cache...")
+
+                // Clear Glide memory cache on UI thread
+                lifecycleScope.launch(Dispatchers.Main) {
+                    Glide.get(this@CustomizeActivity).clearMemory()
+                    Log.w("Performance", "   ✅ Glide memory cache cleared")
+                }
+
+                // Clear disk cache on background thread (optional, more aggressive)
+                if (level == android.content.ComponentCallbacks2.TRIM_MEMORY_RUNNING_CRITICAL) {
+                    lifecycleScope.launch(Dispatchers.IO) {
+                        Glide.get(this@CustomizeActivity).clearDiskCache()
+                        Log.w("Performance", "   ✅ Glide disk cache cleared (critical memory)")
+                    }
+                }
+            }
+            android.content.ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN -> {
+                // User navigated away from the app, clear memory cache
+                Log.d("Performance", "📱 UI Hidden - clearing Glide memory cache")
+                Glide.get(this@CustomizeActivity).clearMemory()
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clear any pending Glide requests to prevent memory leaks
+        Glide.get(this).clearMemory()
+        Log.d("Performance", "🧹 CustomizeActivity destroyed - Glide cache cleared")
     }
 }

@@ -12,13 +12,25 @@ import com.example.st169_animal_oc_maker.data.custom.LayerListModel
 import com.example.st169_animal_oc_maker.data.custom.LayerModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import java.io.FileOutputStream
 import java.util.ArrayList
 
 object AssetHelper {
+    // ✅ PERFORMANCE: Cache assets list to avoid repeated I/O
+    private val assetListCache = mutableMapOf<String, ArrayList<String>>()
+
     // Read sub folder
     fun getSubfoldersAsset(context: Context, path: String): ArrayList<String> {
+        // Check cache first
+        assetListCache[path]?.let {
+            Log.d("AssetHelper", "✅ Cache hit for: $path")
+            return it
+        }
+
         val allData = context.assets.list(path)
         if (allData == null || allData.isEmpty()) {
             Log.e("nbhieu", "❌ Error: Cannot read asset path: $path")
@@ -27,11 +39,23 @@ object AssetHelper {
         val sortedData =
             MediaHelper.sortAsset(allData)?.map { "${AssetsKey.ASSET_MANAGER}/$path/$it" }
                 ?.toCollection(ArrayList())
-        return sortedData ?: arrayListOf()
+
+        // Cache result
+        val result = sortedData ?: arrayListOf()
+        assetListCache[path] = result
+        Log.d("AssetHelper", "📦 Cached assets list for: $path (${result.size} items)")
+        return result
     }
 
     // Read sub folder
     fun getSubfoldersNotDomainAsset(context: Context, path: String): ArrayList<String> {
+        // Check cache first (with different key prefix)
+        val cacheKey = "nodomain_$path"
+        assetListCache[cacheKey]?.let {
+            Log.d("AssetHelper", "✅ Cache hit for: $cacheKey")
+            return it
+        }
+
         val allData = context.assets.list(path)
         if (allData == null || allData.isEmpty()) {
             Log.e("nbhieu", "❌ Error: Cannot read asset path: $path")
@@ -39,7 +63,12 @@ object AssetHelper {
         }
         val sortedData = MediaHelper.sortAsset(allData)?.map { "${AssetsKey.DATA}/$it" }
             ?.toCollection(ArrayList())
-        return sortedData ?: arrayListOf()
+
+        // Cache result
+        val result = sortedData ?: arrayListOf()
+        assetListCache[cacheKey] = result
+        Log.d("AssetHelper", "📦 Cached assets list for: $cacheKey (${result.size} items)")
+        return result
     }
 
     // Read file txt -> json -> T
@@ -102,22 +131,46 @@ object AssetHelper {
     // ---------------------------------------------------------------------------------------------
     // ---------------------------------------------------------------------------------------------
 
-    fun getDataFromAsset(context: Context): ArrayList<CustomizeModel> {
+    // ✅ PERFORMANCE: Cache helper function
+    private fun getCachedAssetList(assetManager: AssetManager, path: String, cacheKey: String): Array<String>? {
+        // Check cache first
+        val cached = assetListCache[cacheKey]
+        if (cached != null) {
+            Log.d("AssetHelper", "✅ Cache hit: $cacheKey")
+            return cached.map { it.removePrefix("${AssetsKey.ASSET_MANAGER}/") }.toTypedArray()
+        }
+
+        // Cache miss - load from assets
+        val result = assetManager.list(path)
+        if (result != null && result.isNotEmpty()) {
+            // Store in cache
+            val cacheValue = result.map { "${AssetsKey.ASSET_MANAGER}/$it" }.toCollection(ArrayList())
+            assetListCache[cacheKey] = cacheValue
+            Log.d("AssetHelper", "📦 Cached: $cacheKey (${result.size} items)")
+        }
+        return result
+    }
+
+    suspend fun getDataFromAsset(context: Context): ArrayList<CustomizeModel> = coroutineScope {
         val start = System.currentTimeMillis()
+        var cacheHits = 0
+        var cacheMisses = 0
+
         val customList = ArrayList<CustomizeModel>()
         val assetManager = context.assets
 
-        // "character_1, character_2,..."
-        val characterList = assetManager.list(AssetsKey.DATA)
+        // ✅ OPTIMIZATION 1: Cache character list
+        val characterList = getCachedAssetList(assetManager, AssetsKey.DATA, "characters")
         if (characterList == null || characterList.isEmpty()) {
             Log.e("nbhieu", "❌ Error: Cannot read asset data folder - characterList is null or empty!")
-            return arrayListOf()
+            return@coroutineScope arrayListOf()
         }
+        if (assetListCache.containsKey("characters")) cacheHits++ else cacheMisses++
 
         val sortedCharacter = MediaHelper.sortAsset(characterList)
         if (sortedCharacter.isNullOrEmpty()) {
             Log.e("nbhieu", "❌ Error: sortedCharacter is null or empty!")
-            return arrayListOf()
+            return@coroutineScope arrayListOf()
         }
 
         Log.d(
@@ -137,19 +190,22 @@ object AssetHelper {
         sortedCharacter.forEachIndexed { indexCharacter, character ->
             val layerListModelList = ArrayList<LayerListModel>()
             Log.d("nbhieu", "indexCharacter: $indexCharacter")
-            // "1.30, 2.4, 3.1, 4.22,..."
-            val layer = assetManager.list("${AssetsKey.DATA}/${character}")
+
+            // ✅ OPTIMIZATION 2: Cache layer list for each character
+            val cacheKey = "character_${character}_layers"
+            val layer = getCachedAssetList(assetManager, "${AssetsKey.DATA}/${character}", cacheKey)
             if (layer == null || layer.isEmpty()) {
                 Log.e("nbhieu", "❌ Error: Cannot read layers for character: $character")
-                return arrayListOf()
+                return@coroutineScope arrayListOf()
             }
+            if (assetListCache.containsKey(cacheKey)) cacheHits++ else cacheMisses++
 
             val sortedLayer =
                 MediaHelper.sortAsset(layer)?.toCollection(ArrayList()) ?: arrayListOf()
 
             if (sortedLayer.isEmpty()) {
                 Log.e("nbhieu", "❌ Error: sortedLayer is empty for character: $character")
-                return arrayListOf()
+                return@coroutineScope arrayListOf()
             }
 
             val avatar = "${AssetsKey.DATA_ASSET}${character}/${sortedLayer.last()}"
@@ -161,69 +217,22 @@ object AssetHelper {
                 "----------------------------------------------------------------------------------"
             )
 
-            for (i in 0 until sortedLayer.size) {
-                // Tách 1 và 30 (1.30)
-                val position = sortedLayer[i].split(AssetsKey.SPLIT_LAYER)
-                val positionCustom = position[0].toInt() - 1
-                val positionNavigation = position[1].toInt() - 1
-
-                // Lấy folder màu hoặc lấy ảnh nếu không có màu, lấy ảnh navigation
-                // data/character_1/1.30
-                val folderOrImageList =
-                    assetManager.list("${AssetsKey.DATA}/${character}/${sortedLayer[i]}")
-
-                if (folderOrImageList == null || folderOrImageList.isEmpty()) {
-                    Log.e("nbhieu", "❌ Error: Cannot read folder contents for ${character}/${sortedLayer[i]}")
-                    continue
+            // 🚀 PARALLEL LOADING: Load all layers in parallel using async
+            val layerLoadStart = System.currentTimeMillis()
+            val layerModels = sortedLayer.mapIndexed { i, layerName ->
+                async {
+                    loadSingleLayer(
+                        assetManager,
+                        character,
+                        layerName,
+                        i
+                    )
                 }
+            }.awaitAll().filterNotNull()
 
-                val folderOrImageSortedList =
-                    MediaHelper.sortAsset(folderOrImageList)?.toCollection(ArrayList())
-                        ?: arrayListOf()
-
-                if (folderOrImageSortedList.isEmpty()) {
-                    Log.e("nbhieu", "❌ Error: folderOrImageSortedList is empty for ${character}/${sortedLayer[i]}")
-                    continue
-                }
-
-                // ← THÊM LOG NÀY
-                Log.d("nbhieu", "==============================================")
-                Log.d("nbhieu", "Character: $character")
-                Log.d("nbhieu", "Layer folder: ${sortedLayer[i]}")
-                Log.d("nbhieu", "Items inside: ${folderOrImageSortedList.joinToString()}")
-                Log.d("nbhieu", "First item: ${folderOrImageSortedList.firstOrNull()}")
-
-                // ✅ Verify nav.png exists (should be last item after sorting)
-                val lastItem = folderOrImageSortedList.last()
-                if (lastItem != AssetsKey.NAVIGATION_IMAGE_PNG) {
-                    Log.w("nbhieu", "⚠️ Warning: Expected nav.png but found '$lastItem' in ${character}/${sortedLayer[i]}")
-                }
-
-                //Lấy navigation
-                val navigationImage =
-                    "${AssetsKey.DATA_ASSET}${character}/${sortedLayer[i]}/${lastItem}"
-                folderOrImageSortedList.removeAt(folderOrImageSortedList.size - 1)
-
-                // Check if list is empty after removing nav.png
-                if (folderOrImageSortedList.isEmpty()) {
-                    Log.e("nbhieu", "❌ Error: No files left after removing nav.png for ${character}/${sortedLayer[i]}")
-                    continue
-                }
-
-                // Nếu không có folder -> không có màu
-                val layer = if (AssetsKey.FIRST_IMAGE.any { it in folderOrImageSortedList[0] }) {
-                    Log.d("nbhieu", "→ Detected: NO COLOR")
-
-                    getDataNoColor(character, folderOrImageSortedList, sortedLayer[i])
-                } else {
-                    Log.d("nbhieu", "→ Detected: HAS COLOR")
-
-                    getDataColor(assetManager, character, folderOrImageSortedList, sortedLayer[i])
-                }
-                val layerListModel =
-                    LayerListModel(positionCustom, positionNavigation, navigationImage, layer)
-                layerListModelList.add(layerListModel)
-            }
+            layerListModelList.addAll(layerModels)
+            val layerLoadEnd = System.currentTimeMillis()
+            Log.d("nbhieu", "🚀 Loaded ${layerModels.size} layers in parallel: ${layerLoadEnd - layerLoadStart}ms")
             layerListModelList.sortBy { it.positionNavigation }
             customList.add(CustomizeModel(character, avatar, layerListModelList))
             Log.d(
@@ -244,8 +253,90 @@ object AssetHelper {
             Log.d("nbhieu", "✅ Successfully loaded ${customList.size} character(s) from assets")
         }
 
-        Log.d("nbhieu", "count time: ${System.currentTimeMillis() - start}")
-        return customList
+        val loadTime = System.currentTimeMillis() - start
+        Log.d("nbhieu", "count time: ${loadTime}ms")
+        Log.d("AssetHelper", "📊 CACHE STATS: Hits=$cacheHits, Misses=$cacheMisses, Hit Rate=${if (cacheHits + cacheMisses > 0) (cacheHits * 100 / (cacheHits + cacheMisses)) else 0}%")
+        return@coroutineScope customList
+    }
+
+    /**
+     * 🚀 Load a single layer (used for parallel loading)
+     */
+    private fun loadSingleLayer(
+        assetManager: AssetManager,
+        character: String,
+        layerName: String,
+        layerIndex: Int
+    ): LayerListModel? {
+        try {
+            // Tách 1 và 30 (1.30)
+            val position = layerName.split(AssetsKey.SPLIT_LAYER)
+            val positionCustom = position[0].toInt() - 1
+            val positionNavigation = position[1].toInt() - 1
+
+            // ✅ OPTIMIZATION 3: Cache layer contents
+            val layerCacheKey = "layer_${character}_${layerName}"
+            val folderOrImageList = synchronized(assetListCache) {
+                getCachedAssetList(
+                    assetManager,
+                    "${AssetsKey.DATA}/${character}/${layerName}",
+                    layerCacheKey
+                )
+            }
+
+            if (folderOrImageList == null || folderOrImageList.isEmpty()) {
+                Log.e("nbhieu", "❌ Error: Cannot read folder contents for ${character}/${layerName}")
+                return null
+            }
+
+            val folderOrImageSortedList =
+                MediaHelper.sortAsset(folderOrImageList)?.toCollection(ArrayList())
+                    ?: arrayListOf()
+
+            if (folderOrImageSortedList.isEmpty()) {
+                Log.e("nbhieu", "❌ Error: folderOrImageSortedList is empty for ${character}/${layerName}")
+                return null
+            }
+
+            Log.d("nbhieu", "==============================================")
+            Log.d("nbhieu", "Character: $character")
+            Log.d("nbhieu", "Layer folder: ${layerName}")
+            Log.d("nbhieu", "Items inside: ${folderOrImageSortedList.joinToString()}")
+            Log.d("nbhieu", "First item: ${folderOrImageSortedList.firstOrNull()}")
+
+            // ✅ Verify nav.png exists (should be last item after sorting)
+            val lastItem = folderOrImageSortedList.last()
+            if (lastItem != AssetsKey.NAVIGATION_IMAGE_PNG) {
+                Log.w("nbhieu", "⚠️ Warning: Expected nav.png but found '$lastItem' in ${character}/${layerName}")
+            }
+
+            //Lấy navigation
+            val navigationImage =
+                "${AssetsKey.DATA_ASSET}${character}/${layerName}/${lastItem}"
+            folderOrImageSortedList.removeAt(folderOrImageSortedList.size - 1)
+
+            // Check if list is empty after removing nav.png
+            if (folderOrImageSortedList.isEmpty()) {
+                Log.e("nbhieu", "❌ Error: No files left after removing nav.png for ${character}/${layerName}")
+                return null
+            }
+
+            // Nếu không có folder -> không có màu
+            val layer = if (AssetsKey.FIRST_IMAGE.any { it in folderOrImageSortedList[0] }) {
+                Log.d("nbhieu", "→ Detected: NO COLOR")
+                getDataNoColor(character, folderOrImageSortedList, layerName)
+            } else {
+                Log.d("nbhieu", "→ Detected: HAS COLOR")
+                synchronized(assetListCache) {
+                    getDataColor(assetManager, character, folderOrImageSortedList, layerName, 0, 0)
+                }
+            }
+
+            return LayerListModel(positionCustom, positionNavigation, navigationImage, layer)
+        } catch (e: Exception) {
+            Log.e("nbhieu", "❌ Error loading layer ${layerName}: ${e.message}")
+            return null
+        }
     }
 
     private fun getDataNoColor(
@@ -268,13 +359,22 @@ object AssetHelper {
     }
 
     private fun getDataColor(
-        assetManager: AssetManager, character: String, folderList: List<String>, folder: String
+        assetManager: AssetManager, character: String, folderList: List<String>, folder: String,
+        cacheHits: Int = 0, cacheMisses: Int = 0
     ): ArrayList<LayerModel> {
         try {
             val colorNames = folderList.map { "#$it" }
+
+            // ✅ OPTIMIZATION 4: Cache color folder contents
             val fileList = folderList.map { colorFolder ->
-                assetManager.list("${AssetsKey.DATA}/$character/$folder/$colorFolder")
-                    ?.let { MediaHelper.sortAsset(it) }
+                val colorCacheKey = "color_${character}_${folder}_${colorFolder}"
+                val cachedList = getCachedAssetList(
+                    assetManager,
+                    "${AssetsKey.DATA}/$character/$folder/$colorFolder",
+                    colorCacheKey
+                )
+
+                cachedList?.let { MediaHelper.sortAsset(it) }
                     ?.map { "${AssetsKey.DATA_ASSET}$character/$folder/$colorFolder/$it" }
                     ?: emptyList()
             }

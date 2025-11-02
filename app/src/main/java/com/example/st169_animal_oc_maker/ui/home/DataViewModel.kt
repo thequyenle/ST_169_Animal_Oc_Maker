@@ -39,6 +39,14 @@ class DataViewModel : ViewModel() {
     private val _getDataAPI = MutableLiveData<List<PartAPI>>()
     val getDataAPI: LiveData<List<PartAPI>> get() = _getDataAPI
 
+    // ✅ Loading state for UI
+    private val _isLoadingData = MutableStateFlow(false)
+    val isLoadingData: StateFlow<Boolean> = _isLoadingData.asStateFlow()
+
+    // ✅ Error state for UI
+    private val _loadingError = MutableStateFlow<String?>(null)
+    val loadingError: StateFlow<String?> = _loadingError.asStateFlow()
+
     fun saveAndReadData(context: Context) {
         viewModelScope.launch {
             val timeStart = System.currentTimeMillis()
