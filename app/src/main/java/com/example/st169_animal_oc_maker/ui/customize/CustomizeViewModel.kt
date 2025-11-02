@@ -854,27 +854,45 @@ class CustomizeViewModel : ViewModel() {
     }
 
     suspend fun setClickReset(): String {
+        Log.d("CustomizeViewModel", "🔄 ════════════════════════════════════")
+        Log.d("CustomizeViewModel", "🔄 RESET START - Character $positionSelected")
+        Log.d("CustomizeViewModel", "🔄 ════════════════════════════════════")
+
         resetDataList()
         _bottomNavigationList.value.forEachIndexed { index, model ->
             val positionSelected = if (index == 0) 1 else 0
             setItemNavList(index, positionSelected)
 
-            // ✅ FIX: Rebuild colorItemNavList từ item default (giống logic setClickFillLayer)
-            val defaultItem = _itemNavList.value[index][positionSelected]
-            if (defaultItem.listImageColor.isNotEmpty()) {
-                val newColorList = ArrayList<ItemColorModel>()
-                defaultItem.listImageColor.forEachIndexed { colorIndex, colorItem ->
-                    newColorList.add(ItemColorModel(
-                        color = colorItem.color,
-                        isSelected = (colorIndex == 0)  // Reset về màu đầu tiên
-                    ))
-                }
-                _colorItemNavList.value[index] = newColorList
-                _positionColorItemList.value[index] = 0
+            // ✅ FIX: Lấy màu trực tiếp từ data gốc (_dataCustomize) thay vì từ itemNavList
+            val layerData = _dataCustomize.value?.layerList?.getOrNull(index)
+            if (layerData != null) {
+                // Lấy item default: layer 0 → item[1], các layer khác → item[0]
+                val defaultItemFromSource = layerData.layer.getOrNull(positionSelected)
 
-                Log.d("CustomizeViewModel", "🔄 RESET: Rebuilt colorItemNavList[$index]: ${newColorList.size} colors, selected=0")
+                Log.d("CustomizeViewModel", "🔄 Layer[$index]: posNav=${layerData.positionNavigation}, posCus=${layerData.positionCustom}, itemSelected=$positionSelected")
+                Log.d("CustomizeViewModel", "   └─ Item path: ${defaultItemFromSource?.image?.substringAfterLast("/") ?: "null"}")
+                Log.d("CustomizeViewModel", "   └─ isMoreColors: ${defaultItemFromSource?.isMoreColors}")
+                Log.d("CustomizeViewModel", "   └─ listColor.size: ${defaultItemFromSource?.listColor?.size}")
+
+                if (defaultItemFromSource != null && defaultItemFromSource.isMoreColors && defaultItemFromSource.listColor.isNotEmpty()) {
+                    val newColorList = ArrayList<ItemColorModel>()
+                    defaultItemFromSource.listColor.forEachIndexed { colorIndex, colorItem ->
+                        newColorList.add(ItemColorModel(
+                            color = colorItem.color,
+                            isSelected = (colorIndex == 0)  // Reset về màu đầu tiên
+                        ))
+                    }
+                    _colorItemNavList.value[index] = newColorList
+                    _positionColorItemList.value[index] = 0
+
+                    Log.d("CustomizeViewModel", "   └─ ✅ Rebuilt ${newColorList.size} colors (first: ${newColorList.firstOrNull()?.color})")
+                } else {
+                    _colorItemNavList.value[index] = arrayListOf()
+                    Log.d("CustomizeViewModel", "   └─ ⚠️ No colors for this layer")
+                }
             } else {
                 _colorItemNavList.value[index] = arrayListOf()
+                Log.e("CustomizeViewModel", "   └─ ❌ Layer data not found!")
             }
         }
         val pathDefault = _dataCustomize.value!!.layerList.first().layer.first().image
@@ -883,6 +901,12 @@ class CustomizeViewModel : ViewModel() {
         _pathSelectedList.value[0] = pathDefault
         _keySelectedItemList.value[_dataCustomize.value!!.layerList.first().positionNavigation] = pathDefault
         _isSelectedItemList.value[_dataCustomize.value!!.layerList.first().positionNavigation] = true
+
+        Log.d("CustomizeViewModel", "🔄 ════════════════════════════════════")
+        Log.d("CustomizeViewModel", "🔄 RESET COMPLETE")
+        Log.d("CustomizeViewModel", "🔄 Total colorItemNavList sizes: ${_colorItemNavList.value.map { it.size }}")
+        Log.d("CustomizeViewModel", "🔄 ════════════════════════════════════")
+
         return pathDefault
     }
 

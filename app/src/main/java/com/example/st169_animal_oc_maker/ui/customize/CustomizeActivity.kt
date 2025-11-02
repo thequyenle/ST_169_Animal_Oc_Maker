@@ -1269,10 +1269,54 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                         // ✅ FIX: Render lại tất cả layers
                         renderAllLayers()
                         customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
-                        colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[viewModel.positionNavSelected.value])
+
+                        // 🔍 DEBUG: Log color list before submitting to adapter
+                        val colorList = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                        dLog("🎨 RESET - Submitting color list to adapter:")
+                        dLog("   └─ Tab position: ${viewModel.positionNavSelected.value}")
+                        dLog("   └─ Color items count: ${colorList.size}")
+                        if (colorList.isNotEmpty()) {
+                            dLog("   └─ First 3 colors: ${colorList.take(3).map { it.color }}")
+                            dLog("   └─ Selected index: ${colorList.indexOfFirst { it.isSelected }}")
+                        }
+
+                        colorLayerAdapter.submitListWithLog(colorList)
                         binding.rcvColor.post {
                             binding.rcvColor.requestLayout()
+                            dLog("🎨 rcvColor after reset: adapter.itemCount=${binding.rcvColor.adapter?.itemCount}")
                         }
+
+                        // ✅ FIX: Enable rcvColor sau khi reset (giống handleRandomAllLayer)
+                        val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                            .firstOrNull { it.isSelected }
+                        val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
+                        if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
+                            !viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
+                            setColorRecyclerViewEnabled(true)
+                        } else {
+                            setColorRecyclerViewEnabled(false)
+                        }
+
+                        // ✅ FIX: Scroll đến item đã được chọn sau khi reset
+                        val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                            .indexOfFirst { it.isSelected }
+                        if (selectedIndex >= 0) {
+                            binding.rcvLayer.post {
+                                binding.rcvLayer.smoothScrollToPosition(selectedIndex)
+                            }
+                        }
+
+                        // ✅ FIX: Scroll đến màu đã được chọn sau khi reset
+                        if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+                            val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                                .indexOfFirst { it.isSelected }
+                            if (selectedColorIndex >= 0) {
+                                binding.rcvColor.post {
+                                    binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                                }
+                            }
+                        }
+
                         hideNavigation()
                     }
                 }
