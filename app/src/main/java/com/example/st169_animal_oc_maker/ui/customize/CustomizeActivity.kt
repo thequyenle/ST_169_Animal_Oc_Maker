@@ -90,7 +90,14 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         }
         binding.main.setBackgroundResource(backgroundDrawable)
 
-
+        // Set background cho layoutRcvColor dựa trên category position
+        val colorBarBackground = when(categoryPosition) {
+            0 -> R.drawable.bg_color_cus_1
+            1 -> R.drawable.bg_color_cus_2
+            2 -> R.drawable.bg_color_cus_3
+            else -> R.drawable.bg_color_cus_1
+        }
+        binding.layoutRcvColor.setBackgroundResource(colorBarBackground)
         // Set icon color tương ứng
         updateColorIcon()
 
