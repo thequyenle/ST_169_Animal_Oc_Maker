@@ -7,9 +7,10 @@
     android:layout_marginBottom="16dp">
 
     <FrameLayout
-        android:layout_width="324dp"
-        android:layout_height="135dp"
-        android:layout_gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintDimensionRatio="324:135"
+        app:layout_constraintWidth_percent="0.95"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -17,18 +18,20 @@
         <!-- Background frame -->
         <ImageView
             android:id="@+id/imvFrame"
-            android:layout_width="324dp"
-            android:layout_height="135dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:adjustViewBounds="true"
             android:scaleType="fitXY"
             android:src="@drawable/img_tommy_make_character" />
 
         <!-- Content image inside frame -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
-            android:layout_height="132dp"
-            android:visibility="invisible"
+            android:layout_height="match_parent"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
+            android:layout_marginTop="3dp"
+            android:visibility="invisible"
             android:backgroundTint="@color/tranf"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp">

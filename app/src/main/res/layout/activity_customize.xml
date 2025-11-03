@@ -104,7 +104,7 @@
 
     <FrameLayout
         android:id="@+id/layoutRcvColor"
-        android:layout_width="168dp"
+        android:layout_width="0dp"
         android:layout_height="38dp"
         android:layout_marginStart="8dp"
         android:layout_marginBottom="10dp"
@@ -112,6 +112,7 @@
         android:visibility="invisible"
         android:paddingTop="7dp"
         android:paddingBottom="7dp"
+        app:layout_constraintEnd_toEndOf="@id/guideline95"
         app:layout_constraintStart_toEndOf="@id/btnColor"
         app:layout_constraintBottom_toTopOf="@id/gl0625"
         >
@@ -172,6 +173,13 @@
         tools:listitem="@layout/item_navi">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline95"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.95" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
