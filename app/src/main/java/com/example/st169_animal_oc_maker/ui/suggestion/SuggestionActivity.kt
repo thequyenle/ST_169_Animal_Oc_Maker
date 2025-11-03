@@ -66,9 +66,9 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
                     dataViewModel.ensureData(this@SuggestionActivity)
                     val allData = dataViewModel.allData.first { it.isNotEmpty() }
 
-                    Log.d("SuggestionActivity", "🚀 Starting to generate 10 suggestions per category...")
+                    Log.d("SuggestionActivity", "🚀 Starting to generate 10 suggestions per category (optimized)...")
 
-                    // Generate 10 suggestions per category
+                    // Generate 10 suggestions per category (optimized với semaphore để tránh lag/crash)
                     suggestionViewModel.generateAllSuggestions(
                         allData,
                         this@SuggestionActivity,
@@ -84,10 +84,19 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     }
 
     private fun setupRecyclerViews() {
-        // XML đã có layoutManager và spanCount, chỉ cần config thêm
-        binding.rcvTommy.isNestedScrollingEnabled = false
-        binding.rcvMiley.isNestedScrollingEnabled = false
-        binding.rcvDammy.isNestedScrollingEnabled = false
+        // Use WrapContentGridLayoutManager to properly handle wrap_content in ScrollView
+        binding.rcvTommy.apply {
+            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            isNestedScrollingEnabled = false
+        }
+        binding.rcvMiley.apply {
+            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            isNestedScrollingEnabled = false
+        }
+        binding.rcvDammy.apply {
+            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            isNestedScrollingEnabled = false
+        }
     }
 
     override fun viewListener() {
@@ -111,6 +120,8 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
         }
         tommyAdapter.submitList(tommySuggestions) {
             Log.d("SuggestionActivity", "✅ Tommy adapter list submitted: ${tommySuggestions.size} items")
+            // Force RecyclerView to remeasure to show all items
+            binding.rcvTommy.requestLayout()
         }
 
         // Miley suggestions (category 1) - 10 items
@@ -123,6 +134,8 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
         }
         mileyAdapter.submitList(mileySuggestions) {
             Log.d("SuggestionActivity", "✅ Miley adapter list submitted: ${mileySuggestions.size} items")
+            // Force RecyclerView to remeasure to show all items
+            binding.rcvMiley.requestLayout()
         }
 
         // Dammy suggestions (category 2) - 10 items
@@ -135,6 +148,8 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
         }
         dammyAdapter.submitList(dammySuggestions) {
             Log.d("SuggestionActivity", "✅ Dammy adapter list submitted: ${dammySuggestions.size} items")
+            // Force RecyclerView to remeasure to show all items
+            binding.rcvDammy.requestLayout()
         }
 
         Log.d("SuggestionActivity", "========================================")

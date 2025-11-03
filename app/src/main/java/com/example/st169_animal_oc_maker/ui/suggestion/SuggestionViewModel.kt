@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import java.util.concurrent.Executors
@@ -25,8 +26,11 @@ import kotlin.random.Random
 
 class SuggestionViewModel : ViewModel() {
 
-    // ✅ OPTIMIZATION: Custom dispatcher với 4 threads cho đa nhân
-    private val multiThreadDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
+    // ✅ OPTIMIZATION: Giảm threads từ 4 xuống 2 để tránh quá tải
+    private val multiThreadDispatcher = Executors.newFixedThreadPool(2).asCoroutineDispatcher()
+
+    // ✅ OPTIMIZATION: Giới hạn chỉ 3 thumbnails load đồng thời để tránh OOM
+    private val thumbnailSemaphore = Semaphore(3)
 
     private val _suggestions = MutableStateFlow<List<SuggestionModel>>(emptyList())
     val suggestions: StateFlow<List<SuggestionModel>> = _suggestions.asStateFlow()
@@ -49,9 +53,9 @@ class SuggestionViewModel : ViewModel() {
             _isLoading.value = true
             val startTime = System.currentTimeMillis()
 
-            Log.d("SuggestionViewModel", "🚀 Starting PARALLEL generation with 4 cores...")
+            Log.d("SuggestionViewModel", "🚀 Starting PARALLEL generation with 2 cores (optimized for 10 items/category)...")
 
-            // ✅ STEP 1: Generate suggestions PARALLEL cho 3 categories (sử dụng 3/4 cores)
+            // ✅ STEP 1: Generate suggestions PARALLEL cho 3 categories (sử dụng 2 cores)
             val suggestionsList = withContext(multiThreadDispatcher) {
                 val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<SuggestionModel>>>()
 
@@ -132,31 +136,38 @@ class SuggestionViewModel : ViewModel() {
             val startTime = System.currentTimeMillis()
             val thumbnailsMap = mutableMapOf<String, Bitmap>()
 
-            Log.d("SuggestionViewModel", "🖼️ Starting PARALLEL thumbnail generation (4 cores, ${suggestions.size} thumbnails)...")
+            Log.d("SuggestionViewModel", "🖼️ Starting CONTROLLED thumbnail generation (max 3 concurrent, ${suggestions.size} total)...")
 
-            // ✅ PARALLEL: Generate all thumbnails concurrently với 4 cores
+            // ✅ CONTROLLED: Generate thumbnails với semaphore - chỉ 3 thumbnails load đồng thời
             val jobs = suggestions.map { suggestion ->
                 async(multiThreadDispatcher) {
-                    val thumbnail = ThumbnailGenerator.generateThumbnail(
-                        context,
-                        suggestion.randomState,
-                        suggestion.background
-                    )
+                    // ✅ Acquire semaphore - đợi nếu đã có 3 thumbnails đang load
+                    thumbnailSemaphore.acquire()
+                    try {
+                        val thumbnail = ThumbnailGenerator.generateThumbnail(
+                            context,
+                            suggestion.randomState,
+                            suggestion.background
+                        )
 
-                    thumbnail?.let {
-                        // ✅ SIMPLE LOGIC: Tất cả characters (Tommy, Miley, Dammy) đều dùng logic giống nhau
-                        // Chỉ dùng thumbnail từ ThumbnailGenerator, không có logic đặc biệt
+                        thumbnail?.let {
+                            // ✅ SIMPLE LOGIC: Tất cả characters (Tommy, Miley, Dammy) đều dùng logic giống nhau
+                            // Chỉ dùng thumbnail từ ThumbnailGenerator, không có logic đặc biệt
 
-                        // ✅ PROGRESSIVE: Update map as each thumbnail completes
-                        synchronized(thumbnailsMap) {
-                            thumbnailsMap[suggestion.id] = it
+                            // ✅ PROGRESSIVE: Update map as each thumbnail completes
+                            synchronized(thumbnailsMap) {
+                                thumbnailsMap[suggestion.id] = it
+                            }
+
+                            // ✅ Emit updated map immediately (UI updates progressively)
+                            withContext(Dispatchers.Main) {
+                                _thumbnails.value = thumbnailsMap.toMap()
+                                Log.d("SuggestionViewModel", "✅ Thumbnail ready: ${suggestion.id} (${thumbnailsMap.size}/${suggestions.size})")
+                            }
                         }
-
-                        // ✅ Emit updated map immediately (UI updates progressively)
-                        withContext(Dispatchers.Main) {
-                            _thumbnails.value = thumbnailsMap.toMap()
-                            Log.d("SuggestionViewModel", "✅ Thumbnail ready: ${suggestion.id} (${thumbnailsMap.size}/${suggestions.size})")
-                        }
+                    } finally {
+                        // ✅ Release semaphore - cho phép thumbnail tiếp theo load
+                        thumbnailSemaphore.release()
                     }
                 }
             }
@@ -186,6 +197,8 @@ class SuggestionViewModel : ViewModel() {
     ): List<SuggestionModel> {
         val suggestions = mutableListOf<SuggestionModel>()
 
+        Log.d("SuggestionViewModel", "🎲 Generating $count suggestions for $categoryName...")
+
         repeat(count) { index ->
             val randomState = randomizeCharacter(characterData, categoryPosition)
             val randomBackground = getRandomBackground(context)
@@ -200,9 +213,10 @@ class SuggestionViewModel : ViewModel() {
             )
 
             suggestions.add(suggestion)
-            Log.d("SuggestionViewModel", "Generated: ${categoryName}_${index} (characterIndex: $characterIndex)")
+            Log.d("SuggestionViewModel", "  ✅ Generated: ${categoryName}_${index} with ${randomState.layerSelections.size} layers")
         }
 
+        Log.d("SuggestionViewModel", "🎯 Completed: $categoryName generated ${suggestions.size} suggestions")
         return suggestions
     }
 
@@ -219,11 +233,20 @@ class SuggestionViewModel : ViewModel() {
                 return@forEachIndexed
             }
 
-            // Random 1 item trong layer (bỏ qua None ở index 0 cho layer đầu tiên)
-            val startIndex = if (index == 0) 1 else 0
+            // Random 1 item trong layer
+            // Chỉ bỏ qua item None (index 0) cho layer body (index 0), các layer khác có thể chọn None
+            val startIndex = if (index == 0) {
+                // Layer đầu tiên (body) - bắt buộc phải có item
+                1
+            } else {
+                // Các layer khác - có thể chọn None (index 0) hoặc item thật
+                0
+            }
+
             val availableItems = layerListModel.layer.size
 
             if (availableItems <= startIndex) {
+                // Nếu layer chỉ có None hoặc rỗng, bỏ qua
                 return@forEachIndexed
             }
 
@@ -244,12 +267,15 @@ class SuggestionViewModel : ViewModel() {
                 randomItem.image
             }
 
-            // Dùng positionCustom làm key (giống Tommy và Dammy)
-            layerSelections[layerListModel.positionCustom] = LayerSelection(
-                itemIndex = randomItemIndex,
-                path = finalPath,
-                colorIndex = randomColorIndex
-            )
+            // Chỉ thêm vào nếu có path hợp lệ
+            if (finalPath.isNotEmpty()) {
+                // Dùng positionCustom làm key
+                layerSelections[layerListModel.positionCustom] = LayerSelection(
+                    itemIndex = randomItemIndex,
+                    path = finalPath,
+                    colorIndex = randomColorIndex
+                )
+            }
         }
 
         return RandomState(layerSelections)
