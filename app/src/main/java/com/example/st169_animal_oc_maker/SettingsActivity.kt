@@ -1,5 +1,6 @@
 package com.animal.avatar.charactor.maker
 
+import android.app.Activity
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
@@ -11,6 +12,10 @@ import com.animal.avatar.charactor.maker.core.utils.RatingPreferences
 import com.animal.avatar.charactor.maker.databinding.ActivitySettingsBinding
 import com.animal.avatar.charactor.maker.dialog.RatingDialog
 import com.animal.avatar.charactor.maker.ui.language.LanguageActivity
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.review.ReviewManagerFactory
+import java.lang.Void
+import kotlin.system.exitProcess
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
 
@@ -61,6 +66,9 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             this,
             onRatingSubmitted = { rating ->
                 handleRatingSubmitted()
+                if (rating >= 4) {
+                    reviewApp(this, true)
+                }
             },
             onDismiss = {
                 // Dialog dismissed without rating
@@ -80,8 +88,29 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             .setDuration(300)
             .withEndAction {
                 binding.btnRate.visibility = View.GONE
+
             }
             .start()
+    }
+
+    fun reviewApp(context: Activity, isBackPress: Boolean) {
+        val manager = ReviewManagerFactory.create(context)
+        val request = manager.requestReviewFlow()
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val reviewInfo = task.result
+                val flow = (context as Activity?)?.let { manager.launchReviewFlow(it, reviewInfo) }
+                flow?.addOnCompleteListener { task2: Task<Void> ->
+                    if (isBackPress) {
+                        exitProcess(0)
+                    }
+                }
+            } else {
+                if (isBackPress) {
+                    exitProcess(0)
+                }
+            }
+        }
     }
 
     private fun shareApp() {

@@ -1,6 +1,7 @@
 package com.animal.avatar.charactor.maker.ui.home
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
 import com.animal.avatar.charactor.maker.SettingsActivity
@@ -13,6 +14,10 @@ import com.animal.avatar.charactor.maker.dialog.RatingDialog
 import com.animal.avatar.charactor.maker.ui.category.CategoryActivity
 import com.animal.avatar.charactor.maker.ui.mycreation.MycreationActivity
 import com.animal.avatar.charactor.maker.ui.suggestion.SuggestionActivity
+import com.google.android.gms.tasks.Task
+import com.google.android.play.core.review.ReviewManagerFactory
+import java.lang.Void
+import kotlin.system.exitProcess
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 
@@ -89,6 +94,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 ratingPrefs.setRated(true)
                 Log.d("HomeActivity", "Rating saved, exiting app")
                 finishAffinity()
+                if (rating >= 4) {
+                    reviewApp(this, true)
+                }
+
             },
             onDismiss = {
                 Log.d("HomeActivity", "Rating dialog dismissed, exiting app")
@@ -96,5 +105,25 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 finishAffinity()
             }
         )
+    }
+
+    fun reviewApp(context: Activity, isBackPress: Boolean) {
+        val manager = ReviewManagerFactory.create(context)
+        val request = manager.requestReviewFlow()
+        request.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val reviewInfo = task.result
+                val flow = (context as Activity?)?.let { manager.launchReviewFlow(it, reviewInfo) }
+                flow?.addOnCompleteListener { task2: Task<Void> ->
+                    if (isBackPress) {
+                        exitProcess(0)
+                    }
+                }
+            } else {
+                if (isBackPress) {
+                    exitProcess(0)
+                }
+            }
+        }
     }
 }
