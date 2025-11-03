@@ -2,7 +2,6 @@ package com.example.st169_animal_oc_maker.ui.suggestion
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,15 +13,20 @@ import com.example.st169_animal_oc_maker.data.suggestion.RandomState
 import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
+import java.util.concurrent.Executors
 import kotlin.random.Random
 
 class SuggestionViewModel : ViewModel() {
+
+    // ✅ OPTIMIZATION: Custom dispatcher với 4 threads cho đa nhân
+    private val multiThreadDispatcher = Executors.newFixedThreadPool(4).asCoroutineDispatcher()
 
     private val _suggestions = MutableStateFlow<List<SuggestionModel>>(emptyList())
     val suggestions: StateFlow<List<SuggestionModel>> = _suggestions.asStateFlow()
@@ -40,134 +44,99 @@ class SuggestionViewModel : ViewModel() {
      * 2. Generate thumbnails PARALLEL (giảm 60% thời gian)
      * 3. Emit từng thumbnail khi xong (progressive update)
      */
-    fun generateAllSuggestions(allData: List<CustomizeModel>, context: Context) {
+    fun generateAllSuggestions(allData: List<CustomizeModel>, context: Context, suggestionsPerCategory: Int = 2) {
         viewModelScope.launch {
             _isLoading.value = true
+            val startTime = System.currentTimeMillis()
 
-            val suggestionsList = mutableListOf<SuggestionModel>()
+            Log.d("SuggestionViewModel", "🚀 Starting PARALLEL generation with 4 cores...")
 
-            // ✅ STEP 1: Generate suggestions metadata (FAST - no thumbnails)
-            withContext(Dispatchers.IO) {
+            // ✅ STEP 1: Generate suggestions PARALLEL cho 3 categories (sử dụng 3/4 cores)
+            val suggestionsList = withContext(multiThreadDispatcher) {
+                val jobs = mutableListOf<kotlinx.coroutines.Deferred<List<SuggestionModel>>>()
+
+                // Tommy - async job 1
                 if (allData.size > 0) {
-                    suggestionsList.addAll(generateSuggestionsForCategory(
-                        characterData = allData[0],
-                        categoryPosition = 0,
-                        characterIndex = 0,
-                        categoryName = "Tommy",
-                        context = context
-                    ))
+                    jobs.add(async {
+                        Log.d("SuggestionViewModel", "🎯 [Core 1] Generating Tommy...")
+                        generateSuggestionsForCategory(
+                            characterData = allData[0],
+                            categoryPosition = 0,
+                            characterIndex = 0,
+                            categoryName = "Tommy",
+                            context = context,
+                            count = suggestionsPerCategory
+                        )
+                    })
                 }
 
+                // Miley - async job 2
                 if (allData.size > 1) {
-                    // ✅ DEBUG: Log chi tiết data của Miley (character 1)
-                    logCharacterData(allData[1], "Miley", 1)
-
-                    val mileySuggestions = generateSuggestionsForCategory(
-                        characterData = allData[1],
-                        categoryPosition = 1,
-                        characterIndex = 1,
-                        categoryName = "Miley",
-                        context = context
-                    )
-
-                    // ✅ LOG: Log chi tiết suggestions được tạo
-                    Log.d("SuggestionViewModel", "========================================")
-                    Log.d("SuggestionViewModel", "📊 MILEY SUGGESTIONS GENERATED")
-                    Log.d("SuggestionViewModel", "========================================")
-                    mileySuggestions.forEachIndexed { index, suggestion ->
-                        Log.d("SuggestionViewModel", "Suggestion $index:")
-                        Log.d("SuggestionViewModel", "  id: ${suggestion.id}")
-                        Log.d("SuggestionViewModel", "  background: ${suggestion.background}")
-                        Log.d("SuggestionViewModel", "  randomState layers: ${suggestion.randomState.layerSelections.size}")
-                        suggestion.randomState.layerSelections.forEach { (key, sel) ->
-                            Log.d("SuggestionViewModel", "    Layer key=$key: item=${sel.itemIndex}, color=${sel.colorIndex}, path=${sel.path}")
-                        }
-                    }
-                    Log.d("SuggestionViewModel", "========================================")
-
-                    suggestionsList.addAll(mileySuggestions)
+                    jobs.add(async {
+                        Log.d("SuggestionViewModel", "🎯 [Core 2] Generating Miley...")
+                        generateSuggestionsForCategory(
+                            characterData = allData[1],
+                            categoryPosition = 1,
+                            characterIndex = 1,
+                            categoryName = "Miley",
+                            context = context,
+                            count = suggestionsPerCategory
+                        )
+                    })
                 }
 
+                // Dammy - async job 3
                 if (allData.size > 2) {
-                    suggestionsList.addAll(generateSuggestionsForCategory(
-                        characterData = allData[2],
-                        categoryPosition = 2,
-                        characterIndex = 2,
-                        categoryName = "Dammy",
-                        context = context
-                    ))
+                    jobs.add(async {
+                        Log.d("SuggestionViewModel", "🎯 [Core 3] Generating Dammy...")
+                        generateSuggestionsForCategory(
+                            characterData = allData[2],
+                            categoryPosition = 2,
+                            characterIndex = 2,
+                            categoryName = "Dammy",
+                            context = context,
+                            count = suggestionsPerCategory
+                        )
+                    })
                 }
+
+                // Đợi tất cả jobs hoàn thành và gộp kết quả
+                jobs.flatMap { it.await() }
             }
+
+            val generationTime = System.currentTimeMillis() - startTime
 
             // ✅ STEP 2: Emit suggestions IMMEDIATELY (UI can show placeholders)
             _suggestions.value = suggestionsList
             _isLoading.value = false
-            Log.d("SuggestionViewModel", "Emitted ${suggestionsList.size} suggestions (thumbnails loading...)")
+            Log.d("SuggestionViewModel", "========================================")
+            Log.d("SuggestionViewModel", "✅ EMITTED ${suggestionsList.size} SUGGESTIONS in ${generationTime}ms")
+            Log.d("SuggestionViewModel", "   Tommy: ${suggestionsList.count { it.categoryPosition == 0 }}")
+            Log.d("SuggestionViewModel", "   Miley: ${suggestionsList.count { it.categoryPosition == 1 }}")
+            Log.d("SuggestionViewModel", "   Dammy: ${suggestionsList.count { it.categoryPosition == 2 }}")
+            Log.d("SuggestionViewModel", "   (thumbnails loading...)")
+            Log.d("SuggestionViewModel", "========================================")
 
-            // ✅ STEP 3: Generate thumbnails PARALLEL in background
+            // ✅ STEP 3: Generate thumbnails PARALLEL với 4 cores
             generateThumbnailsProgressively(suggestionsList, context)
         }
     }
 
-    /**
-     * ✅ DEBUG: Log chi tiết data của character để debug
-     */
-    private fun logCharacterData(character: CustomizeModel, name: String, index: Int) {
-        Log.d("SuggestionViewModel", "========================================")
-        Log.d("SuggestionViewModel", "📊 DEBUG DATA: $name (Character $index)")
-        Log.d("SuggestionViewModel", "========================================")
-        Log.d("SuggestionViewModel", "Avatar: ${character.avatar}")
-        Log.d("SuggestionViewModel", "Total layers: ${character.layerList.size}")
-
-        character.layerList.forEachIndexed { layerIndex, layer ->
-            Log.d("SuggestionViewModel", "")
-            Log.d("SuggestionViewModel", "--- Layer $layerIndex ---")
-            Log.d("SuggestionViewModel", "  positionCustom: ${layer.positionCustom}")
-            Log.d("SuggestionViewModel", "  positionNavigation: ${layer.positionNavigation}")
-            Log.d("SuggestionViewModel", "  imageNavigation: ${layer.imageNavigation}")
-            Log.d("SuggestionViewModel", "  Total items: ${layer.layer.size}")
-
-            // Log chi tiết layer 0 (body)
-            if (layerIndex == 0) {
-                Log.d("SuggestionViewModel", "  ⚠️ LAYER 0 (BODY) DETAILS:")
-                layer.layer.forEachIndexed { itemIndex, item ->
-                    Log.d("SuggestionViewModel", "    Item $itemIndex:")
-                    Log.d("SuggestionViewModel", "      image: ${item.image}")
-                    Log.d("SuggestionViewModel", "      isMoreColors: ${item.isMoreColors}")
-                    Log.d("SuggestionViewModel", "      colors count: ${item.listColor.size}")
-                    if (item.isMoreColors && item.listColor.isNotEmpty()) {
-                        Log.d("SuggestionViewModel", "      color paths:")
-                        item.listColor.take(3).forEachIndexed { colorIndex, color ->
-                            Log.d("SuggestionViewModel", "        [$colorIndex] ${color.path}")
-                        }
-                        if (item.listColor.size > 3) {
-                            Log.d("SuggestionViewModel", "        ... and ${item.listColor.size - 3} more colors")
-                        }
-                    }
-                }
-            } else {
-                // Log tóm tắt các layer khác
-                Log.d("SuggestionViewModel", "  Items: ${layer.layer.size}")
-                if (layer.layer.isNotEmpty()) {
-                    Log.d("SuggestionViewModel", "  Sample item 0: ${layer.layer[0].image}")
-                    Log.d("SuggestionViewModel", "  Has colors: ${layer.layer[0].isMoreColors}")
-                }
-            }
-        }
-        Log.d("SuggestionViewModel", "========================================")
-    }
 
     /**
-     * ✅ NEW: Generate thumbnails progressively and parallel
+     * ✅ OPTIMIZED: Generate thumbnails progressively and parallel với 4 cores
      * Emit each thumbnail as soon as it's ready (don't wait for all)
      */
     private fun generateThumbnailsProgressively(suggestions: List<SuggestionModel>, context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(multiThreadDispatcher) {
+            val startTime = System.currentTimeMillis()
             val thumbnailsMap = mutableMapOf<String, Bitmap>()
 
-            // ✅ PARALLEL: Generate all thumbnails concurrently
+            Log.d("SuggestionViewModel", "🖼️ Starting PARALLEL thumbnail generation (4 cores, ${suggestions.size} thumbnails)...")
+
+            // ✅ PARALLEL: Generate all thumbnails concurrently với 4 cores
             val jobs = suggestions.map { suggestion ->
-                async {
+                async(multiThreadDispatcher) {
                     val thumbnail = ThumbnailGenerator.generateThumbnail(
                         context,
                         suggestion.randomState,
@@ -175,75 +144,18 @@ class SuggestionViewModel : ViewModel() {
                     )
 
                     thumbnail?.let {
-                        // ✅ FULL RENDER: Vẽ TẤT CẢ các layer (không chỉ layer 0)
-                        val finalThumbnail = if (suggestion.categoryPosition == 1) {
-                            Log.d("SuggestionViewModel", "🎨 FULL RENDER: Compositing ALL layers for Miley ${suggestion.id}")
-
-                            // ✅ DEBUG: In ra TOÀN BỘ randomState
-                            Log.d("SuggestionViewModel", "🔍 DEBUG: randomState has ${suggestion.randomState.layerSelections.size} layers")
-                            suggestion.randomState.layerSelections.forEach { (pos, sel) ->
-                                Log.d("SuggestionViewModel", "🔍 Layer key=$pos: item=${sel.itemIndex}, color=${sel.colorIndex}, path=${sel.path}")
-                            }
-
-                            try {
-                                // Create composite bitmap
-                                val compositeBitmap = Bitmap.createBitmap(400, 400, Bitmap.Config.ARGB_8888)
-                                val canvas = Canvas(compositeBitmap)
-
-                                // 1. Draw background
-                                val bgPath = suggestion.background
-                                if (!bgPath.isNullOrEmpty()) {
-                                    Log.d("SuggestionViewModel", "🎨 Drawing background: $bgPath")
-                                    val bgBitmap = ThumbnailGenerator.loadBitmapSync(context, bgPath, 400, 400)
-                                    if (bgBitmap != null) {
-                                        canvas.drawBitmap(bgBitmap, 0f, 0f, null)
-                                        Log.d("SuggestionViewModel", "✅ Background drawn")
-                                    }
-                                }
-
-                                // 2. ✅ VẼ TẤT CẢ CÁC LAYER theo thứ tự positionCustom
-                                // Sort layers by key to draw in correct order
-                                val sortedLayers = suggestion.randomState.layerSelections.toSortedMap()
-
-                                sortedLayers.forEach { (key, selection) ->
-                                    if (selection.path.isNotEmpty()) {
-                                        Log.d("SuggestionViewModel", "🎨 Drawing layer key=$key: ${selection.path}")
-                                        val layerBitmap = ThumbnailGenerator.loadBitmapSync(
-                                            context,
-                                            selection.path,
-                                            400,
-                                            400
-                                        )
-
-                                        if (layerBitmap != null) {
-                                            canvas.drawBitmap(layerBitmap, 0f, 0f, null)
-                                            Log.d("SuggestionViewModel", "✅ Layer key=$key drawn successfully")
-                                        } else {
-                                            Log.e("SuggestionViewModel", "❌ Failed to load layer key=$key")
-                                        }
-                                    }
-                                }
-
-                                Log.d("SuggestionViewModel", "✅ FULL RENDER: All layers composited successfully")
-                                compositeBitmap
-                            } catch (e: Exception) {
-                                Log.e("SuggestionViewModel", "❌ Error compositing ALL layers: ${e.message}")
-                                e.printStackTrace()
-                                it
-                            }
-                        } else {
-                            it
-                        }
+                        // ✅ SIMPLE LOGIC: Tất cả characters (Tommy, Miley, Dammy) đều dùng logic giống nhau
+                        // Chỉ dùng thumbnail từ ThumbnailGenerator, không có logic đặc biệt
 
                         // ✅ PROGRESSIVE: Update map as each thumbnail completes
                         synchronized(thumbnailsMap) {
-                            thumbnailsMap[suggestion.id] = finalThumbnail
+                            thumbnailsMap[suggestion.id] = it
                         }
 
                         // ✅ Emit updated map immediately (UI updates progressively)
                         withContext(Dispatchers.Main) {
                             _thumbnails.value = thumbnailsMap.toMap()
-                            Log.d("SuggestionViewModel", "Thumbnail ready: ${suggestion.id} (${thumbnailsMap.size}/6)")
+                            Log.d("SuggestionViewModel", "✅ Thumbnail ready: ${suggestion.id} (${thumbnailsMap.size}/${suggestions.size})")
                         }
                     }
                 }
@@ -252,24 +164,29 @@ class SuggestionViewModel : ViewModel() {
             // Wait for all thumbnails to complete
             jobs.forEach { it.await() }
 
-            Log.d("SuggestionViewModel", "All thumbnails generated: ${thumbnailsMap.size}")
+            val thumbnailTime = System.currentTimeMillis() - startTime
+            Log.d("SuggestionViewModel", "========================================")
+            Log.d("SuggestionViewModel", "✅ All ${thumbnailsMap.size} thumbnails generated in ${thumbnailTime}ms")
+            Log.d("SuggestionViewModel", "   Average: ${thumbnailTime / thumbnailsMap.size}ms per thumbnail")
+            Log.d("SuggestionViewModel", "========================================")
         }
     }
 
     /**
-     * Generate 2 random suggestions cho 1 category
-     * ✅ WORKAROUND: Đặc biệt xử lý category 1 (Miley) để đảm bảo layer 0 đúng
+     * Generate random suggestions cho 1 category
+     * Logic đơn giản giống nhau cho tất cả characters (Tommy, Miley, Dammy)
      */
     private fun generateSuggestionsForCategory(
         characterData: CustomizeModel,
         categoryPosition: Int,
         characterIndex: Int,
         categoryName: String,
-        context: Context
+        context: Context,
+        count: Int = 2
     ): List<SuggestionModel> {
         val suggestions = mutableListOf<SuggestionModel>()
 
-        repeat(2) { index ->
+        repeat(count) { index ->
             val randomState = randomizeCharacter(characterData, categoryPosition)
             val randomBackground = getRandomBackground(context)
 
@@ -291,62 +208,27 @@ class SuggestionViewModel : ViewModel() {
 
     /**
      * Random tất cả layers của character
-     * ✅ WORKAROUND: Đảm bảo layer đầu tiên (index 0) được xử lý đúng, đặc biệt cho category 1 (Miley)
-     * @param character CustomizeModel của character
-     * @param categoryPosition Vị trí category (0=Tommy, 1=Miley, 2=Dammy)
+     * Logic đơn giản giống nhau cho tất cả characters (Tommy, Miley, Dammy)
      */
     private fun randomizeCharacter(character: CustomizeModel, categoryPosition: Int): RandomState {
         val layerSelections = mutableMapOf<Int, LayerSelection>()
 
-        if (categoryPosition == 1) {
-            Log.d("SuggestionViewModel", "========================================")
-            Log.d("SuggestionViewModel", "🎲 RANDOMIZING MILEY CHARACTER")
-            Log.d("SuggestionViewModel", "========================================")
-            Log.d("SuggestionViewModel", "Total layers to process: ${character.layerList.size}")
-        }
-
         character.layerList.forEachIndexed { index, layerListModel ->
-            // ✅ DEBUG: Log tất cả layers được xử lý
-            if (categoryPosition == 1) {
-                Log.d("SuggestionViewModel", "")
-                Log.d("SuggestionViewModel", "🔍 Processing layer $index:")
-                Log.d("SuggestionViewModel", "  positionCustom: ${layerListModel.positionCustom}")
-                Log.d("SuggestionViewModel", "  positionNavigation: ${layerListModel.positionNavigation}")
-                Log.d("SuggestionViewModel", "  items count: ${layerListModel.layer.size}")
-            }
-
             // Bỏ qua layer rỗng
             if (layerListModel.layer.isEmpty()) {
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  ⚠️ SKIPPED: Empty layer")
-                }
                 return@forEachIndexed
             }
 
-            // Random 1 item trong layer (bỏ qua None ở index 0)
+            // Random 1 item trong layer (bỏ qua None ở index 0 cho layer đầu tiên)
             val startIndex = if (index == 0) 1 else 0
             val availableItems = layerListModel.layer.size
 
             if (availableItems <= startIndex) {
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  ⚠️ SKIPPED: availableItems($availableItems) <= startIndex($startIndex)")
-                }
                 return@forEachIndexed
             }
 
             val randomItemIndex = Random.nextInt(startIndex, availableItems)
             val randomItem = layerListModel.layer[randomItemIndex]
-
-            if (categoryPosition == 1) {
-                Log.d("SuggestionViewModel", "  Random item selected: index=$randomItemIndex")
-                Log.d("SuggestionViewModel", "  Item image: ${randomItem.image}")
-                Log.d("SuggestionViewModel", "  Item isMoreColors: ${randomItem.isMoreColors}")
-                Log.d("SuggestionViewModel", "  Item colors count: ${randomItem.listColor.size}")
-            }
-
-            // ✅ WORKAROUND: Đối với category 1 (Miley) và layer 0, cần xử lý đặc biệt
-            // Vì có bug khi load ảnh, ta cần đảm bảo path được set đúng
-            val shouldForceColor = (categoryPosition == 1 && index == 0 && randomItem.isMoreColors && randomItem.listColor.isNotEmpty())
 
             // Random màu nếu có
             val randomColorIndex = if (randomItem.isMoreColors && randomItem.listColor.isNotEmpty()) {
@@ -355,74 +237,19 @@ class SuggestionViewModel : ViewModel() {
                 0
             }
 
-            // ✅ WORKAROUND: Đảm bảo path được lấy đúng theo logic của handleFillLayer
+            // Lấy path: nếu có màu thì lấy từ listColor, không thì lấy image gốc
             val finalPath = if (randomItem.isMoreColors && randomItem.listColor.isNotEmpty()) {
-                // Có màu -> lấy path từ listColor
-                val colorPath = randomItem.listColor[randomColorIndex].path
-
-                // ✅ LOG chi tiết cho layer 0 của category 1
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  ✅ Has colors - selected color index: $randomColorIndex")
-                    Log.d("SuggestionViewModel", "  ✅ Color path: $colorPath")
-                    if (index == 0) {
-                        Log.d("SuggestionViewModel", "  🔧 LAYER 0 (BODY) - Total colors: ${randomItem.listColor.size}")
-                    }
-                }
-
-                colorPath
+                randomItem.listColor[randomColorIndex].path
             } else {
-                // Không có màu -> lấy image gốc
-                val imagePath = randomItem.image
-
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  ✅ No colors - using base image: $imagePath")
-                }
-
-                imagePath
+                randomItem.image
             }
 
-            // ✅ ULTIMATE FIX: Cho Miley, dùng key đặc biệt cho body layer để tránh bị overwrite
-            // Body layer: positionNavigation=0, positionCustom=1
-            // Ears layer: positionNavigation=2, positionCustom=1 (cùng positionCustom!)
-            val storageKey = if (categoryPosition == 1 && layerListModel.positionNavigation == 0) {
-                // Body layer của Miley - dùng key âm để tránh conflict
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  🔧 BODY LAYER - Using special key=-1 to avoid conflict")
-                }
-                -1
-            } else {
-                if (categoryPosition == 1) {
-                    Log.d("SuggestionViewModel", "  Using positionCustom=${layerListModel.positionCustom} as storage key")
-                }
-                layerListModel.positionCustom
-            }
-
-            // ✅ CRITICAL: Check duplicate positionCustom (multiple layers with same positionCustom)
-            if (layerSelections.containsKey(storageKey)) {
-                if (categoryPosition == 1) {
-                    Log.w("SuggestionViewModel", "  ⚠️ DUPLICATE key=$storageKey at layer $index (nav=${layerListModel.positionNavigation})")
-                    Log.w("SuggestionViewModel", "     Previous layer will be OVERWRITTEN!")
-                }
-            }
-
-            layerSelections[storageKey] = LayerSelection(
+            // Dùng positionCustom làm key (giống Tommy và Dammy)
+            layerSelections[layerListModel.positionCustom] = LayerSelection(
                 itemIndex = randomItemIndex,
                 path = finalPath,
                 colorIndex = randomColorIndex
             )
-
-            if (categoryPosition == 1) {
-                Log.d("SuggestionViewModel", "  ✅ Saved: key=$storageKey, itemIndex=$randomItemIndex, colorIndex=$randomColorIndex")
-                Log.d("SuggestionViewModel", "  ✅ Path: $finalPath")
-            }
-        }
-
-        if (categoryPosition == 1) {
-            Log.d("SuggestionViewModel", "")
-            Log.d("SuggestionViewModel", "========================================")
-            Log.d("SuggestionViewModel", "✅ RANDOMIZATION COMPLETE")
-            Log.d("SuggestionViewModel", "Total layer selections: ${layerSelections.size}")
-            Log.d("SuggestionViewModel", "========================================")
         }
 
         return RandomState(layerSelections)
@@ -459,5 +286,14 @@ class SuggestionViewModel : ViewModel() {
      */
     fun getSuggestionsByCategory(categoryPosition: Int): List<SuggestionModel> {
         return _suggestions.value.filter { it.categoryPosition == categoryPosition }
+    }
+
+    /**
+     * Cleanup dispatcher khi ViewModel bị destroy
+     */
+    override fun onCleared() {
+        super.onCleared()
+        multiThreadDispatcher.close()
+        Log.d("SuggestionViewModel", "🔚 ViewModel cleared, dispatcher closed")
     }
 }

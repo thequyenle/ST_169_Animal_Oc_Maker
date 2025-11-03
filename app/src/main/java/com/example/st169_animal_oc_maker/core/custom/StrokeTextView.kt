@@ -64,7 +64,7 @@ class StrokeTextView : AppCompatTextView {
 
     override fun onDraw(canvas: Canvas) {
         val restoreColor = this.currentTextColor
-        if (strokeColor != null) {
+        if (strokeWidth > 0f && strokeJoin != null) {
             val paint = this.paint
             paint.style = Paint.Style.STROKE
             paint.strokeJoin = strokeJoin

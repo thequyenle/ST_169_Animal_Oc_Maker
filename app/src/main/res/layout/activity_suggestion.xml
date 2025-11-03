@@ -48,15 +48,19 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
+        android:scrollbars="none"
         app:layout_constraintTop_toBottomOf="@id/hehe"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="25dp">
 
+            <!-- Tommy Section -->
             <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/tommy"
                 android:layout_width="wrap_content"
@@ -71,57 +75,22 @@
                 android:textColor="#FFA600"
                 android:textSize="24sp"
                 app:strokeWidth="4dp"
-                app:strokeColor="@color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:strokeColor="@color/white" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardTommy1"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvTommy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="13dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="7dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/cardTommy2"
-                app:layout_constraintTop_toBottomOf="@id/tommy"
-                app:layout_constraintBottom_toBottomOf="@id/cardTommy2">
+                android:paddingHorizontal="20dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_suggestion" />
 
-                <ImageView
-                    android:id="@+id/imvTommy1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardTommy2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginStart="7dp"
-                android:layout_marginEnd="20dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toEndOf="@id/cardTommy1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tommy">
-
-                <ImageView
-                    android:id="@+id/imvTommy2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
+            <!-- Miley Section -->
             <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/miley"
                 android:layout_width="wrap_content"
@@ -136,57 +105,22 @@
                 android:textColor="#FF7396"
                 android:textSize="24sp"
                 app:strokeWidth="4dp"
-                app:strokeColor="@color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardTommy1" />
+                app:strokeColor="@color/white" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardMiley1"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvMiley"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="13dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="7dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/cardMiley2"
-                app:layout_constraintTop_toBottomOf="@id/miley"
-                app:layout_constraintBottom_toBottomOf="@id/cardMiley2">
+                android:paddingHorizontal="20dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_suggestion" />
 
-                <ImageView
-                    android:id="@+id/imvMiley1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardMiley2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginStart="7dp"
-                android:layout_marginEnd="20dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toEndOf="@id/cardMiley1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/miley">
-
-                <ImageView
-                    android:id="@+id/imvMiley2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
+            <!-- Dammy Section -->
             <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
                 android:id="@+id/dammy"
                 android:layout_width="wrap_content"
@@ -201,69 +135,22 @@
                 android:textColor="#8501D2"
                 android:textSize="24sp"
                 app:strokeWidth="4dp"
-                app:strokeColor="@color/white"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardMiley1" />
+                app:strokeColor="@color/white" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDammy1"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="7dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/cardDammy2"
-                app:layout_constraintTop_toBottomOf="@id/dammy"
-                app:layout_constraintBottom_toBottomOf="@id/cardDammy2">
-
-                <ImageView
-                    android:id="@+id/imvDammy1"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardDammy2"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="13dp"
-                android:layout_marginStart="7dp"
-                android:layout_marginEnd="20dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="6dp"
-                app:cardBackgroundColor="@color/white"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintStart_toEndOf="@id/cardDammy1"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/dammy">
-
-                <ImageView
-                    android:id="@+id/imvDammy2"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop" />
-
-            </com.google.android.material.card.MaterialCardView>
-
-
-            <View
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rcvDammy"
                 android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:background="@android:color/transparent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/cardDammy2"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="13dp"
+                android:paddingHorizontal="20dp"
+                android:clipToPadding="false"
+                android:clipChildren="false"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/item_suggestion" />
 
-
+        </LinearLayout>
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
