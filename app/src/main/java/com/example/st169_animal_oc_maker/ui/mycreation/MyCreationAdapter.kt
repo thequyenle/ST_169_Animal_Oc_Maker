@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.mycreation
+package com.animal.avatar.charactor.maker.ui.mycreation
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.dialog.ItemOptionsPopup
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.show
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.dialog.ItemOptionsPopup
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.show
 import com.girlmaker.create.avatar.creator.model.MyCreationModel
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.shimmerDrawable
-import com.example.st169_animal_oc_maker.databinding.ItemMyCreationBinding
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.shimmerDrawable
+import com.animal.avatar.charactor.maker.databinding.ItemMyCreationBinding
 
 class MyCreationAdapter(val context: Context) : RecyclerView.Adapter<MyCreationAdapter.MyLibraryViewHolder>() {
     private var listMyLibrary: ArrayList<MyCreationModel> = arrayListOf()

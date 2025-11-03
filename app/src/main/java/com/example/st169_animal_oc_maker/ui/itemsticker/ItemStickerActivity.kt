@@ -1,12 +1,12 @@
-package com.example.st169_animal_oc_maker.ui.itemsticker
+package com.animal.avatar.charactor.maker.ui.itemsticker
 
 import android.util.Log
 import android.view.LayoutInflater
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.HALLOWEEN_KEY
-import com.example.st169_animal_oc_maker.databinding.ActivityItemStickerBinding
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.HALLOWEEN_KEY
+import com.animal.avatar.charactor.maker.databinding.ActivityItemStickerBinding
 
 class ItemStickerActivity : BaseActivity<ActivityItemStickerBinding>() {
     private val stickerList = ArrayList<String>()

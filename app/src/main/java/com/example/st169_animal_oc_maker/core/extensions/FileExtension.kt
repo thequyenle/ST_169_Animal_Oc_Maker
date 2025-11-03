@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.extensions
+package com.animal.avatar.charactor.maker.core.extensions
 
 import android.app.Activity
 import android.content.ContentValues
@@ -12,11 +12,11 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
-import com.example.st169_animal_oc_maker.data.model.DataModel
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.DATA_DEFAULT
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.DOWNLOAD_ALBUM
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.HALLOWEEN_AVAILABLE_FILE
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.PICK_IMAGE_REQUEST_CODE
+import com.animal.avatar.charactor.maker.data.model.DataModel
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.DATA_DEFAULT
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.DOWNLOAD_ALBUM
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.HALLOWEEN_AVAILABLE_FILE
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.PICK_IMAGE_REQUEST_CODE
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.File

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.utils.key
+package com.animal.avatar.charactor.maker.core.utils.key
 
 object RequestKey {
     const val STORAGE_PERMISSION_CODE = 999

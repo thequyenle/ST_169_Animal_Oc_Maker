@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "417182797963",
+    "project_id": "st169-animal-oc-maker",
+    "storage_bucket": "st169-animal-oc-maker.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:417182797963:android:ff7d54165e58f53302848e",
+        "android_client_info": {
+          "package_name": "com.animal.avatar.charactor.maker"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBvmIQcsiGboM77jq5uccrIrVSeZx6RnkI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,9 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import com.example.st169_animal_oc_maker.core.utils.HandleState
+import com.animal.avatar.charactor.maker.core.utils.HandleState
 
 object InternetHelper {
     fun checkInternet(context: Context, state : ((HandleState) -> Unit) = {}){

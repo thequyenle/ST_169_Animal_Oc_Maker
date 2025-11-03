@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.success
+package com.animal.avatar.charactor.maker.ui.success
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -7,17 +7,17 @@ import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.showToast
-import com.example.st169_animal_oc_maker.core.extensions.startIntent
-import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
-import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.databinding.ActivitySuccessBinding
-import com.example.st169_animal_oc_maker.ui.background.BackgroundActivity
-import com.example.st169_animal_oc_maker.ui.home.HomeActivity
-import com.example.st169_animal_oc_maker.ui.mycreation.MycreationActivity
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showToast
+import com.animal.avatar.charactor.maker.core.extensions.startIntent
+import com.animal.avatar.charactor.maker.core.helper.BitmapHelper
+import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
+import com.animal.avatar.charactor.maker.databinding.ActivitySuccessBinding
+import com.animal.avatar.charactor.maker.ui.background.BackgroundActivity
+import com.animal.avatar.charactor.maker.ui.home.HomeActivity
+import com.animal.avatar.charactor.maker.ui.mycreation.MycreationActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

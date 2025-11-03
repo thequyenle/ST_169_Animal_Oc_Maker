@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.custom
+package com.animal.avatar.charactor.maker.core.custom
 
 import android.content.Context
 import android.util.Log

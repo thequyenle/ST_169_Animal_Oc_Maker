@@ -1,6 +1,6 @@
-package com.example.st169_animal_oc_maker.core.service
+package com.animal.avatar.charactor.maker.core.service
 
-import com.example.st169_animal_oc_maker.core.utils.key.DomainKey
+import com.animal.avatar.charactor.maker.core.utils.key.DomainKey
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

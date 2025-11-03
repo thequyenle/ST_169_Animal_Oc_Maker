@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.base
+package com.animal.avatar.charactor.maker.core.base
 
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
@@ -19,19 +19,19 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.viewbinding.ViewBinding
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.custom.StrokeTextView
-import com.example.st169_animal_oc_maker.core.dialog.LoadingDialog
-import com.example.st169_animal_oc_maker.core.dialog.NoInternetDialog
-import com.example.st169_animal_oc_maker.core.extensions.checkPermissions
-import com.example.st169_animal_oc_maker.core.extensions.goToSettings
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.hideNavigation
-import com.example.st169_animal_oc_maker.core.extensions.requestPermission
-import com.example.st169_animal_oc_maker.core.extensions.select
-import com.example.st169_animal_oc_maker.core.extensions.showToast
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.custom.StrokeTextView
+import com.animal.avatar.charactor.maker.core.dialog.LoadingDialog
+import com.animal.avatar.charactor.maker.core.dialog.NoInternetDialog
+import com.animal.avatar.charactor.maker.core.extensions.checkPermissions
+import com.animal.avatar.charactor.maker.core.extensions.goToSettings
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.hideNavigation
+import com.animal.avatar.charactor.maker.core.extensions.requestPermission
+import com.animal.avatar.charactor.maker.core.extensions.select
+import com.animal.avatar.charactor.maker.core.extensions.showToast
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setLocale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

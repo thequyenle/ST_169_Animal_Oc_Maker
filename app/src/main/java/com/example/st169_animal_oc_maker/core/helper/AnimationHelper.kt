@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.animation.ValueAnimator
 import android.content.Context
@@ -9,8 +9,8 @@ import android.view.animation.TranslateAnimation
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.visible
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.visible
 
 object AnimationHelper{
     // Animate thay đổi margin bottom

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.suggestion
+package com.animal.avatar.charactor.maker.ui.suggestion
 
 fun partici(array: Array<Int>, low: Int, high: Int): Int {
     val pivot = array[high]

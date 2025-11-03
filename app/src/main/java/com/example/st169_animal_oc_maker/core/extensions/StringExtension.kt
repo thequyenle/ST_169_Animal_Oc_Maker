@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.extensions
+package com.animal.avatar.charactor.maker.core.extensions
 
 import kotlin.ranges.random
 

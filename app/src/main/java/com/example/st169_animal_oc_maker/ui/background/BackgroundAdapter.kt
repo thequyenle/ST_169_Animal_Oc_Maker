@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.background
+package com.animal.avatar.charactor.maker.ui.background
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.show
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.show
 import com.girlmaker.create.avatar.creator.model.BackGroundModel
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.BODY
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.shimmerDrawable
-import com.example.st169_animal_oc_maker.databinding.ItemBackgroundBinding
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.BODY
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.shimmerDrawable
+import com.animal.avatar.charactor.maker.databinding.ItemBackgroundBinding
 import kotlin.text.contains
 
 class BackgroundAdapter(private val context: Context) : RecyclerView.Adapter<BackgroundAdapter.BackgroundViewHolder>() {
@@ -43,7 +43,7 @@ class BackgroundAdapter(private val context: Context) : RecyclerView.Adapter<Bac
 
             // Update border based on selection
             if (item.isSelected) {
-                binding.borderFrame.setBackgroundResource(com.example.st169_animal_oc_maker.R.drawable.bg_border_selected)
+                binding.borderFrame.setBackgroundResource(com.animal.avatar.charactor.maker.R.drawable.bg_border_selected)
             } else {
                 binding.borderFrame.setBackgroundResource(android.R.color.transparent)
             }

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.utils
+package com.animal.avatar.charactor.maker.core.utils
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -17,20 +17,20 @@ import com.facebook.shimmer.Shimmer
 import com.facebook.shimmer.ShimmerDrawable
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewManagerFactory
-import com.example.st169_animal_oc_maker.data.custom.CustomizeModel
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.COUNT_BACK
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.COUNT_BACK_KEY
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.FIRST_APP_1
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.FIRST_LANG
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.FIRST_LANG_KEY
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.FIRST_PERMISSION
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.FIRST_PERMISSION_KEY
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.IS_STORAGE
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.KEY_OPEN_ADS
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.NOTIFICATION_KEY
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.RATE
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.RATE_KEY
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.STORAGE_KEY
+import com.animal.avatar.charactor.maker.data.custom.CustomizeModel
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.COUNT_BACK
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.COUNT_BACK_KEY
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.FIRST_APP_1
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.FIRST_LANG
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.FIRST_LANG_KEY
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.FIRST_PERMISSION
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.FIRST_PERMISSION_KEY
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.IS_STORAGE
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.KEY_OPEN_ADS
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.NOTIFICATION_KEY
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.RATE
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.RATE_KEY
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.STORAGE_KEY
 import java.lang.Void
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -193,7 +193,7 @@ object SystemUtils {
     }
 
     fun Activity.policy() {
-        val url = "https://sites.google.com/view/girl-maker-avatar-creator/"
+        val url = "https://sites.google.com/view/animal-character-maker/"
         val i = Intent(Intent.ACTION_VIEW)
         i.data = Uri.parse(url)
         startActivity(i)

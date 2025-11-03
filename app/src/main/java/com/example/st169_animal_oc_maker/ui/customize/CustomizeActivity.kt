@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.customize
+package com.animal.avatar.charactor.maker.ui.customize
 
 import android.content.Intent
 import android.os.Build
@@ -7,27 +7,27 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.dialog.ConfirmDialog
-import com.example.st169_animal_oc_maker.core.extensions.dLog
-import com.example.st169_animal_oc_maker.core.extensions.eLog
-import com.example.st169_animal_oc_maker.core.extensions.hideNavigation
-import com.example.st169_animal_oc_maker.core.helper.InternetHelper
-import com.example.st169_animal_oc_maker.core.extensions.invisible
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.showToast
-import com.example.st169_animal_oc_maker.core.extensions.startIntent
-import com.example.st169_animal_oc_maker.core.extensions.visible
-import com.example.st169_animal_oc_maker.core.utils.SaveState
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
-import com.example.st169_animal_oc_maker.core.utils.key.AssetsKey
-import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
-import com.example.st169_animal_oc_maker.data.custom.ItemNavCustomModel
-import com.example.st169_animal_oc_maker.databinding.ActivityCustomizeBinding
-import com.example.st169_animal_oc_maker.ui.background.BackgroundActivity
-import com.example.st169_animal_oc_maker.ui.home.DataViewModel
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.dialog.ConfirmDialog
+import com.animal.avatar.charactor.maker.core.extensions.dLog
+import com.animal.avatar.charactor.maker.core.extensions.eLog
+import com.animal.avatar.charactor.maker.core.extensions.hideNavigation
+import com.animal.avatar.charactor.maker.core.helper.InternetHelper
+import com.animal.avatar.charactor.maker.core.extensions.invisible
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showToast
+import com.animal.avatar.charactor.maker.core.extensions.startIntent
+import com.animal.avatar.charactor.maker.core.extensions.visible
+import com.animal.avatar.charactor.maker.core.utils.SaveState
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setLocale
+import com.animal.avatar.charactor.maker.core.utils.key.AssetsKey
+import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.data.custom.ItemNavCustomModel
+import com.animal.avatar.charactor.maker.databinding.ActivityCustomizeBinding
+import com.animal.avatar.charactor.maker.ui.background.BackgroundActivity
+import com.animal.avatar.charactor.maker.ui.home.DataViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -229,7 +229,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     /**
      * ✅ LOG: Log chi tiết toàn bộ data của Character 0
      */
-    private fun logCharacter0Data(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+    private fun logCharacter0Data(character: com.animal.avatar.charactor.maker.data.custom.CustomizeModel, source: String) {
         Log.d("CustomizeActivity", "========================================")
         Log.d("CustomizeActivity", "📊 CHARACTER 0 DATA - $source")
         Log.d("CustomizeActivity", "========================================")
@@ -277,7 +277,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     /**
      * ✅ LOG: Log chi tiết toàn bộ data của Miley character
      */
-    private fun logMileyCharacterData(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+    private fun logMileyCharacterData(character: com.animal.avatar.charactor.maker.data.custom.CustomizeModel, source: String) {
         Log.d("CustomizeActivity", "========================================")
         Log.d("CustomizeActivity", "📊 MILEY CHARACTER DATA - $source")
         Log.d("CustomizeActivity", "========================================")
@@ -325,7 +325,7 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     /**
      * ✅ LOG: Log chi tiết toàn bộ data của Dammy character
      */
-    private fun logDammyCharacterData(character: com.example.st169_animal_oc_maker.data.custom.CustomizeModel, source: String) {
+    private fun logDammyCharacterData(character: com.animal.avatar.charactor.maker.data.custom.CustomizeModel, source: String) {
         Log.d("CustomizeActivity", "========================================")
         Log.d("CustomizeActivity", "📊 DAMMY CHARACTER DATA - $source")
         Log.d("CustomizeActivity", "========================================")

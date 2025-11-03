@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker
+package com.animal.avatar.charactor.maker
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

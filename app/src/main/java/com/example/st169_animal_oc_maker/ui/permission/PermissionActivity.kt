@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.permission
+package com.animal.avatar.charactor.maker.ui.permission
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -14,27 +14,27 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.checkPermissions
-import com.example.st169_animal_oc_maker.core.extensions.goToSettings
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.hide
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.requestPermission
-import com.example.st169_animal_oc_maker.core.extensions.show
-import com.example.st169_animal_oc_maker.core.extensions.startIntentAnim
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.NOTIFICATION_PERMISSION_CODE
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.STORAGE_PERMISSION_CODE
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.isNotificationPermission
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.isStoragePermission
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.notificationPermission
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setNotificationPermission
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setStoragePermission
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.storagePermission
-import com.example.st169_animal_oc_maker.databinding.ActivityPermissionBinding
-import com.example.st169_animal_oc_maker.ui.home.HomeActivity
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.checkPermissions
+import com.animal.avatar.charactor.maker.core.extensions.goToSettings
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.hide
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.requestPermission
+import com.animal.avatar.charactor.maker.core.extensions.show
+import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.NOTIFICATION_PERMISSION_CODE
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.STORAGE_PERMISSION_CODE
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.isNotificationPermission
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.isStoragePermission
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.notificationPermission
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setNotificationPermission
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setStoragePermission
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.storagePermission
+import com.animal.avatar.charactor.maker.databinding.ActivityPermissionBinding
+import com.animal.avatar.charactor.maker.ui.home.HomeActivity
 
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
     override fun setViewBinding(): ActivityPermissionBinding {

@@ -1,16 +1,16 @@
-package com.example.st169_animal_oc_maker.ui.suggestion
+package com.animal.avatar.charactor.maker.ui.suggestion
 
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.st169_animal_oc_maker.core.helper.ThumbnailGenerator
-import com.example.st169_animal_oc_maker.core.utils.DataLocal
-import com.example.st169_animal_oc_maker.data.custom.CustomizeModel
-import com.example.st169_animal_oc_maker.data.suggestion.LayerSelection
-import com.example.st169_animal_oc_maker.data.suggestion.RandomState
-import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
+import com.animal.avatar.charactor.maker.core.helper.ThumbnailGenerator
+import com.animal.avatar.charactor.maker.core.utils.DataLocal
+import com.animal.avatar.charactor.maker.data.custom.CustomizeModel
+import com.animal.avatar.charactor.maker.data.suggestion.LayerSelection
+import com.animal.avatar.charactor.maker.data.suggestion.RandomState
+import com.animal.avatar.charactor.maker.data.suggestion.SuggestionModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.asCoroutineDispatcher

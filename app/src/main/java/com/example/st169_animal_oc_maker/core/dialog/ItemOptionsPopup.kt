@@ -1,12 +1,12 @@
-package com.example.st169_animal_oc_maker.core.dialog
+package com.animal.avatar.charactor.maker.core.dialog
 
 import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.PopupWindow
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.databinding.DialogItemOptionsBinding
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.databinding.DialogItemOptionsBinding
 
 class ItemOptionsPopup(private val context: Context) {
     private var popupWindow: PopupWindow? = null

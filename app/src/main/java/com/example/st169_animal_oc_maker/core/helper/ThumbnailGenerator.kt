@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -8,7 +8,7 @@ import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.example.st169_animal_oc_maker.data.suggestion.RandomState
+import com.animal.avatar.charactor.maker.data.suggestion.RandomState
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException

@@ -1,15 +1,15 @@
-package com.example.st169_animal_oc_maker.core.utils
+package com.animal.avatar.charactor.maker.core.utils
 
 
 import android.content.Context
-import com.example.st169_animal_oc_maker.R
+import com.animal.avatar.charactor.maker.R
 import com.girlmaker.create.avatar.creator.model.IntroModel
 import com.girlmaker.create.avatar.creator.model.LanguageModel
 
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.ASSET_MANAGER
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.AVATAR_ASSET
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.AVATAR_STICKER_ASSET
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.BG_ASSET
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.ASSET_MANAGER
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.AVATAR_ASSET
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.AVATAR_STICKER_ASSET
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.BG_ASSET
 import com.facebook.shimmer.Shimmer
 
 import kotlin.collections.forEach

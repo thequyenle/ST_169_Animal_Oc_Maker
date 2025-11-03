@@ -1,11 +1,11 @@
-package com.example.st169_animal_oc_maker.core.dialog
+package com.animal.avatar.charactor.maker.core.dialog
 
 import android.app.Activity
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseDialog
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseDialog
 
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.databinding.DialogNoInternetBinding
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.databinding.DialogNoInternetBinding
 import kotlin.apply
 
 class NoInternetDialog (val context: Activity) : BaseDialog<DialogNoInternetBinding>(context, maxWidth = true, maxHeight = true) {

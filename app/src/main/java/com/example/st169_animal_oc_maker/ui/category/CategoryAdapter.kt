@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.category
+package com.animal.avatar.charactor.maker.ui.category
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,11 +6,11 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.DataLocal.shimmer
-import com.example.st169_animal_oc_maker.data.custom.CustomizeModel
-import com.example.st169_animal_oc_maker.databinding.ItemCategoryBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.DataLocal.shimmer
+import com.animal.avatar.charactor.maker.data.custom.CustomizeModel
+import com.animal.avatar.charactor.maker.databinding.ItemCategoryBinding
 import com.facebook.shimmer.ShimmerDrawable
 import kotlin.collections.ArrayList
 

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.base
+package com.animal.avatar.charactor.maker.core.base
 
 import android.app.Activity
 import android.app.Dialog
@@ -8,8 +8,8 @@ import android.view.View
 import android.view.Window
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
 
 
 abstract class BaseDialog2<DB : ViewDataBinding>(var context: Activity, var canAble: Boolean) :

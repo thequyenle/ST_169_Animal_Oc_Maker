@@ -1,16 +1,18 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
     // ⚠️ COMMENTED OUT due to SSL error with Glide compiler dependency
     // id 'kotlin-kapt'
 }
 
 android {
-    namespace 'com.example.st169_animal_oc_maker'
+    namespace 'com.animal.avatar.charactor.maker'
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.example.st169_animal_oc_maker"
+        applicationId "com.animal.avatar.charactor.maker"
         minSdk 24
         targetSdk 35
         versionCode 1
@@ -59,7 +61,6 @@ dependencies {
 
     implementation libs.androidx.core.ktx
     implementation libs.androidx.appcompat
-    implementation libs.material
     implementation libs.androidx.activity
     implementation libs.androidx.constraintlayout
     testImplementation libs.junit
@@ -68,7 +69,6 @@ dependencies {
     // review app
     implementation("com.google.android.play:review-ktx:2.0.1")
     // required to avoid crash on Android 12 API 31
-    implementation 'androidx.work:work-runtime-ktx:2.7.0'
     // Glide
     implementation 'com.github.bumptech.glide:glide:4.16.0'
     // ⚠️ COMMENTED OUT due to SSL error during build - MyGlideModule won't be generated
@@ -103,6 +103,15 @@ dependencies {
     implementation "androidx.room:room-ktx:2.6.1"
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0"
+
+    // required to avoid crash on Android 12 API 31
+    implementation 'androidx.work:work-runtime-ktx:2.7.0'
+    //firebase
+    implementation platform('com.google.firebase:firebase-bom:31.1.1')
+    implementation 'com.google.firebase:firebase-analytics'
+    implementation 'com.google.firebase:firebase-crashlytics'
+    implementation 'com.google.firebase:firebase-messaging:23.3.1'
+    implementation 'com.google.firebase:firebase-config:21.5.0'
     // LiveData
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.0"
     //Lifecycle runtime (nếu dùng lifecycleScope)

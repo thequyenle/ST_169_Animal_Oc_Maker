@@ -1,16 +1,16 @@
-package com.example.st169_animal_oc_maker
+package com.animal.avatar.charactor.maker
 
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.RatingPreferences
-import com.example.st169_animal_oc_maker.databinding.ActivitySettingsBinding
-import com.example.st169_animal_oc_maker.dialog.RatingDialog
-import com.example.st169_animal_oc_maker.ui.language.LanguageActivity
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.RatingPreferences
+import com.animal.avatar.charactor.maker.databinding.ActivitySettingsBinding
+import com.animal.avatar.charactor.maker.dialog.RatingDialog
+import com.animal.avatar.charactor.maker.ui.language.LanguageActivity
 
 class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
 

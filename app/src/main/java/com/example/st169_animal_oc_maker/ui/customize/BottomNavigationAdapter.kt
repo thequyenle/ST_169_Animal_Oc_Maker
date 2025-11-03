@@ -1,17 +1,17 @@
-package com.example.st169_animal_oc_maker.ui.customize
+package com.animal.avatar.charactor.maker.ui.customize
 
 import android.content.Context
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseAdapter
-import com.example.st169_animal_oc_maker.core.extensions.gone
-import com.example.st169_animal_oc_maker.core.extensions.invisible
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.DataLocal
-import com.example.st169_animal_oc_maker.data.custom.NavigationModel
-import com.example.st169_animal_oc_maker.databinding.ItemNaviBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseAdapter
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.invisible
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.DataLocal
+import com.animal.avatar.charactor.maker.data.custom.NavigationModel
+import com.animal.avatar.charactor.maker.databinding.ItemNaviBinding
 import com.facebook.shimmer.ShimmerDrawable
 
 

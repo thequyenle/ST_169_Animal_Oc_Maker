@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.custom
+package com.animal.avatar.charactor.maker.core.custom
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,7 +9,7 @@ import android.graphics.Paint.Join
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.graphics.toColorInt
-import com.example.st169_animal_oc_maker.R
+import com.animal.avatar.charactor.maker.R
 
 
 class StrokeTextView : AppCompatTextView {

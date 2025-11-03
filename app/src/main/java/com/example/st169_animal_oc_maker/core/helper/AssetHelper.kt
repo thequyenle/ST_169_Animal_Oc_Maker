@@ -1,15 +1,15 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.content.Context
 import android.content.res.AssetManager
 import android.graphics.Bitmap
 import android.util.Log
-import com.example.st169_animal_oc_maker.core.utils.key.AssetsKey
-import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
-import com.example.st169_animal_oc_maker.data.custom.ColorModel
-import com.example.st169_animal_oc_maker.data.custom.CustomizeModel
-import com.example.st169_animal_oc_maker.data.custom.LayerListModel
-import com.example.st169_animal_oc_maker.data.custom.LayerModel
+import com.animal.avatar.charactor.maker.core.utils.key.AssetsKey
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.data.custom.ColorModel
+import com.animal.avatar.charactor.maker.data.custom.CustomizeModel
+import com.animal.avatar.charactor.maker.data.custom.LayerListModel
+import com.animal.avatar.charactor.maker.data.custom.LayerModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.async

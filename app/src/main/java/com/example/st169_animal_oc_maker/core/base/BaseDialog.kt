@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.base
+package com.animal.avatar.charactor.maker.core.base
 
 import android.app.Dialog
 import android.content.Context
@@ -12,7 +12,7 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
 
 
 abstract class BaseDialog<VB : ViewBinding>(

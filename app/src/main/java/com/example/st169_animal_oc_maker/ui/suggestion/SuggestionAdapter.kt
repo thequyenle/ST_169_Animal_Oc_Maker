@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.suggestion
+package com.animal.avatar.charactor.maker.ui.suggestion
 
 import android.graphics.Bitmap
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
-import com.example.st169_animal_oc_maker.databinding.ItemSuggestionBinding
+import com.animal.avatar.charactor.maker.data.suggestion.SuggestionModel
+import com.animal.avatar.charactor.maker.databinding.ItemSuggestionBinding
 
 class SuggestionAdapter(
     private val onItemClick: (SuggestionModel) -> Unit

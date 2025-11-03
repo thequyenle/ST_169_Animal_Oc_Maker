@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.dialog
+package com.animal.avatar.charactor.maker.dialog
 
 import android.app.Dialog
 import android.content.Context
@@ -12,7 +12,7 @@ import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import com.willy.ratingbar.ScaleRatingBar
-import com.example.st169_animal_oc_maker.R
+import com.animal.avatar.charactor.maker.R
 
 class RatingDialog(
     context: Context,

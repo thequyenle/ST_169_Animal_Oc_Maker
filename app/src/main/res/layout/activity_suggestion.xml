@@ -60,7 +60,7 @@
             android:paddingBottom="25dp">
 
             <!-- Tommy Section -->
-            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
+            <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
                 android:id="@+id/tommy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -76,26 +76,26 @@
                 app:strokeWidth="4dp"
                 app:strokeColor="@color/white" />
 
+            <!-- Miley Section -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rcvTommy"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="13dp"
                 android:layout_marginBottom="20dp"
-                android:paddingHorizontal="20dp"
-                android:clipToPadding="false"
                 android:clipChildren="false"
+                android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
+                android:paddingHorizontal="20dp"
                 android:paddingBottom="3dp"
                 tools:listitem="@layout/item_suggestion" />
 
-            <!-- Miley Section -->
-            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
+            <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
                 android:id="@+id/miley"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
                 android:paddingBottom="7dp"
@@ -121,16 +121,16 @@
                 tools:listitem="@layout/item_suggestion" />
 
             <!-- Dammy Section -->
-            <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
+            <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
                 android:id="@+id/dammy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="0dp"
                 android:fontFamily="@font/coiny_regular"
                 android:includeFontPadding="false"
                 android:paddingBottom="7dp"
-                android:paddingTop="3dp"
+                android:paddingTop="0dp"
                 android:text="@string/dammy"
                 android:textColor="#8501D2"
                 android:textSize="24sp"
@@ -145,6 +145,7 @@
                 android:paddingHorizontal="20dp"
                 android:clipToPadding="false"
                 android:clipChildren="false"
+                android:paddingBottom="7dp"
                 android:nestedScrollingEnabled="false"
                 tools:listitem="@layout/item_suggestion" />
 

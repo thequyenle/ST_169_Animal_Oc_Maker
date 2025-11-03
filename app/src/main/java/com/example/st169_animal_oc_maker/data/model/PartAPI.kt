@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.data.model
+package com.animal.avatar.charactor.maker.data.model
 
 data class PartAPI(
     val position: String,

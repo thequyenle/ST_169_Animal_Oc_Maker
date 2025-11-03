@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.data.suggestion
+package com.animal.avatar.charactor.maker.data.suggestion
 
 import com.google.gson.Gson
 

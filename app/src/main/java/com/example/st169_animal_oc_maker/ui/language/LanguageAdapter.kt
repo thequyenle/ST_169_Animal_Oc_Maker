@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.language
+package com.animal.avatar.charactor.maker.ui.language
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.databinding.ItemLanguageBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.databinding.ItemLanguageBinding
 
 import com.girlmaker.create.avatar.creator.model.LanguageModel
 import kotlin.apply

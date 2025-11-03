@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.itemsticker
+package com.animal.avatar.charactor.maker.ui.itemsticker
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -7,9 +7,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.shimmerDrawable
-import com.example.st169_animal_oc_maker.databinding.ItemStickerBinding
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.shimmerDrawable
+import com.animal.avatar.charactor.maker.databinding.ItemStickerBinding
 import kotlin.collections.ArrayList
 
 

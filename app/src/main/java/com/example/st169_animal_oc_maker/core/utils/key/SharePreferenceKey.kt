@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.utils.key
+package com.animal.avatar.charactor.maker.core.utils.key
 
 object SharePreferenceKey {
     const val SHARE_KEY = "data_share"

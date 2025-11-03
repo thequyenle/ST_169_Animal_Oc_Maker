@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.content.Context
 import android.media.SoundPool

@@ -1,28 +1,28 @@
-package com.example.st169_animal_oc_maker.ui.background
+package com.animal.avatar.charactor.maker.ui.background
 
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import android.content.Intent
 import android.graphics.Color
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.showToast
-import com.example.st169_animal_oc_maker.core.utils.SaveState
-import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
-import com.example.st169_animal_oc_maker.databinding.ActivityBackgroundBinding
-import com.example.st169_animal_oc_maker.ui.success.SuccessActivity
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showToast
+import com.animal.avatar.charactor.maker.core.utils.SaveState
+import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.databinding.ActivityBackgroundBinding
+import com.animal.avatar.charactor.maker.ui.success.SuccessActivity
 import com.girlmaker.create.avatar.creator.model.BackGroundModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.example.st169_animal_oc_maker.core.helper.BitmapHelper
-import com.example.st169_animal_oc_maker.core.helper.InternetHelper
-import com.example.st169_animal_oc_maker.core.helper.MediaHelper
+import com.animal.avatar.charactor.maker.core.helper.BitmapHelper
+import com.animal.avatar.charactor.maker.core.helper.InternetHelper
+import com.animal.avatar.charactor.maker.core.helper.MediaHelper
 
 class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     private val backgroundAdapter by lazy { BackgroundAdapter(this) }

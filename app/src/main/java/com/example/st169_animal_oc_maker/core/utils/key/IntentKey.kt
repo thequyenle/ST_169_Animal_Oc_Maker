@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.utils.key
+package com.animal.avatar.charactor.maker.core.utils.key
 
 object IntentKey {
     const val INTENT_KEY = "intent_key"

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.base
+package com.animal.avatar.charactor.maker.core.base
 
 import android.annotation.SuppressLint
 import android.view.LayoutInflater

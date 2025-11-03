@@ -1,12 +1,12 @@
-package com.example.st169_animal_oc_maker.ui.customize
+package com.animal.avatar.charactor.maker.ui.customize
 
 import android.content.Context
 import androidx.core.view.isVisible
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseAdapter
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.data.custom.ItemColorModel
-import com.example.st169_animal_oc_maker.databinding.ItemColorBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseAdapter
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.data.custom.ItemColorModel
+import com.animal.avatar.charactor.maker.databinding.ItemColorBinding
 
 
 class ColorLayerAdapter(val context: Context) :

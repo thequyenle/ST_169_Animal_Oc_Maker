@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.extensions
+package com.animal.avatar.charactor.maker.core.extensions
 
 import android.app.Activity
 import android.app.AlertDialog
@@ -12,9 +12,9 @@ import android.widget.Button
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.st169_animal_oc_maker.R
+import com.animal.avatar.charactor.maker.R
 
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setLocale
 import kotlin.apply
 import kotlin.collections.all
 

@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.helper
+package com.animal.avatar.charactor.maker.core.helper
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -26,10 +26,10 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.net.URL
 import androidx.core.graphics.scale
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.utils.HandleState
-import com.example.st169_animal_oc_maker.core.utils.SaveState
-import com.example.st169_animal_oc_maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.utils.HandleState
+import com.animal.avatar.charactor.maker.core.utils.SaveState
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
 import kotlinx.coroutines.flow.flowOn
 
 object MediaHelper {

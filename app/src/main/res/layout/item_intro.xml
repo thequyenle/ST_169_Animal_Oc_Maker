@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <com.example.st169_animal_oc_maker.core.custom.StrokeTextView
+    <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
         android:id="@+id/txtContent"
         style="@style/custom_text"
         android:layout_width="match_parent"

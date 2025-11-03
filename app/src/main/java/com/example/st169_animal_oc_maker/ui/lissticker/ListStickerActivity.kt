@@ -1,15 +1,15 @@
-package com.example.st169_animal_oc_maker.ui.lissticker
+package com.animal.avatar.charactor.maker.ui.lissticker
 
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.utils.DataLocal.getAvatarStickerAsset
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.HALLOWEEN_KEY
-import com.example.st169_animal_oc_maker.databinding.ActivityListStickerBinding
-import com.example.st169_animal_oc_maker.ui.itemsticker.ItemStickerActivity
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.utils.DataLocal.getAvatarStickerAsset
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.HALLOWEEN_KEY
+import com.animal.avatar.charactor.maker.databinding.ActivityListStickerBinding
+import com.animal.avatar.charactor.maker.ui.itemsticker.ItemStickerActivity
 
 class ListStickerActivity : BaseActivity<ActivityListStickerBinding>() {
 

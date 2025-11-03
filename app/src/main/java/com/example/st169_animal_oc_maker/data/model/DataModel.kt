@@ -1,7 +1,7 @@
-package com.example.st169_animal_oc_maker.data.model
+package com.animal.avatar.charactor.maker.data.model
 
-import com.example.st169_animal_oc_maker.data.custom.ItemColorModel
-import com.example.st169_animal_oc_maker.data.custom.ItemNavCustomModel
+import com.animal.avatar.charactor.maker.data.custom.ItemColorModel
+import com.animal.avatar.charactor.maker.data.custom.ItemNavCustomModel
 
 
 data class DataModel(

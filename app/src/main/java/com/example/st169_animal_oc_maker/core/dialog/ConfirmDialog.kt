@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.dialog
+package com.animal.avatar.charactor.maker.core.dialog
 
 import android.app.Activity
 import android.graphics.Color
@@ -7,12 +7,12 @@ import android.graphics.Shader
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseDialog
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseDialog
 
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.select
-import com.example.st169_animal_oc_maker.databinding.DialogConfirmBinding
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.select
+import com.animal.avatar.charactor.maker.databinding.DialogConfirmBinding
 
 import kotlin.apply
 

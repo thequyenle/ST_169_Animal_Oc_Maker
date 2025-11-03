@@ -1,16 +1,18 @@
-package com.example.st169_animal_oc_maker.ui.splash
+package com.animal.avatar.charactor.maker.ui.splash
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
-import com.example.st169_animal_oc_maker.databinding.ActivitySplashBinding
-import com.example.st169_animal_oc_maker.ui.home.DataViewModel
-import com.example.st169_animal_oc_maker.ui.intro.IntroActivity
-import com.example.st169_animal_oc_maker.ui.language.LanguageActivity
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.databinding.ActivitySplashBinding
+import com.animal.avatar.charactor.maker.ui.home.DataViewModel
+import com.animal.avatar.charactor.maker.ui.intro.IntroActivity
+import com.animal.avatar.charactor.maker.ui.language.LanguageActivity
 import kotlinx.coroutines.launch
 
 class SplashActivity : BaseActivity<ActivitySplashBinding>() {
@@ -19,6 +21,9 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
     override fun setViewBinding(): ActivitySplashBinding {
         return ActivitySplashBinding.inflate(LayoutInflater.from(this))
     }
+
+
+
 
     override fun initView() {
         if (!isTaskRoot && intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intent.action != null && intent.action.equals(

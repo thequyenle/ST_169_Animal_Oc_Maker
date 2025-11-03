@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.suggestion
+package com.animal.avatar.charactor.maker.ui.suggestion
 
 import android.content.Intent
 import android.graphics.Bitmap
@@ -6,15 +6,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.handleBack
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.helper.InternetHelper
-import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.data.suggestion.SuggestionModel
-import com.example.st169_animal_oc_maker.databinding.ActivitySuggestionBinding
-import com.example.st169_animal_oc_maker.ui.customize.CustomizeActivity
-import com.example.st169_animal_oc_maker.ui.home.DataViewModel
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.handleBack
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.helper.InternetHelper
+import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
+import com.animal.avatar.charactor.maker.data.suggestion.SuggestionModel
+import com.animal.avatar.charactor.maker.databinding.ActivitySuggestionBinding
+import com.animal.avatar.charactor.maker.ui.customize.CustomizeActivity
+import com.animal.avatar.charactor.maker.ui.home.DataViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -86,15 +86,15 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
     private fun setupRecyclerViews() {
         // Use WrapContentGridLayoutManager to properly handle wrap_content in ScrollView
         binding.rcvTommy.apply {
-            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            layoutManager = com.animal.avatar.charactor.maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
             isNestedScrollingEnabled = false
         }
         binding.rcvMiley.apply {
-            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            layoutManager = com.animal.avatar.charactor.maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
             isNestedScrollingEnabled = false
         }
         binding.rcvDammy.apply {
-            layoutManager = com.example.st169_animal_oc_maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
+            layoutManager = com.animal.avatar.charactor.maker.core.custom.WrapContentGridLayoutManager(this@SuggestionActivity, 2)
             isNestedScrollingEnabled = false
         }
     }

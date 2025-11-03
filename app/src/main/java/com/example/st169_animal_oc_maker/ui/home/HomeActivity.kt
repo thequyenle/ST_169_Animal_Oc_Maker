@@ -1,18 +1,18 @@
-package com.example.st169_animal_oc_maker.ui.home
+package com.animal.avatar.charactor.maker.ui.home
 
 import android.annotation.SuppressLint
 import android.util.Log
 import android.view.LayoutInflater
-import com.example.st169_animal_oc_maker.SettingsActivity
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.extensions.onSingleClick
-import com.example.st169_animal_oc_maker.core.extensions.startIntentAnim
-import com.example.st169_animal_oc_maker.core.utils.RatingPreferences
-import com.example.st169_animal_oc_maker.databinding.ActivityHomeBinding
-import com.example.st169_animal_oc_maker.dialog.RatingDialog
-import com.example.st169_animal_oc_maker.ui.category.CategoryActivity
-import com.example.st169_animal_oc_maker.ui.mycreation.MycreationActivity
-import com.example.st169_animal_oc_maker.ui.suggestion.SuggestionActivity
+import com.animal.avatar.charactor.maker.SettingsActivity
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
+import com.animal.avatar.charactor.maker.core.utils.RatingPreferences
+import com.animal.avatar.charactor.maker.databinding.ActivityHomeBinding
+import com.animal.avatar.charactor.maker.dialog.RatingDialog
+import com.animal.avatar.charactor.maker.ui.category.CategoryActivity
+import com.animal.avatar.charactor.maker.ui.mycreation.MycreationActivity
+import com.animal.avatar.charactor.maker.ui.suggestion.SuggestionActivity
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
 

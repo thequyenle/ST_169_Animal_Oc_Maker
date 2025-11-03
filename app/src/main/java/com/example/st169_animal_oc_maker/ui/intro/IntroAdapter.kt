@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.ui.intro
+package com.animal.avatar.charactor.maker.ui.intro
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -8,9 +8,9 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.marginTop
 import androidx.recyclerview.widget.RecyclerView
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.extensions.select
-import com.example.st169_animal_oc_maker.databinding.ItemIntroBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.extensions.select
+import com.animal.avatar.charactor.maker.databinding.ItemIntroBinding
 import com.girlmaker.create.avatar.creator.model.IntroModel
 
 import kotlin.apply

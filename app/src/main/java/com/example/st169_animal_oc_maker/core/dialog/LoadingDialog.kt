@@ -1,9 +1,9 @@
-package com.example.st169_animal_oc_maker.core.dialog
+package com.animal.avatar.charactor.maker.core.dialog
 
 import android.app.Activity
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.base.BaseDialog
-import com.example.st169_animal_oc_maker.databinding.DialogLoadingBinding
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseDialog
+import com.animal.avatar.charactor.maker.databinding.DialogLoadingBinding
 
 
 class LoadingDialog(val context: Activity) : BaseDialog<DialogLoadingBinding>(context, maxWidth = true, maxHeight = true) {

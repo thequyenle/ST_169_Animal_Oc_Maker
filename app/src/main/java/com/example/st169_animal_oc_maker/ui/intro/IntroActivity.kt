@@ -1,14 +1,14 @@
-package com.example.st169_animal_oc_maker.ui.intro
+package com.animal.avatar.charactor.maker.ui.intro
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
-import com.example.st169_animal_oc_maker.core.base.BaseActivity
-import com.example.st169_animal_oc_maker.core.utils.DataLocal
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
-import com.example.st169_animal_oc_maker.databinding.ActivityIntroBinding
-import com.example.st169_animal_oc_maker.ui.home.HomeActivity
-import com.example.st169_animal_oc_maker.ui.permission.PermissionActivity
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.utils.DataLocal
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.databinding.ActivityIntroBinding
+import com.animal.avatar.charactor.maker.ui.home.HomeActivity
+import com.animal.avatar.charactor.maker.ui.permission.PermissionActivity
 import kotlin.system.exitProcess
 
 class IntroActivity : BaseActivity<ActivityIntroBinding>() {

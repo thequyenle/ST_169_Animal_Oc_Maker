@@ -1,4 +1,4 @@
-package com.example.st169_animal_oc_maker.core.extensions
+package com.animal.avatar.charactor.maker.core.extensions
 
 import android.app.Activity
 import android.content.Context
@@ -17,15 +17,15 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
-import com.example.st169_animal_oc_maker.R
-import com.example.st169_animal_oc_maker.core.dialog.LoadingDialog
-import com.example.st169_animal_oc_maker.core.dialog.NoInternetDialog
-import com.example.st169_animal_oc_maker.core.utils.KeyApp.INTENT_KEY
-import com.example.st169_animal_oc_maker.core.utils.key.IntentKey
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.lastClickTime
-import com.example.st169_animal_oc_maker.core.utils.SystemUtils.setLocale
-import com.example.st169_animal_oc_maker.ui.home.HomeActivity
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.dialog.LoadingDialog
+import com.animal.avatar.charactor.maker.core.dialog.NoInternetDialog
+import com.animal.avatar.charactor.maker.core.utils.KeyApp.INTENT_KEY
+import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.lastClickTime
+import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setLocale
+import com.animal.avatar.charactor.maker.ui.home.HomeActivity
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
