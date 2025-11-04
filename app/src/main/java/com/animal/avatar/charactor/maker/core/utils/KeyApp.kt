@@ -52,7 +52,7 @@ object KeyApp {
     const val AVATAR_ASSET = "avatar"
 
     const val AVATAR_STICKER_ASSET = "avatar_sticker"
-    const val BG_ASSET = "bg"
+    const val BG_ASSET = "background"
 
     const val BODY = "body"
     const val FACE = "face"
