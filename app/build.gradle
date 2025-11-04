@@ -113,6 +113,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-messaging:23.3.1'
     implementation 'com.google.firebase:firebase-config:21.5.0'
     // LiveData
+
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.9.0"
     //Lifecycle runtime (nếu dùng lifecycleScope)
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.9.0"
