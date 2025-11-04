@@ -53,7 +53,9 @@
 -keep public enum com.bumptech.glide.load.EncodeStrategy { *; }
 
 
+-keep class com.animal.avatar.charactor.maker.ui.suggestion.** {*; }
+-keep class com.animal.avatar.charactor.maker.ui.customize.** {*; }
+
 -keep class com.animal.avatar.charactor.maker.ui.splash.SplashActivity.** {*; }
--keep class com.animal.avatar.charactor.maker.data.custom.** {*; }
--keep class com.animal.avatar.charactor.maker.data.model.** {*; }
+-keep class com.animal.avatar.charactor.maker.data.** {*; }
 -keep public class com.google.android.gms.** { public protected *; }
