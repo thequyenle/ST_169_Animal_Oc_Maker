@@ -132,6 +132,14 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     }
 
     private fun handleSelectBackground(item: BackGroundModel, position: Int) {
+        // Check if item is from online URL and internet is available
+        if (item.path.startsWith("https://") || item.path.startsWith("http://")) {
+            if (!InternetHelper.checkInternet(this)) {
+                showNoInternetDialog()
+                return
+            }
+        }
+
         lifecycleScope.launch(Dispatchers.IO) {
             val path = item.path
             selectedBackgroundPath = path
