@@ -67,7 +67,7 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
             onRatingSubmitted = { rating ->
                 handleRatingSubmitted()
                 if (rating >= 4) {
-                    reviewApp(this, true)
+                    reviewApp(this, false)
                 }
             },
             onDismiss = {
@@ -126,7 +126,7 @@ class SettingsActivity : BaseActivity<ActivitySettingsBinding>() {
     }
 
     private fun openPrivacyPolicy() {
-        val url = "https://sites.google.com/view/docx-reader-office-viewer/home"
+        val url = "https://sites.google.com/view/animal-character-maker/"
         val intent = Intent(Intent.ACTION_VIEW).apply {
             data = android.net.Uri.parse(url)
         }
