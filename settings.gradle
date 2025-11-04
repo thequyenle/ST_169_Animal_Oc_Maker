@@ -42,5 +42,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "ST181_Halloween_Maker"
+rootProject.name = "Animal Character Maker"
 include ':app'
