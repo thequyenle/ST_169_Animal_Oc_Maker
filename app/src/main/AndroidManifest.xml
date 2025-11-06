@@ -7,17 +7,13 @@
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <!-- Storage permissions for different Android versions -->
-    <!-- Android 8-12: Need WRITE_EXTERNAL_STORAGE -->
+    <!-- Android 8-12: Need WRITE_EXTERNAL_STORAGE for saving images to gallery -->
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32"
         tools:ignore="ScopedStorage" />
 
-    <!-- Android 13+: Need READ_MEDIA_IMAGES for reading, but writing uses MediaStore (no permission needed) -->
-    <uses-permission
-        android:name="android.permission.READ_MEDIA_IMAGES"
-        android:minSdkVersion="33" />
-
+    <!-- Android 13+: Uses MediaStore API for saving (no permission needed) -->
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -30,14 +26,6 @@
         android:theme="@style/Theme.ST181_Halloween_Maker">
         <activity
             android:name=".SettingsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.itemsticker.ItemStickerActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".ui.lissticker.ListStickerActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity

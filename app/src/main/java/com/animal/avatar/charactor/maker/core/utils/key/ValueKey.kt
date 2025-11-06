@@ -1,7 +1,7 @@
 package com.animal.avatar.charactor.maker.core.utils.key
 
 object ValueKey {
-    const val DOWNLOAD_ALBUM = "Animal OC Maker"
+    const val DOWNLOAD_ALBUM = "Animal Character Maker"
     const val DOWNLOAD_ALBUM_BACKGROUND = "Image Background"
     const val DATA_INTERNAL = "DATA_INTERNAL"
     const val POSITION_API = 3
