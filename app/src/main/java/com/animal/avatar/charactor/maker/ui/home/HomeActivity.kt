@@ -39,9 +39,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     override fun viewListener() {
         binding.apply {
             btnCreate.onSingleClick {
-                showInterAll {
+
                     startIntentAnim(CategoryActivity::class.java)
-                }
+
 
             }
             btnSetting.onSingleClick {

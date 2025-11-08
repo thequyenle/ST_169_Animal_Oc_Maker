@@ -5,6 +5,9 @@ import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.dialog.ConfirmDialog
@@ -12,6 +15,7 @@ import com.animal.avatar.charactor.maker.core.extensions.gone
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
 import com.animal.avatar.charactor.maker.core.extensions.show
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.showToast
 import com.animal.avatar.charactor.maker.core.helper.BitmapHelper
 import com.animal.avatar.charactor.maker.core.helper.MediaHelper
@@ -59,14 +63,18 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
                 if (isSelectionMode) {
                     exitSelectionMode()
                 } else {
-                    // If from SuccessActivity, navigate to HomeActivity
-                    if (fromSuccess) {
-                        val intent = Intent(this@MycreationActivity, HomeActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    } else {
-                        handleBack()
+                    //quyen
+                    showInterAll {
+                        // If from SuccessActivity, navigate to HomeActivity
+                        if (fromSuccess) {
+                            val intent = Intent(this@MycreationActivity, HomeActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                        } else {
+                            handleBack()
+                        }
                     }
+                    //quyen
                 }
             }
 
@@ -155,10 +163,14 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
     private fun handleRcv() {
         myCreationAdapter.onItemClick = { path ->
             // ✅ Navigate to ViewActivity regardless of selection mode
-            val intent = Intent(this, ViewActivity::class.java).apply {
-                putExtra(IntentKey.IMAGE_PATH_KEY, path)
+            //quyen
+            showInterAll {
+                val intent = Intent(this, ViewActivity::class.java).apply {
+                    putExtra(IntentKey.IMAGE_PATH_KEY, path)
+                }
+                startActivity(intent)
             }
-            startActivity(intent)
+            //quyen
         }
 
         myCreationAdapter.onDeleteClick = { path, position ->
@@ -550,4 +562,17 @@ class MycreationActivity : BaseActivity<ActivityMycreationBinding>() {
             }
         }
     }
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_album), binding.nativeAds2)
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_creation), binding.nativeAds, R.layout.ads_native_collap_banner_1)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_album), binding.nativeAds2)
+    }
+    //quyen
 }

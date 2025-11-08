@@ -4,12 +4,16 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import android.content.Intent
 import android.graphics.Color
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.showToast
 import com.animal.avatar.charactor.maker.core.utils.SaveState
 import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
@@ -323,22 +327,26 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
                         }
                         is SaveState.Success -> {
                             dismissLoading(true)
-                            // Navigate to SuccessActivity after saving
-                            val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
-                                if (isNoneSelected) {
-                                    // ✅ When None is selected, pass background color
-                                    putExtra(IntentKey.IS_NONE_SELECTED, true)
-                                    putExtra(IntentKey.BACKGROUND_COLOR_KEY, categoryBackgroundColor)
-                                } else {
-                                    // Normal flow: pass selected background path
-                                    putExtra(IntentKey.IS_NONE_SELECTED, false)
-                                    putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
+                            //quyen
+                            showInterAll {
+                                // Navigate to SuccessActivity after saving
+                                val intent = Intent(this@BackgroundActivity, SuccessActivity::class.java).apply {
+                                    if (isNoneSelected) {
+                                        // ✅ When None is selected, pass background color
+                                        putExtra(IntentKey.IS_NONE_SELECTED, true)
+                                        putExtra(IntentKey.BACKGROUND_COLOR_KEY, categoryBackgroundColor)
+                                    } else {
+                                        // Normal flow: pass selected background path
+                                        putExtra(IntentKey.IS_NONE_SELECTED, false)
+                                        putExtra(IntentKey.BACKGROUND_IMAGE_KEY, selectedBackgroundPath)
+                                    }
+                                    putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
+                                    putExtra(IntentKey.CATEGORY_POSITION_KEY, categoryPosition)
                                 }
-                                putExtra(IntentKey.PREVIOUS_IMAGE_KEY, previousImagePath)
-                                putExtra(IntentKey.CATEGORY_POSITION_KEY, categoryPosition)
+                                startActivity(intent)
+                                finish()
                             }
-                            startActivity(intent)
-                            finish()
+                            //quyen
                         }
                     }
                 }
@@ -346,4 +354,16 @@ class BackgroundActivity : BaseActivity<ActivityBackgroundBinding>() {
     }
 
     override fun initText() {}
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_bg), binding.nativeAds2)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_bg), binding.nativeAds2)
+    }
+    //quyen
 }

@@ -61,18 +61,30 @@
         </RelativeLayout>
     </RelativeLayout>
 
+    <!-- quyen -->
+    <FrameLayout
+        android:id="@+id/native_ads"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/actionBar">
+        <include layout="@layout/ads_shimmer_collap_native_banner"/>
+    </FrameLayout>
+    <!-- quyen -->
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/actionBar">
+        app:layout_constraintTop_toBottomOf="@+id/native_ads">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rcv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="10dp"
+            android:layout_marginBottom="82dp"
             android:paddingHorizontal="12dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             android:orientation="vertical"
@@ -80,5 +92,15 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <!-- quyen -->
+    <FrameLayout
+        android:id="@+id/native_ads_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <include layout="@layout/ads_shimmer_collap_native"/>
+    </FrameLayout>
+    <!-- quyen -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

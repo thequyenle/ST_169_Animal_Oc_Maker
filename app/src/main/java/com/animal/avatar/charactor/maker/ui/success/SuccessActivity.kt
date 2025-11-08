@@ -7,9 +7,13 @@ import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.showToast
 import com.animal.avatar.charactor.maker.core.extensions.startIntent
 import com.animal.avatar.charactor.maker.core.helper.BitmapHelper
@@ -98,8 +102,12 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
 
         // Add click listener for ic_home to return to HomeActivity
         binding.icHome.onSingleClick {
-            startIntent(HomeActivity::class.java)
-            finish()
+            //quyen
+            showInterAll {
+                startIntent(HomeActivity::class.java)
+                finish()
+            }
+            //quyen
         }
 
         // Add click listener for btnMyAlbum to navigate to MycreationActivity
@@ -199,4 +207,16 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
     override fun initText() {
         // Initialize text here if needed
     }
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_success), binding.nativeAds2)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_success), binding.nativeAds2)
+    }
+    //quyen
 }

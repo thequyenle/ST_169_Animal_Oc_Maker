@@ -7,6 +7,9 @@ import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.dialog.ConfirmDialog
@@ -16,6 +19,7 @@ import com.animal.avatar.charactor.maker.core.extensions.hideNavigation
 import com.animal.avatar.charactor.maker.core.helper.InternetHelper
 import com.animal.avatar.charactor.maker.core.extensions.invisible
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.showToast
 import com.animal.avatar.charactor.maker.core.extensions.startIntent
 import com.animal.avatar.charactor.maker.core.extensions.visible
@@ -192,29 +196,47 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     override fun viewListener() {
         binding.apply {
             actionBar.apply {
-                btnBack.onSingleClick { confirmExit() }
-                btnNext.onSingleClick { handleSave() }
+                btnBack.onSingleClick {
+                    confirmExit()
+                }
+                btnNext.onSingleClick {
+                    //quyen
+                    showInterAll {
+                        handleSave()
+                    }
+                    //quyen
+                }
             }
             btnRandom.onSingleClick {
-                // Check internet for Miley (1) and Dammy (2)
-                if (categoryPosition == 1 || categoryPosition == 2) {
-                    if (!InternetHelper.checkInternet(this@CustomizeActivity)) {
-                        showNoInternetDialog()
-                        return@onSingleClick
+                //quyen
+                showInterAll {
+                    // Check internet for Miley (1) and Dammy (2)
+                    if (categoryPosition == 1 || categoryPosition == 2) {
+                        if (!InternetHelper.checkInternet(this@CustomizeActivity)) {
+                            showNoInternetDialog()
+                            return@showInterAll
+                        }
                     }
-                }
 
-                if (viewModel.isDataAPI()) {
-                    if (InternetHelper.checkInternet(this@CustomizeActivity)) {
-                        handleRandomAllLayer()
+                    if (viewModel.isDataAPI()) {
+                        if (InternetHelper.checkInternet(this@CustomizeActivity)) {
+                            handleRandomAllLayer()
+                        } else {
+                            showNoInternetDialog()
+                        }
                     } else {
-                        showNoInternetDialog()
+                        handleRandomAllLayer()
                     }
-                } else {
-                    handleRandomAllLayer()
                 }
+                //quyen
             }
-            btnReset.onSingleClick { handleReset() }
+            btnReset.onSingleClick {
+                //quyen
+                showInterAll {
+                    handleReset()
+                }
+                //quyen
+            }
             btnFlip.onSingleClick { viewModel.setIsFlip() }
             btnColor.onSingleClick { toggleColorBar() }
 
@@ -1178,42 +1200,46 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
     private fun handleClickBottomNavigation(positionBottomNavigation: Int) {
         if (positionBottomNavigation == viewModel.positionNavSelected.value) return
-        lifecycleScope.launch(Dispatchers.IO) {
-            viewModel.setPositionNavSelected(positionBottomNavigation)
-            viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList[positionBottomNavigation].positionCustom)
-            viewModel.setClickBottomNavigation(positionBottomNavigation)
-            withContext(Dispatchers.Main) {
-                // ✅ FIX: Update adapters with the correct lists for the new navigation tab
-                customizeLayerAdapter.submitList(viewModel.itemNavList.value[positionBottomNavigation])
-                colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[positionBottomNavigation])
+        //quyen
+        showInterAll {
+            lifecycleScope.launch(Dispatchers.IO) {
+                viewModel.setPositionNavSelected(positionBottomNavigation)
+                viewModel.setPositionCustom(viewModel.dataCustomize.value!!.layerList[positionBottomNavigation].positionCustom)
+                viewModel.setClickBottomNavigation(positionBottomNavigation)
+                withContext(Dispatchers.Main) {
+                    // ✅ FIX: Update adapters with the correct lists for the new navigation tab
+                    customizeLayerAdapter.submitList(viewModel.itemNavList.value[positionBottomNavigation])
+                    colorLayerAdapter.submitListWithLog(viewModel.colorItemNavList.value[positionBottomNavigation])
 
-                // ✅ Optimized: Scroll to selected color if exists
-                binding.rcvColor.post {
-                    if (viewModel.colorItemNavList.value[positionBottomNavigation].isNotEmpty()) {
-                        val selectedColorIndex = viewModel.colorItemNavList.value[positionBottomNavigation]
-                            .indexOfFirst { it.isSelected }
-                        if (selectedColorIndex >= 0) {
-                            binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                    // ✅ Optimized: Scroll to selected color if exists
+                    binding.rcvColor.post {
+                        if (viewModel.colorItemNavList.value[positionBottomNavigation].isNotEmpty()) {
+                            val selectedColorIndex = viewModel.colorItemNavList.value[positionBottomNavigation]
+                                .indexOfFirst { it.isSelected }
+                            if (selectedColorIndex >= 0) {
+                                binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                            }
                         }
                     }
+
+                    // Check if the selected item in this tab is NONE or empty, then disable color
+                    val selectedItem = viewModel.itemNavList.value[positionBottomNavigation]
+                        .firstOrNull { it.isSelected }
+
+                    // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
+                    val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
+                    if (selectedItem?.path == AssetsKey.NONE_LAYER ||
+                        viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
+                        setColorRecyclerViewEnabled(false)
+                    } else {
+                        setColorRecyclerViewEnabled(true)
+                    }
+
+                    checkStatusColor()
                 }
-
-                // Check if the selected item in this tab is NONE or empty, then disable color
-                val selectedItem = viewModel.itemNavList.value[positionBottomNavigation]
-                    .firstOrNull { it.isSelected }
-
-                // ✅ AUTO-DETECT: Tự động chọn pathIndex phù hợp với data structure
-                val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
-                if (selectedItem?.path == AssetsKey.NONE_LAYER ||
-                    viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
-                    setColorRecyclerViewEnabled(false)
-                } else {
-                    setColorRecyclerViewEnabled(true)
-                }
-
-                checkStatusColor()
             }
         }
+        //quyen
     }
 
     private fun confirmExit() {
@@ -1222,8 +1248,12 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         setLocale(this)
         dialog.show()
         dialog.onYesClick = {
-            dialog.dismiss()
-            finish()
+            //quyen
+            showInterAll {
+                dialog.dismiss()
+                finish()
+            }
+            //quyen
         }
         dialog.onNoClick = {
             dialog.dismiss()
@@ -1243,16 +1273,20 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
 
                     is SaveState.Success -> {
                         dismissLoading(true)
-                        // Pass suggestion background if exists
-                        val intent = Intent(this@CustomizeActivity, BackgroundActivity::class.java).apply {
-                            putExtra(IntentKey.INTENT_KEY, result.path)
-                            putExtra(IntentKey.CATEGORY_POSITION_KEY, viewModel.positionSelected)
-                            // Pass suggestion background to BackgroundActivity
-                            viewModel.getSuggestionBackground()?.let { bg ->
-                                putExtra(IntentKey.SUGGESTION_BACKGROUND, bg)
+                        //quyen
+                        showInterAll {
+                            // Pass suggestion background if exists
+                            val intent = Intent(this@CustomizeActivity, BackgroundActivity::class.java).apply {
+                                putExtra(IntentKey.INTENT_KEY, result.path)
+                                putExtra(IntentKey.CATEGORY_POSITION_KEY, viewModel.positionSelected)
+                                // Pass suggestion background to BackgroundActivity
+                                viewModel.getSuggestionBackground()?.let { bg ->
+                                    putExtra(IntentKey.SUGGESTION_BACKGROUND, bg)
+                                }
                             }
+                            startActivity(intent)
                         }
-                        startActivity(intent)
+                        //quyen
                     }
                 }
             }
@@ -1273,58 +1307,62 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     val pathDefault = viewModel.setClickReset()
                     withContext(Dispatchers.Main) {
-                        // ✅ FIX: Render lại tất cả layers
-                        renderAllLayers()
-                        customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
+                        //quyen
+                        showInterAll {
+                            // ✅ FIX: Render lại tất cả layers
+                            renderAllLayers()
+                            customizeLayerAdapter.submitList(viewModel.itemNavList.value[viewModel.positionNavSelected.value])
 
-                        // 🔍 DEBUG: Log color list before submitting to adapter
-                        val colorList = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
-                        dLog("🎨 RESET - Submitting color list to adapter:")
-                        dLog("   └─ Tab position: ${viewModel.positionNavSelected.value}")
-                        dLog("   └─ Color items count: ${colorList.size}")
-                        if (colorList.isNotEmpty()) {
-                            dLog("   └─ First 3 colors: ${colorList.take(3).map { it.color }}")
-                            dLog("   └─ Selected index: ${colorList.indexOfFirst { it.isSelected }}")
-                        }
-
-                        colorLayerAdapter.submitListWithLog(colorList)
-                        binding.rcvColor.post {
-                            binding.rcvColor.requestLayout()
-                            dLog("🎨 rcvColor after reset: adapter.itemCount=${binding.rcvColor.adapter?.itemCount}")
-                        }
-
-                        // ✅ FIX: Enable rcvColor sau khi reset (giống handleRandomAllLayer)
-                        val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
-                            .firstOrNull { it.isSelected }
-                        val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
-                        if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
-                            !viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
-                            setColorRecyclerViewEnabled(true)
-                        } else {
-                            setColorRecyclerViewEnabled(false)
-                        }
-
-                        // ✅ FIX: Scroll đến item đã được chọn sau khi reset
-                        val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
-                            .indexOfFirst { it.isSelected }
-                        if (selectedIndex >= 0) {
-                            binding.rcvLayer.post {
-                                binding.rcvLayer.smoothScrollToPosition(selectedIndex)
+                            // 🔍 DEBUG: Log color list before submitting to adapter
+                            val colorList = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                            dLog("🎨 RESET - Submitting color list to adapter:")
+                            dLog("   └─ Tab position: ${viewModel.positionNavSelected.value}")
+                            dLog("   └─ Color items count: ${colorList.size}")
+                            if (colorList.isNotEmpty()) {
+                                dLog("   └─ First 3 colors: ${colorList.take(3).map { it.color }}")
+                                dLog("   └─ Selected index: ${colorList.indexOfFirst { it.isSelected }}")
                             }
-                        }
 
-                        // ✅ FIX: Scroll đến màu đã được chọn sau khi reset
-                        if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
-                            val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                            colorLayerAdapter.submitListWithLog(colorList)
+                            binding.rcvColor.post {
+                                binding.rcvColor.requestLayout()
+                                dLog("🎨 rcvColor after reset: adapter.itemCount=${binding.rcvColor.adapter?.itemCount}")
+                            }
+
+                            // ✅ FIX: Enable rcvColor sau khi reset (giống handleRandomAllLayer)
+                            val currentSelectedItem = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
+                                .firstOrNull { it.isSelected }
+                            val pathIndex = viewModel.getPathIndexForLayer(viewModel.positionNavSelected.value)
+                            if (currentSelectedItem?.path != AssetsKey.NONE_LAYER &&
+                                !viewModel.pathSelectedList.value[pathIndex].isNullOrEmpty()) {
+                                setColorRecyclerViewEnabled(true)
+                            } else {
+                                setColorRecyclerViewEnabled(false)
+                            }
+
+                            // ✅ FIX: Scroll đến item đã được chọn sau khi reset
+                            val selectedIndex = viewModel.itemNavList.value[viewModel.positionNavSelected.value]
                                 .indexOfFirst { it.isSelected }
-                            if (selectedColorIndex >= 0) {
-                                binding.rcvColor.post {
-                                    binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                            if (selectedIndex >= 0) {
+                                binding.rcvLayer.post {
+                                    binding.rcvLayer.smoothScrollToPosition(selectedIndex)
                                 }
                             }
-                        }
 
-                        hideNavigation()
+                            // ✅ FIX: Scroll đến màu đã được chọn sau khi reset
+                            if (viewModel.colorItemNavList.value[viewModel.positionNavSelected.value].isNotEmpty()) {
+                                val selectedColorIndex = viewModel.colorItemNavList.value[viewModel.positionNavSelected.value]
+                                    .indexOfFirst { it.isSelected }
+                                if (selectedColorIndex >= 0) {
+                                    binding.rcvColor.post {
+                                        binding.rcvColor.smoothScrollToPosition(selectedColorIndex)
+                                    }
+                                }
+                            }
+
+                            hideNavigation()
+                        }
+                        //quyen
                     }
                 }
             }
@@ -1471,4 +1509,16 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
         Glide.get(this).clearMemory()
         Log.d("Performance", "🧹 CustomizeActivity destroyed - Glide cache cleared")
     }
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_custom), binding.nativeAds2)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_custom), binding.nativeAds2)
+    }
+    //quyen
 }

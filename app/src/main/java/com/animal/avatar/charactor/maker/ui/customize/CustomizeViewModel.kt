@@ -760,8 +760,10 @@ class CustomizeViewModel : ViewModel() {
         return pathRandom to isMoreColors
     }
     suspend fun setClickRandomFullLayer(): Boolean {
-//        countRandom++
-//        val isOutTurn = if (countRandom == 5) true else false
+        //quyen
+        countRandom++
+        val isOutTurn = if (countRandom == 5) true else false
+        //quyen
 
         // ✅ FIX DUPLICATE POSITION CUSTOM:
         // Step 1: Tạo map để track positionCustom đã được random
@@ -850,7 +852,9 @@ class CustomizeViewModel : ViewModel() {
                 }
             }
         }
-        return false
+        //quyen
+        return isOutTurn
+        //quyen
     }
 
     suspend fun setClickReset(): String {

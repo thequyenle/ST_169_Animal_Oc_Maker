@@ -3,9 +3,14 @@ package com.animal.avatar.charactor.maker.ui.category
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
+import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.startIntent
 import com.animal.avatar.charactor.maker.core.helper.AssetHelper
 import com.animal.avatar.charactor.maker.core.helper.InternetHelper
@@ -56,7 +61,7 @@ class CategoryActivity : BaseActivity<ActivityCategoryBinding>() {
     override fun viewListener() {
         binding.apply {
             btnBack.onSingleClick {
-                handleBack()
+                showInterAll { handleBack() }
             }
             swipeRefreshLayout.setOnRefreshListener {
                 refreshData()
@@ -81,15 +86,19 @@ class CategoryActivity : BaseActivity<ActivityCategoryBinding>() {
                 // Check internet for position 1 and 2 (0-indexed = item 2 and 3 for user)
                 if (position == 1 || position == 2) {
                     if (InternetHelper.checkInternet(this@CategoryActivity)) {
-                        startIntent(CustomizeActivity::class.java, position)
+                        showInterAll {
+                            startIntent(CustomizeActivity::class.java, position)
+                        }
                     } else {
                         showNoInternetDialog()
                     }
                 } else if (position == 0) {
                     // 🚀 Character 0: Preload all assets before entering CustomizeActivity
-                    preloadCharacter0Assets(position)
+                    showInterAll {
+                        preloadCharacter0Assets(position)
+                    }
                 } else {
-                    startIntent(CustomizeActivity::class.java, position)
+                    showInterAll {  startIntent(CustomizeActivity::class.java, position)}
                 }
             }
         }
@@ -167,5 +176,18 @@ class CategoryActivity : BaseActivity<ActivityCategoryBinding>() {
             binding.swipeRefreshLayout.isRefreshing = false
         }
     }
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_category), binding.nativeAds2)
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_category), binding.nativeAds, R.layout.ads_native_collap_banner_1)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_category), binding.nativeAds2)
+    }
+    //quyen
 
 }
