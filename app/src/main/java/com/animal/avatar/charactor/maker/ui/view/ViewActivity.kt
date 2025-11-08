@@ -6,11 +6,15 @@ import android.view.LayoutInflater
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.dialog.ConfirmDialog
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.showToast
 import com.animal.avatar.charactor.maker.core.helper.BitmapHelper
 import com.animal.avatar.charactor.maker.core.helper.MediaHelper
@@ -44,7 +48,11 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
     override fun viewListener() {
         // Add click listener for btnBack to go back to previous screen
         binding.btnBack.onSingleClick {
-            handleBack()
+            //quyen
+            showInterAll {
+                handleBack()
+            }
+            //quyen
         }
 
         // Add click listener for ic_delete to delete the image
@@ -229,4 +237,16 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
             }
         }
     }
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
+    }
+    //quyen
 }
