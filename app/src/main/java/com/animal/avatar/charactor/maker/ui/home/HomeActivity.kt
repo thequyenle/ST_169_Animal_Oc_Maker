@@ -48,7 +48,11 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 startIntentAnim(SettingsActivity::class.java)
             }
             btnMyCreation.onSingleClick {
-                startIntentAnim(MycreationActivity::class.java)
+                //quyen
+                showInterAll {
+                    startIntentAnim(MycreationActivity::class.java)
+                }
+                //quyen
             }
             btnSuggestion.onSingleClick {
                 startIntentAnim(SuggestionActivity::class.java)
@@ -135,6 +139,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     override fun initAds() {
         Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
         Admob.getInstance().loadNativeAll(this, getString(R.string.native_all))
-       // Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds)
+        //quyen
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds2)
+        //quyen
     }
+
+    //quyen
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds2)
+    }
+    //quyen
 }
