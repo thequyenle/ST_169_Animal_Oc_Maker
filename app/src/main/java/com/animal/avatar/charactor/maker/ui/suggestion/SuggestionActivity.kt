@@ -6,9 +6,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
+import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.helper.InternetHelper
 import com.animal.avatar.charactor.maker.core.utils.key.IntentKey
 import com.animal.avatar.charactor.maker.data.suggestion.SuggestionModel
@@ -101,7 +106,11 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
 
     override fun viewListener() {
         binding.btnBack.onSingleClick {
-            handleBack()
+            //quyen
+            showInterAll {
+                handleBack()
+            }
+            //quyen
         }
     }
 
@@ -175,15 +184,32 @@ class SuggestionActivity : BaseActivity<ActivitySuggestionBinding>() {
             }
         }
 
-        val intent = Intent(this, CustomizeActivity::class.java).apply {
-            putExtra(IntentKey.CATEGORY_POSITION_KEY, suggestion.categoryPosition)
-            putExtra(IntentKey.CHARACTER_INDEX, suggestion.characterIndex)
-            putExtra(IntentKey.IS_SUGGESTION, true)
-            putExtra(IntentKey.SUGGESTION_STATE, suggestion.randomState.toJson())
-            putExtra(IntentKey.SUGGESTION_BACKGROUND, suggestion.background)
+        //quyen
+        showInterAll {
+            val intent = Intent(this, CustomizeActivity::class.java).apply {
+                putExtra(IntentKey.CATEGORY_POSITION_KEY, suggestion.categoryPosition)
+                putExtra(IntentKey.CHARACTER_INDEX, suggestion.characterIndex)
+                putExtra(IntentKey.IS_SUGGESTION, true)
+                putExtra(IntentKey.SUGGESTION_STATE, suggestion.randomState.toJson())
+                putExtra(IntentKey.SUGGESTION_BACKGROUND, suggestion.background)
+            }
+            startActivity(intent)
         }
-        startActivity(intent)
+        //quyen
     }
 
     override fun initText() {}
+
+    //quyen
+    override fun initAds() {
+        super.initAds()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_suggest), binding.nativeAds2)
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_suggest), binding.nativeAds, R.layout.ads_native_avg)
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_suggest), binding.nativeAds2)
+    }
+    //quyen
 }
