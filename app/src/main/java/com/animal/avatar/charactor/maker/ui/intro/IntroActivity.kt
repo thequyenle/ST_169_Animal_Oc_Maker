@@ -87,7 +87,7 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>() {
 
     //quyen
     override fun initAds() {
-        Admob.getInstance().loadNativeAd(this, getString(R.string.native_intro), binding.nativeAds, R.layout.ads_native_avg)
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_intro), binding.nativeAds, R.layout.ads_native_avg2)
     }
     //quyen
 
