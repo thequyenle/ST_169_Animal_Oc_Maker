@@ -44,7 +44,7 @@
         android:fontFamily="@font/nunito_medium"
         android:padding="10dp"
         android:text="@string/next"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="-6dp"
         android:textColor="@color/pink"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/native_ads"
