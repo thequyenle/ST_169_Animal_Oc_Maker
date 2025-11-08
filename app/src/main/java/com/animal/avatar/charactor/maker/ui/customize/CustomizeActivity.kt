@@ -232,9 +232,9 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
             }
             btnReset.onSingleClick {
                 //quyen
-                showInterAll {
+
                     handleReset()
-                }
+
                 //quyen
             }
             btnFlip.onSingleClick { viewModel.setIsFlip() }

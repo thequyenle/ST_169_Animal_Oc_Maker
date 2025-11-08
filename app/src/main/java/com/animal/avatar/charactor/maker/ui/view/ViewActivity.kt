@@ -246,7 +246,7 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
 
     override fun onRestart() {
         super.onRestart()
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
+       // Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
     }
     //quyen
 }

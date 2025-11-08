@@ -163,12 +163,11 @@
         android:id="@+id/rcvNavigation"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_marginBottom="2dp"
+        android:layout_marginBottom="82dp"
         android:background="#FFCC97"
         android:orientation="horizontal"
         android:paddingStart="20dp"
         android:paddingEnd="12dp"
-app:layout_constraintBottom_toTopOf="@id/native_ads_2"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/item_navi">
@@ -188,7 +187,6 @@ app:layout_constraintBottom_toTopOf="@id/native_ads_2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
-
         <include layout="@layout/ads_shimmer_collap_native"/>
     </FrameLayout>
     <!-- quyen -->
