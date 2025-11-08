@@ -8,6 +8,8 @@
     <color name="blue">#039BE5</color>
     <color name="brown">#5E2006</color>
     <color name="pink">#FF7396</color>
+    <color name="native_collap_btn_bg">#FF7396</color>
+    <color name="native_btn_bg">#FF7396</color>
 
     <color name="native_bg_ad">#6618231A</color>
     <color name="native_bg_btn">#BD1313</color>
