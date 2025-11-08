@@ -121,7 +121,7 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 
     //ad
-    implementation 'com.github.LVTapp:AdsLibrary:1.5.1'
+    implementation 'com.github.LVTapp:AdsLibrary:1.5.2'
     implementation 'com.google.android.gms:play-services-ads:24.5.0'
     implementation 'com.google.ads.mediation:facebook:6.20.0.0'
     implementation 'com.google.ads.mediation:vungle:7.5.0.1'

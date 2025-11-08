@@ -3,6 +3,9 @@ package com.animal.avatar.charactor.maker.ui.language
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.widget.Toast
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.handleBack
@@ -173,5 +176,11 @@ class LanguageActivity : BaseActivity<ActivityLanguageBinding>() {
             exitProcess(0)
         }
     }
+
+    //quyen
+    override fun initAds() {
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_language), binding.nativeAds, R.layout.ads_native_big)
+    }
+    //quyen
 
 }

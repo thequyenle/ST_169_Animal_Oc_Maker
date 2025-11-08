@@ -12,9 +12,9 @@
         android:id="@+id/vpgTutorial"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="-5dp"
+        android:layout_marginBottom="5dp"
         android:overScrollMode="never"
-        app:layout_constraintBottom_toTopOf="@+id/txtNext"
+        app:layout_constraintBottom_toTopOf="@+id/dotsIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -41,13 +41,25 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="82dp"
         android:fontFamily="@font/nunito_medium"
         android:padding="10dp"
         android:text="@string/next"
+        android:layout_marginBottom="2dp"
         android:textColor="@color/pink"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/native_ads"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <FrameLayout
+        android:id="@+id/native_ads"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <include layout="@layout/ads_shimmer_avg"/>
+    </FrameLayout>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

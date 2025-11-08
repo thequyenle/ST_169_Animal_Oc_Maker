@@ -10,10 +10,16 @@ import android.text.TextPaint
 import android.text.TextUtils
 import android.text.style.ForegroundColorSpan
 import android.text.style.TypefaceSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.res.ResourcesCompat
+//quyen
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.lvt.ads.callback.InterCallback
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.checkPermissions
@@ -23,6 +29,8 @@ import com.animal.avatar.charactor.maker.core.extensions.hide
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
 import com.animal.avatar.charactor.maker.core.extensions.requestPermission
 import com.animal.avatar.charactor.maker.core.extensions.show
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
+import com.animal.avatar.charactor.maker.core.extensions.startIntent
 import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
 import com.animal.avatar.charactor.maker.core.utils.KeyApp.NOTIFICATION_PERMISSION_CODE
 import com.animal.avatar.charactor.maker.core.utils.KeyApp.STORAGE_PERMISSION_CODE
@@ -37,6 +45,9 @@ import com.animal.avatar.charactor.maker.databinding.ActivityPermissionBinding
 import com.animal.avatar.charactor.maker.ui.home.HomeActivity
 
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
+    //quyen
+    var inter : InterstitialAd? = null
+    //quyen
     override fun setViewBinding(): ActivityPermissionBinding {
         return ActivityPermissionBinding.inflate(LayoutInflater.from(this))
     }
@@ -79,12 +90,23 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
 
             }
 
-            txtContinue.onSingleClick(1500) {
-                startIntentAnim(HomeActivity::class.java)
-                SystemUtils.setFirstPermission(this@PermissionActivity, false)
-                finishAffinity()
-            }
+            Admob.getInstance().loadInterAds(this@PermissionActivity, getString(R.string.inter_per), object : InterCallback(){
+                override fun onAdLoadSuccess(interstitialAd: InterstitialAd?) {
+                    super.onAdLoadSuccess(interstitialAd)
+                    inter = interstitialAd
+                }
+            })
 
+            txtContinue.onSingleClick(1500) {
+                Admob.getInstance().showInterAds(this@PermissionActivity, inter, object: InterCallback(){
+                    override fun onNextAction() {
+                        super.onNextAction()
+                        startIntentAnim(HomeActivity::class.java)
+                        SystemUtils.setFirstPermission(this@PermissionActivity, false)
+                        finishAffinity()
+                    }
+                })
+            }
             btnBack.hide()
             btnSettings.hide()
         }
@@ -203,5 +225,11 @@ class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
             binding.switchNotification.setImageResource(R.drawable.sw_off)
         }
     }
+
+    //quyen
+    override fun initAds() {
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_per), binding.nativeAds, R.layout.ads_native_big)
+    }
+    //quyen
 
 }

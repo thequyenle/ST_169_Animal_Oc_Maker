@@ -3,6 +3,12 @@ package com.animal.avatar.charactor.maker.ui.intro
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
+import androidx.viewpager2.widget.ViewPager2
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
+import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.utils.DataLocal
 import com.animal.avatar.charactor.maker.core.utils.SystemUtils
@@ -26,6 +32,19 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>() {
         binding.txtNext.setOnClickListener {
             handleNext()
         }
+        //quyen
+        binding.vpgTutorial.registerOnPageChangeCallback(object :
+            ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                if (position == 1) {
+                    binding.nativeAds.visibility = View.GONE
+                } else {
+                    binding.nativeAds.visibility = View.VISIBLE
+                }
+            }
+        })
+        //quyen
     }
 
     override fun initText() {
@@ -65,5 +84,11 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>() {
     override fun onBackPressed() {
         exitProcess(0)
     }
+
+    //quyen
+    override fun initAds() {
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_intro), binding.nativeAds, R.layout.ads_native_avg)
+    }
+    //quyen
 
 }

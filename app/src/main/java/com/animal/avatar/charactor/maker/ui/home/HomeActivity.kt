@@ -4,9 +4,11 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.util.Log
 import android.view.LayoutInflater
+import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.SettingsActivity
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
 import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
 import com.animal.avatar.charactor.maker.core.utils.RatingPreferences
 import com.animal.avatar.charactor.maker.databinding.ActivityHomeBinding
@@ -16,6 +18,7 @@ import com.animal.avatar.charactor.maker.ui.mycreation.MycreationActivity
 import com.animal.avatar.charactor.maker.ui.suggestion.SuggestionActivity
 import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.lvt.ads.util.Admob
 import java.lang.Void
 import kotlin.system.exitProcess
 
@@ -36,7 +39,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
     override fun viewListener() {
         binding.apply {
             btnCreate.onSingleClick {
-                startIntentAnim(CategoryActivity::class.java)
+                showInterAll {
+                    startIntentAnim(CategoryActivity::class.java)
+                }
+
             }
             btnSetting.onSingleClick {
                 startIntentAnim(SettingsActivity::class.java)
@@ -125,5 +131,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>() {
                 }
             }
         }
+    }
+    override fun initAds() {
+        Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
+        Admob.getInstance().loadNativeAll(this, getString(R.string.native_all))
+       // Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds)
     }
 }

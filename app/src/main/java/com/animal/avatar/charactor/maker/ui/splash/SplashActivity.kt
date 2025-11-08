@@ -7,6 +7,11 @@ import android.os.PersistableBundle
 import android.view.LayoutInflater
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import com.animal.avatar.charactor.maker.R
+//quyen
+import com.lvt.ads.callback.InterCallback
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.utils.SystemUtils
 import com.animal.avatar.charactor.maker.databinding.ActivitySplashBinding
@@ -18,10 +23,12 @@ import kotlinx.coroutines.launch
 class SplashActivity : BaseActivity<ActivitySplashBinding>() {
     private var check = false
     private val viewModel: DataViewModel by viewModels()
+    //quyen
+    var interCallBack: InterCallback? = null
+    //quyen
     override fun setViewBinding(): ActivitySplashBinding {
         return ActivitySplashBinding.inflate(LayoutInflater.from(this))
     }
-
 
 
 
@@ -32,7 +39,7 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
         ) {
             finish(); return;
         }
-
+        Admob.getInstance().setTimeLimitShowAds(30000)
         viewModel.ensureData(this)
 
     }
@@ -42,20 +49,40 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
             viewModel.allData.collect { data ->
                 if (data.isNotEmpty()){
                     kotlinx.coroutines.delay(3000)
-
-                    if (SystemUtils.isFirstLang(this@SplashActivity)) {
-                        startActivity(Intent(this@SplashActivity, LanguageActivity::class.java))
-                        check = true
-                        finishAffinity()
-                    } else {
-                        startActivity(Intent(this@SplashActivity, IntroActivity::class.java))
-                        check = true
-                        finishAffinity()
-                    }
+                    //quyen
+                    moveNextScreen()
+                    //quyen
                 }
             }
         }
     }
+
+    //quyen
+    private fun moveNextScreen() {
+        val nextIntent = if (SystemUtils.isFirstLang(this)) {
+            Intent(this, LanguageActivity::class.java)
+        } else {
+            Intent(this, IntroActivity::class.java)
+        }
+
+        interCallBack = object : InterCallback() {
+            override fun onNextAction() {
+                super.onNextAction()
+                startActivity(nextIntent)
+                check = true
+                finishAffinity()
+            }
+        }
+
+        Admob.getInstance().loadSplashInterAds(
+            this,
+            getString(R.string.inter_splash),
+            30000,
+            3000,
+            interCallBack
+        )
+    }
+    //quyen
     override fun viewListener() {
 
     }
@@ -72,5 +99,12 @@ class SplashActivity : BaseActivity<ActivitySplashBinding>() {
             check = false
         }
     }
+
+    //quyen
+    override fun onResume() {
+        super.onResume()
+        Admob.getInstance().onCheckShowSplashWhenFail(this, interCallBack, 1000)
+    }
+    //quyen
 
 }
