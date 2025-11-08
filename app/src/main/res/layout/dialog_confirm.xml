@@ -89,5 +89,18 @@
                     android:textSize="16sp" />
             </FrameLayout>
         </LinearLayout>
+
+        <!-- quyen -->
+        <FrameLayout
+            android:id="@+id/native_ads"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
+
+            <include layout="@layout/ads_shimmer_avg2" />
+        </FrameLayout>
+        <!-- quyen -->
+
     </LinearLayout>
 </layout>

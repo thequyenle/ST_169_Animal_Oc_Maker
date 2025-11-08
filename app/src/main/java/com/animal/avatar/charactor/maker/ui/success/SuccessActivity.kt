@@ -211,12 +211,12 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
     //quyen
     override fun initAds() {
         super.initAds()
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_success), binding.nativeAds2)
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_ss), binding.nativeAds2)
     }
 
     override fun onRestart() {
         super.onRestart()
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_success), binding.nativeAds2)
+        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_ss), binding.nativeAds2)
     }
     //quyen
 }

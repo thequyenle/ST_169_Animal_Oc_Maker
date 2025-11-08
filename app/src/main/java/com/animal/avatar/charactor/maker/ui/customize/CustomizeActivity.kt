@@ -1243,8 +1243,10 @@ class CustomizeActivity : BaseActivity<ActivityCustomizeBinding>() {
     }
 
     private fun confirmExit() {
+        //quyen
         val dialog =
-            ConfirmDialog(this, R.string.exit_your_customize, R.string.haven_t_saved_it_yet_do_you_want_to_exit)
+            ConfirmDialog(this, R.string.exit_your_customize, R.string.haven_t_saved_it_yet_do_you_want_to_exit, checkExit = true)
+        //quyen
         setLocale(this)
         dialog.show()
         dialog.onYesClick = {

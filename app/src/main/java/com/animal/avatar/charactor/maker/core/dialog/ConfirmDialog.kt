@@ -4,9 +4,13 @@ import android.app.Activity
 import android.graphics.Color
 import android.graphics.LinearGradient
 import android.graphics.Shader
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+//quyen
+import com.lvt.ads.util.Admob
+//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseDialog
 
@@ -16,7 +20,7 @@ import com.animal.avatar.charactor.maker.databinding.DialogConfirmBinding
 
 import kotlin.apply
 
-class ConfirmDialog(val context: Activity, val title: Int, val description: Int) :
+class ConfirmDialog(val context: Activity, val title: Int, val description: Int, var checkExit: Boolean = false) :
     BaseDialog<DialogConfirmBinding>(context, maxWidth = false, maxHeight = false) {
     override val layoutId: Int = R.layout.dialog_confirm
     override val isCancel: Boolean = false
@@ -27,6 +31,18 @@ class ConfirmDialog(val context: Activity, val title: Int, val description: Int)
     var onDismissClick: (() -> Unit)? = null
     override fun initView() {
         initText()
+
+        //quyen
+        if (checkExit) {
+            binding.nativeAds.visibility = View.VISIBLE
+            Admob.getInstance().loadNativeAd(
+                context,
+                context.getString(R.string.native_dialog),
+                binding.nativeAds,
+                R.layout.ads_native_avg2_white
+            )
+        }
+        //quyen
 
         // Cố định kích thước dialog là 316dp
         val widthInDp = 316
