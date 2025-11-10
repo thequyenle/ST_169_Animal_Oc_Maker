@@ -142,14 +142,14 @@
         android:layout_width="150dp"
         android:layout_height="51dp"
         android:layout_marginStart="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="82dp"
         android:background="@drawable/img_item_ss"
         android:fontFamily="@font/nunito_medium"
         android:gravity="center"
         android:text="@string/download"
         android:textColor="@color/white"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/native_ads_2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -157,14 +157,14 @@
         android:layout_width="150dp"
         android:layout_height="51dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="82dp"
         android:background="@drawable/img_item_ss"
         android:fontFamily="@font/nunito_medium"
         android:gravity="center"
         android:text="@string/share"
         android:textColor="@color/white"
         android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/native_ads_2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageView

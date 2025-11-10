@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -33,6 +34,8 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
     private var categoryPosition: Int = 0
     private var isNoneSelected: Boolean = false
     private var backgroundColor: String? = null
+
+    private  var checkRestart = false
 
     override fun setViewBinding(): ActivitySuccessBinding {
         return ActivitySuccessBinding.inflate(LayoutInflater.from(this))
@@ -79,6 +82,11 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+       // binding.nativeAds2.visibility= if(!checkRestart) View.VISIBLE else View.GONE
+
+    }
     override fun viewListener() {
         // ✅ FIX: Truyền đầy đủ thông tin khi quay lại BackgroundActivity
         binding.btnBack.onSingleClick {
@@ -216,7 +224,9 @@ class SuccessActivity : BaseActivity<ActivitySuccessBinding>() {
 
     override fun onRestart() {
         super.onRestart()
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_ss), binding.nativeAds2)
+     //   checkRestart=true
+
+        //  Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_ss), binding.nativeAds2)
     }
     //quyen
 }

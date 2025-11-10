@@ -3,6 +3,7 @@ package com.animal.avatar.charactor.maker.ui.view
 import android.content.Intent
 import android.graphics.Bitmap
 import android.view.LayoutInflater
+import android.view.View
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
@@ -28,11 +29,15 @@ import java.io.File
 
 class ViewActivity : BaseActivity<ActivityViewBinding>() {
     private var imagePath: String? = null
-
+    private  var checkRestart = false
     override fun setViewBinding(): ActivityViewBinding {
         return ActivityViewBinding.inflate(LayoutInflater.from(this))
     }
 
+    override fun dataObservable() {
+        super.dataObservable()
+
+    }
     override fun initView() {
         // Get image path from intent
         imagePath = intent.getStringExtra(IntentKey.IMAGE_PATH_KEY)
@@ -246,7 +251,8 @@ class ViewActivity : BaseActivity<ActivityViewBinding>() {
 
     override fun onRestart() {
         super.onRestart()
-       // Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
+         //   checkRestart=true
+        //Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_detail), binding.nativeAds2)
     }
     //quyen
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Animal Character Maker</string>
     <string name="go_to_setting_title">Berechtigungseinstellungen</string>
     <string name="go_to_setting_message">Die App benötigt diese Berechtigung</string>
     <string name="ok">OK</string>

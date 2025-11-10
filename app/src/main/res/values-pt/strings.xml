@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Animal Oc Maker</string>
     <string name="go_to_setting_title">Definições de permissão</string>
     <string name="go_to_setting_message">A aplicação precisa desta permissão</string>
     <string name="ok">OK</string>
