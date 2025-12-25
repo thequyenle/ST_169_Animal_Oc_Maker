@@ -4,62 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:background="@drawable/img_bg_app"
     android:layout_height="match_parent"
     tools:context=".ui.intro.IntroActivity">
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+       android:background="@drawable/img_splash_language"
+        />
+
+    <!--    vpgTutorial-->
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vpgTutorial"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="20dp"
         android:overScrollMode="never"
+        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toTopOf="@+id/dotsIndicator"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!--    dotsIndicator-->
     <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
         android:id="@+id/dotsIndicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginStart="16dp"
         app:dotsColor="#FABECD"
         app:dotsCornerRadius="8dp"
         app:dotsSize="8dp"
         app:dotsSpacing="3dp"
         app:dotsWidthFactor="2.5"
-        app:layout_constraintBottom_toTopOf="@+id/txtNext"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnNext"
         app:layout_constraintStart_toStartOf="parent"
         app:progressMode="false"
-        app:selectedDotColor="@color/pink" />
+        app:selectedDotColor="#FF005C" />
 
+    <!--    btnNext-->
     <TextView
-        android:id="@+id/txtNext"
+        android:id="@+id/btnNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:fontFamily="@font/nunito_medium"
-        android:padding="10dp"
+        android:padding="3dp"
         android:text="@string/next"
-        android:layout_marginBottom="-6dp"
-        android:textColor="@color/pink"
+        android:textColor="#FF005C"
         android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/native_ads"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginBottom="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/native_ads" />
 
+    <!--    native_ads-->
     <FrameLayout
         android:id="@+id/native_ads"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
-        <include layout="@layout/ads_shimmer_avg"/>
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include layout="@layout/ads_native_medium_btn_bottom_shimmer" />
+
     </FrameLayout>
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

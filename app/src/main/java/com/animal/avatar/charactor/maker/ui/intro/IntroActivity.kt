@@ -3,23 +3,22 @@ package com.animal.avatar.charactor.maker.ui.intro
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import androidx.viewpager2.widget.ViewPager2
-//quyen
 import com.lvt.ads.util.Admob
-//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.gone
 import com.animal.avatar.charactor.maker.core.utils.DataLocal
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils
 import com.animal.avatar.charactor.maker.databinding.ActivityIntroBinding
 import com.animal.avatar.charactor.maker.ui.home.HomeActivity
 import com.animal.avatar.charactor.maker.ui.permission.PermissionActivity
+import com.animal.avatar.charactor.maker.core.extensions.tap
+import com.animal.avatar.charactor.maker.core.extensions.visible
 import kotlin.system.exitProcess
 
 class IntroActivity : BaseActivity<ActivityIntroBinding>() {
-    private var checkStarHome = false
-    private val adapter = IntroAdapter(this, DataLocal.itemIntroList)
+    private val introAdapter by lazy { IntroAdapter(this) }
+
     override fun setViewBinding(): ActivityIntroBinding {
         return ActivityIntroBinding.inflate(LayoutInflater.from(this))
     }
@@ -29,66 +28,55 @@ class IntroActivity : BaseActivity<ActivityIntroBinding>() {
     }
 
     override fun viewListener() {
-        binding.txtNext.setOnClickListener {
-            handleNext()
-        }
-        //quyen
+        binding.btnNext.tap { handleNext() }
+
         binding.vpgTutorial.registerOnPageChangeCallback(object :
             ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 if (position == 1) {
-                    binding.nativeAds.visibility = View.GONE
+                    binding.nativeAds.gone()
                 } else {
-                    binding.nativeAds.visibility = View.VISIBLE
+                    binding.nativeAds.visible()
                 }
             }
         })
-        //quyen
     }
 
-    override fun initText() {
+    override fun initText() {}
 
-    }
+    override fun initActionBar() {}
+
     private fun initVpg() {
         binding.apply {
-            binding.vpgTutorial.adapter = adapter
-            binding.dotsIndicator.setViewPager2(binding.vpgTutorial)
-
+            binding.vpgTutorial.adapter = introAdapter
+            binding.dotsIndicator.attachTo(binding.vpgTutorial)
+            introAdapter.submitList(DataLocal.itemIntroList)
         }
     }
-    private fun handleNext(){
+
+    private fun handleNext() {
         binding.apply {
             val nextItem = binding.vpgTutorial.currentItem + 1
             if (nextItem < DataLocal.itemIntroList.size) {
                 vpgTutorial.setCurrentItem(nextItem, true)
             } else {
-                if (!checkStarHome) {
-                    if (SystemUtils.getFirstPermission(this@IntroActivity)) {
-                        checkStarHome = true
-                        val intent = Intent(this@IntroActivity, PermissionActivity::class.java)
-                        startActivity(intent)
-                        finishAffinity()
+                val intent =
+                    if (sharePreference.getIsFirstPermission()) {
+                        Intent(this@IntroActivity, PermissionActivity::class.java)
                     } else {
-                        checkStarHome = true
-                        val intent = Intent(this@IntroActivity, HomeActivity::class.java)
-                        startActivity(intent)
-                        finishAffinity()
+                        Intent(this@IntroActivity, HomeActivity::class.java)
                     }
-                }
+                startActivity(intent)
+                finishAffinity()
             }
         }
     }
 
-    @SuppressLint("MissingSuperCall")
-    override fun onBackPressed() {
-        exitProcess(0)
-    }
+    @SuppressLint("MissingSuperCall", "GestureBackNavigation")
+    override fun onBackPressed() { exitProcess(0) }
 
-    //quyen
     override fun initAds() {
-        Admob.getInstance().loadNativeAd(this, getString(R.string.native_intro), binding.nativeAds, R.layout.ads_native_avg2)
+        Admob.getInstance().loadNativeAd(this, getString(R.string.native_intro), binding.nativeAds, R.layout.ads_native_medium_btn_bottom_2)
     }
-    //quyen
-
 }

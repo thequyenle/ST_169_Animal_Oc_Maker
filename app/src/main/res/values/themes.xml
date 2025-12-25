@@ -1,20 +1,29 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.ST181_Halloween_Maker" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.BaseProject" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+    <style name="CutCornerCardShape" parent="" tools:keep="@style/CutCornerCardShape">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">12dp</item>
     </style>
 
-    <style name="custom_text">
+    <style name="border_image_5" parent="" tools:keep="@style/border_image_5">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">5dp</item>
+    </style>
+
+    <style name="single_marquee">
         <item name="android:singleLine">true</item>
         <item name="android:ellipsize">marquee</item>
         <item name="android:marqueeRepeatLimit">marquee_forever</item>
     </style>
-    <style name="BaseDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
+
+    <style name="BaseDialog" parent="Theme.AppCompat.Light.Dialog.Alert" tools:keep="@style/BaseDialog">
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
-    <style name="Theme.ST181_Halloween_Maker" parent="Base.Theme.ST181_Halloween_Maker" />
+    <style name="Theme.BaseProject" parent="Base.Theme.BaseProject" />
 </resources>

@@ -5,20 +5,41 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_app"
     tools:context=".ui.splash.SplashActivity">
 
     <ImageView
-        android:id="@+id/imgImage"
-        android:layout_width="360dp"
-        android:layout_height="220dp"
-        android:layout_marginTop="28dp"
-        android:src="@drawable/img_title_app"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+
+        android:src="@drawable/img_splash_bg" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="315dp"
+        android:src="@drawable/avatar_splash"
+        android:layout_gravity="center"
+        android:layout_marginHorizontal="22dp"
+        android:id="@+id/avatar_splash"
+        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintVertical_bias="0.7"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/loading_splash"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="208dp"
+        android:src="@drawable/img_title_splash"
+        app:layout_constraintVertical_bias="0.7"
+       app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/avatar_splash"
+        android:layout_marginHorizontal="20dp"
+
+        />
 
 
+
+    <!-- tvDes -->
     <TextView
         android:id="@+id/tvDes"
         android:layout_width="0dp"
@@ -28,40 +49,35 @@
         android:fontFamily="@font/nunito_medium"
         android:gravity="center"
         android:text="@string/this_action_can_contain_ads"
-        android:textColor="#FFA600"
+        android:textColor="#FFFFFF"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Loading -->
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="360dp"
-        android:layout_height="401dp"
-        android:src="@drawable/img_splash"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.49"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/guid" />
-
-    <ProgressBar
-        android:id="@+id/progressLoading"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginBottom="16dp"
-        android:indeterminate="true"
-        android:indeterminateDrawable="@drawable/progress_loading"
+    <!-- layoutLoading -->
+    <FrameLayout
+        android:id="@+id/loading_splash"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:layout_marginBottom="6dp"
         app:layout_constraintBottom_toTopOf="@+id/tvDes"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:id="@+id/ivLoading"
+            android:layout_width="37dp"
+            android:layout_height="37dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_loading_spinner" />
+
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guid"
         android:layout_width="wrap_content"
+        android:id="@+id/gld"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.28" />
-
+        app:layout_constraintGuide_percent="0.4" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,72 +2,86 @@ package com.animal.avatar.charactor.maker.ui.language
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.RecyclerView
 import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseAdapter
+import com.animal.avatar.charactor.maker.core.extensions.gone
+import com.animal.avatar.charactor.maker.core.extensions.loadImage
+import com.animal.avatar.charactor.maker.core.extensions.tap
+import com.animal.avatar.charactor.maker.core.extensions.visible
+import com.animal.avatar.charactor.maker.data.model.LanguageModel
 import com.animal.avatar.charactor.maker.databinding.ItemLanguageBinding
 
-import com.girlmaker.create.avatar.creator.model.LanguageModel
-import kotlin.apply
+class LanguageAdapter(val context: Context) : BaseAdapter<LanguageModel, ItemLanguageBinding>(
+    ItemLanguageBinding::inflate
+) {
+    var onItemClick: ((code: String) -> Unit) = {}
+    var isFirstLanguage: Boolean = false
 
-class LanguageAdapter(val context: Context): RecyclerView.Adapter<LanguageAdapter.LanguageViewHolder>() {
-    private val languageList = kotlin.collections.ArrayList<LanguageModel>()
-    private var currentActive = 0
-    var onItemClick:((LanguageModel)-> Unit)? = null
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LanguageViewHolder {
-        return LanguageViewHolder(ItemLanguageBinding.inflate(LayoutInflater.from(parent.context), parent, false))
-    }
+    override fun submitList(list: List<LanguageModel>) {
+        if (items.isEmpty()) {
+            items.addAll(list)
+            notifyDataSetChanged()
+        } else {
+            val oldList = items.toList()
+            items.clear()
+            items.addAll(list)
 
-    override fun onBindViewHolder(holder: LanguageViewHolder, position: Int) {
-        val item = languageList[position]
-        holder.bind(item,position)
-    }
-
-    override fun getItemCount(): Int {
-        return languageList.size
-    }
-
-    inner class LanguageViewHolder(private val binding: ItemLanguageBinding): RecyclerView.ViewHolder(binding.root) {
-        @SuppressLint("ResourceAsColor") fun bind(item: LanguageModel, position: Int) {
-            binding.apply {
-                imvFlag.setImageResource(item.flag)
-                txtLang.text = item.name
-                if (item.activate) {
-                    rdbLang.setImageResource(R.drawable.ic_tick_lang_white)
-                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.white))
-                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_selected)
-                } else {
-                    rdbLang.setImageResource(R.drawable.ic_not_tick_lang_pink)
-                    txtLang.setTextColor(ContextCompat.getColor(context, R.color.pink))
-                    itemLang.background = ContextCompat.getDrawable(context, R.drawable.bg_lang_unselected)
-
-                }
-                itemLang.setOnClickListener {
-                    languageList[currentActive].activate = false
-                    notifyItemChanged(currentActive)
-                    currentActive = position
-                    languageList[currentActive].activate = true
-                    notifyItemChanged(currentActive)
-                    onItemClick?.invoke(item)
+            // Find changed items
+            val changedPositions = mutableListOf<Int>()
+            for (i in list.indices) {
+                if (i < oldList.size && oldList[i].activate != list[i].activate) {
+                    changedPositions.add(i)
                 }
             }
 
-        }
-
-    }
-    @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list: ArrayList<LanguageModel>){
-        languageList.clear()
-        languageList.addAll(list)
-        // Tìm vị trí của item đang active để cập nhật currentActive
-        for(i in languageList.indices){
-            if(languageList[i].activate){
-                currentActive = i
-                break
+            // Only notify changed items
+            if (changedPositions.isNotEmpty()) {
+                changedPositions.forEach { notifyItemChanged(it) }
             }
         }
-        notifyDataSetChanged()
+    }
+
+    override fun onBind(
+        binding: ItemLanguageBinding, item: LanguageModel, position: Int
+    ) {
+        binding.apply {
+            loadImage(root, item.flag, imvFlag, false)
+            tvLang.text = item.name
+
+            // Set text color based on selection state
+            val textColor = if (item.activate) {
+                android.graphics.Color.parseColor("#FFFFFF") // White when selected
+            } else {
+                android.graphics.Color.parseColor("#FF7396") // Dark blue when not selected
+            }
+
+            // Remove shader and set solid color
+            tvLang.paint.shader = null
+            tvLang.setTextColor(textColor)
+
+            val ratio = if (item.activate) {
+                R.drawable.ic_tick_lang
+            } else {
+                R.drawable.ic_not_tick_lang
+            }
+            loadImage(root, ratio, btnRadio, false)
+
+            // Apply color tint when activated and not first language
+            if (item.activate && !isFirstLanguage) {
+                btnRadio.setColorFilter(
+                    android.graphics.Color.parseColor("#FFFFFF"),
+                    android.graphics.PorterDuff.Mode.SRC_IN
+                )
+            } else {
+                btnRadio.clearColorFilter()
+            }
+
+            // Set selected state to trigger the selector drawable
+            flMain.isSelected = item.activate
+
+            root.tap {
+                onItemClick.invoke(item.code)
+            }
+        }
     }
 }

@@ -5,303 +5,233 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_app"
-    tools:context=".SettingsActivity">
+    tools:context="com.animal.avatar.charactor.maker.ui.SettingsActivity">
 
-    <RelativeLayout
-        android:id="@+id/actionBar"
+    <ImageView
+        android:id="@+id/imgBackground"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:background="@color/tranf"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@drawable/img_splash_language"/>
+
+    <!-- layoutActionBar -->
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp">
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
 
-            <ImageView
-                android:id="@+id/btnBack"
-                android:layout_width="39dp"
-                android:layout_height="39dp"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="16dp"
-                android:src="@drawable/ic_back"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
-
-            <TextView
-                android:id="@+id/txtTitle1"
-                style="@style/custom_text"
-                android:layout_width="0dp"
-                android:paddingVertical="2dp"
-                android:layout_height="wrap_content"
-                android:layout_toStartOf="@+id/btnSettings"
-                android:layout_toEndOf="@+id/btnBack"
-                android:textColor="@color/pink"
-                android:layout_marginTop="5dp"
-                android:fontFamily="@font/coiny_regular"
-                android:gravity="center"
-                android:text="@string/settings"
-                android:textSize="24sp" />
-
-
-            <ImageView
-                android:id="@+id/btnSettings"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="16dp"
-                android:visibility="invisible"
-                android:background="?attr/selectableItemBackgroundBorderless" />
-        </RelativeLayout>
-    </RelativeLayout>
-
-    <!-- Button -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="21dp"
-        android:layout_marginBottom="4dp"
-        android:scrollbars="none"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="8dp"
+        android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/actionBar">
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
             android:orientation="vertical">
-            <!-- btnLang -->
-            <FrameLayout
+
+            <!--            btnLang-->
+            <LinearLayout
                 android:id="@+id/btnLang"
-                android:background="@drawable/bg_item_permission"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="59dp"
+                android:background="@drawable/bg_language_selected"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="17dp"
+                        android:src="@drawable/ic_lang_set" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="8"
+                    android:fontFamily="@font/josefinsans_regular"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="10">
+                    android:text="@string/language"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/arrow"
+                    android:layout_marginStart="15dp"
+                    />
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:layout_marginVertical="20dp"
-                            android:src="@drawable/ic_lang_set" />
-                    </FrameLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="8"
-                        android:fontFamily="@font/josefin_sans_regular"
-                        android:gravity="center_vertical"
-                        android:text="@string/language"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
+            </LinearLayout>
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            />
-                    </FrameLayout>
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- btnRate -->
-            <FrameLayout
+            <!--            btnLang-->
+            <LinearLayout
                 android:id="@+id/btnRate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_item_permission"
-                android:layout_marginTop="18dp">
+                android:layout_height="59dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_language_selected"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="17dp"
+                        android:src="@drawable/ic_rate_set" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="8"
+                    android:fontFamily="@font/josefinsans_regular"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="10">
+                    android:text="@string/rate_us"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/arrow"
+                    android:layout_marginStart="15dp"
+                    />
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:layout_marginVertical="20dp"
-                            android:src="@drawable/ic_rate_set" />
-                    </FrameLayout>
+            </LinearLayout>
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="8"
-                        android:fontFamily="@font/josefin_sans_regular"
-                        android:gravity="center_vertical"
-                        android:text="@string/rate_us"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:visibility="visible"
-                            android:layout_gravity="center"
-                            />
-                    </FrameLayout>
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- btnShare -->
-            <FrameLayout
-                android:id="@+id/btnShare"
+            <!--            btnShare-->
+            <LinearLayout
+                android:id="@+id/btnShareApp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_item_permission"
-                android:layout_marginTop="18dp">
+                android:layout_height="59dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_language_selected"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="17dp"
+                        android:src="@drawable/ic_share_set" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="8"
+                    android:fontFamily="@font/josefinsans_regular"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="10">
+                    android:text="@string/share_app"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/arrow"
+                    android:layout_marginStart="15dp"
+                    />
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
+            </LinearLayout>
 
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:layout_marginVertical="20dp"
-                            android:src="@drawable/ic_share_set" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="8"
-                        android:fontFamily="@font/josefin_sans_regular"
-                        android:gravity="center_vertical"
-                        android:text="@string/share_app"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:visibility="visible"
-
-                            android:layout_gravity="center"
-                            />
-                    </FrameLayout>
-                </LinearLayout>
-            </FrameLayout>
-
-            <!-- btnPolicy -->
-            <FrameLayout
+            <!--            btnPolicy-->
+            <LinearLayout
                 android:id="@+id/btnPolicy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_item_permission"
-                android:layout_marginTop="18dp">
+                android:layout_height="59dp"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/bg_language_selected"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="10">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <FrameLayout
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
+                    android:layout_marginStart="16dp"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="27dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="17dp"
+                        android:src="@drawable/ic_policy_set" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="8"
+                    android:fontFamily="@font/josefinsans_regular"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:weightSum="10">
+                    android:text="@string/privacy_policy"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+                <TextView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/arrow"
+                    android:layout_marginStart="15dp"
+                    />
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            android:layout_marginVertical="20dp"
-                            android:src="@drawable/ic_privacy_set" />
-                    </FrameLayout>
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="10dp"
-                        android:layout_weight="8"
-                        android:fontFamily="@font/josefin_sans_regular"
-                        android:gravity="center_vertical"
-                        android:text="@string/privacy_policy"
-                        android:textColor="@color/white"
-                        android:textSize="16sp" />
-
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginEnd="10dp"
-                        android:layout_weight="1">
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center"
-                            />
-                    </FrameLayout>
-                </LinearLayout>
-            </FrameLayout>
-
-
+            </LinearLayout>
 
 
         </LinearLayout>
+
     </ScrollView>
 
+    <!--    &lt;!&ndash;    flBanner&ndash;&gt;-->
+    <!--    <FrameLayout-->
+    <!--        android:id="@+id/flBanner"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        app:layout_constraintBottom_toBottomOf="parent">-->
+
+    <!--        <include-->
+    <!--            android:id="@+id/includeBanner"-->
+    <!--            layout="@layout/layout_banner" />-->
+    <!--    </FrameLayout>-->
 </androidx.constraintlayout.widget.ConstraintLayout>

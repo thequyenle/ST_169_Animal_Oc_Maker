@@ -1,27 +1,10 @@
 package com.animal.avatar.charactor.maker.core.utils.key
 
 object IntentKey {
-    const val INTENT_KEY = "intent_key"
+    const val INTENT_KEY = "INTENT_KEY"
     const val FROM_SAVE = "FROM_SAVE"
     const val STATUS_KEY = "STATUS_KEY"
     const val TYPE_KEY = "TYPE_KEY"
     const val PATH_KEY = "PATH_KEY"
-    const val TRENDING_KEY = "TRENDING_KEY"
-    const val PREVIOUS_IMAGE_KEY = "previous_image_key"
-    const val BACKGROUND_IMAGE_KEY = "background_image_key"
-    const val BACKGROUND_COLOR_KEY = "background_color_key"
-    const val CATEGORY_BACKGROUND_RES = "category_background_res"
-    const val CATEGORY_POSITION_KEY = "category_position_key"
-    const val IMAGE_PATH_KEY = "image_path_key"
-
-    // Suggestion keys
-    const val IS_SUGGESTION = "is_suggestion"
-    const val SUGGESTION_STATE = "suggestion_state"
-    const val SUGGESTION_BACKGROUND = "suggestion_background"
-    const val CHARACTER_INDEX = "character_index"
-
-    // Navigation source flags
-    const val FROM_SUCCESS = "from_success"
-    const val IS_NONE_SELECTED = "is_none_selected"
-
+    const val STATUS_FROM_KEY = "STATUS_FROM_KEY"
 }

@@ -1,3 +1,3 @@
-package com.girlmaker.create.avatar.creator.model
+package com.animal.avatar.charactor.maker.data.model
 
 data class IntroModel(val image: Int, val content: Int)

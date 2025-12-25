@@ -1,235 +1,212 @@
 package com.animal.avatar.charactor.maker.ui.permission
 
-import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.os.Build
-import android.text.SpannableString
-import android.text.TextPaint
 import android.text.TextUtils
-import android.text.style.ForegroundColorSpan
-import android.text.style.TypefaceSpan
-import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Toast
-import androidx.annotation.RequiresApi
+import androidx.activity.viewModels
 import androidx.core.content.res.ResourcesCompat
-//quyen
+import androidx.core.graphics.toColorInt
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.lvt.ads.callback.InterCallback
 import com.lvt.ads.util.Admob
-//quyen
 import com.animal.avatar.charactor.maker.R
 import com.animal.avatar.charactor.maker.core.base.BaseActivity
 import com.animal.avatar.charactor.maker.core.extensions.checkPermissions
 import com.animal.avatar.charactor.maker.core.extensions.goToSettings
 import com.animal.avatar.charactor.maker.core.extensions.gone
-import com.animal.avatar.charactor.maker.core.extensions.hide
-import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
 import com.animal.avatar.charactor.maker.core.extensions.requestPermission
-import com.animal.avatar.charactor.maker.core.extensions.show
-import com.animal.avatar.charactor.maker.core.extensions.showInterAll
-import com.animal.avatar.charactor.maker.core.extensions.startIntent
-import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
-import com.animal.avatar.charactor.maker.core.utils.KeyApp.NOTIFICATION_PERMISSION_CODE
-import com.animal.avatar.charactor.maker.core.utils.KeyApp.STORAGE_PERMISSION_CODE
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.isNotificationPermission
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.isStoragePermission
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.notificationPermission
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setNotificationPermission
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.setStoragePermission
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.storagePermission
+import com.animal.avatar.charactor.maker.core.extensions.select
+
+import com.animal.avatar.charactor.maker.core.extensions.startIntentRightToLeft
+import com.animal.avatar.charactor.maker.core.extensions.visible
+import com.animal.avatar.charactor.maker.core.helper.StringHelper
+import com.animal.avatar.charactor.maker.core.utils.key.RequestKey
 import com.animal.avatar.charactor.maker.databinding.ActivityPermissionBinding
 import com.animal.avatar.charactor.maker.ui.home.HomeActivity
+import com.animal.avatar.charactor.maker.core.extensions.setGradientTextHeightColor
+import com.animal.avatar.charactor.maker.core.extensions.tap
+import kotlinx.coroutines.launch
 
 class PermissionActivity : BaseActivity<ActivityPermissionBinding>() {
-    //quyen
-    var inter : InterstitialAd? = null
-    //quyen
-    override fun setViewBinding(): ActivityPermissionBinding {
-        return ActivityPermissionBinding.inflate(LayoutInflater.from(this))
-    }
+
+    private val viewModel: PermissionViewModel by viewModels()
+
+    private var inter: InterstitialAd? = null
+
+    override fun setViewBinding() = ActivityPermissionBinding.inflate(LayoutInflater.from(this))
 
     override fun initView() {
-        initData()
+        // Reset permission counters when activity starts (so it asks again after app restart)
+        android.util.Log.d("PermissionActivity", "initView: Resetting counters to 0")
+        sharePreference.setStoragePermission(0)
+        sharePreference.setNotificationPermission(0)
+        android.util.Log.d("PermissionActivity", "initView: Storage counter = ${sharePreference.getStoragePermission()}, Notification counter = ${sharePreference.getNotificationPermission()}")
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            binding.btnStorage.visible()
+            binding.btnNotification.gone()
+        } else {
+            binding.btnNotification.visible()
+            binding.btnStorage.gone()
+        }
+    }
+
+    override fun initText() {
+        binding.actionBar.tvCenter.select()
+        val textRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) R.string.to_access_13 else R.string.to_access
+
+        binding.txtPer.text = TextUtils.concat(
+            createColoredText(R.string.allow, R.color.white),
+            " ",
+            createColoredText(R.string.app_name, R.color.white),
+            " ",
+            createColoredText(textRes, R.color.white)
+        )
     }
 
     override fun viewListener() {
-        binding.apply {
-            switchPermission.onSingleClick {
-                if (checkPermissions(storagePermission)) {
-                    Toast.makeText(this@PermissionActivity, R.string.granted_storage, Toast.LENGTH_SHORT).show()
-                } else {
-                    if (isStoragePermission(this@PermissionActivity) >= 2 && !checkPermissions(storagePermission)) {
-                        goToSettings()
-                    }else{
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermission(storagePermission, STORAGE_PERMISSION_CODE)
-                        }
+        binding.swPermission.tap { handlePermissionRequest(isStorage = true) }
+        binding.swNotification.tap { handlePermissionRequest(isStorage = false) }
+        binding.tvContinue.tap(1500) { handleContinue() }
+    }
+
+    override fun dataObservable() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    viewModel.storageGranted.collect { granted ->
+                        updatePermissionUI(granted, true)
                     }
                 }
 
-            }
-
-            switchNotification.onSingleClick {
-                if (checkPermissions(notificationPermission)) {
-                    Toast.makeText(
-                        this@PermissionActivity, getString(R.string.granted_notification), Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    if (isNotificationPermission(this@PermissionActivity) >= 2) {
-                        goToSettings()
-                    }else{
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            requestPermission(notificationPermission, NOTIFICATION_PERMISSION_CODE)
-                        }
+                launch {
+                    viewModel.notificationGranted.collect { granted ->
+                        updatePermissionUI(granted, false)
                     }
                 }
-
             }
+        }
+    }
 
-            Admob.getInstance().loadInterAds(this@PermissionActivity, getString(R.string.inter_per), object : InterCallback(){
+    private fun handlePermissionRequest(isStorage: Boolean) {
+        val permType = if (isStorage) "Storage" else "Notification"
+        val counter = if (isStorage) sharePreference.getStoragePermission() else sharePreference.getNotificationPermission()
+        android.util.Log.d("PermissionActivity", "handlePermissionRequest: $permType clicked, counter = $counter")
+
+        val perms = if (isStorage) viewModel.getStoragePermissions() else viewModel.getNotificationPermissions()
+
+        // Check shouldShowRequestPermissionRationale for each permission
+        val shouldShowRationale = perms.any { shouldShowRequestPermissionRationale(it) }
+        perms.forEach { permission ->
+            val shouldShow = shouldShowRequestPermissionRationale(permission)
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: shouldShowRationale for $permission = $shouldShow")
+        }
+
+        if (checkPermissions(perms)) {
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: $permType already granted")
+            showToast(if (isStorage) R.string.granted_storage else R.string.granted_notification)
+        } else if (viewModel.needGoToSettings(sharePreference, isStorage)) {
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: $permType needs settings (counter > 2)")
+            goToSettings()
+        } else if (counter > 0 && !shouldShowRationale) {
+            // User selected "Don't ask again" - shouldShowRationale is false after denying
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: $permType permanently denied (Don't ask again), going to settings")
+            goToSettings()
+        } else {
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: $permType requesting permission from system")
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: Permissions to request = ${perms.joinToString()}")
+            val requestCode = if (isStorage) RequestKey.STORAGE_PERMISSION_CODE else RequestKey.NOTIFICATION_PERMISSION_CODE
+            requestPermission(perms, requestCode)
+            android.util.Log.d("PermissionActivity", "handlePermissionRequest: requestPermission() called")
+        }
+    }
+
+    private fun updatePermissionUI(granted: Boolean, isStorage: Boolean) {
+        val imageView = if (isStorage) binding.swPermission else binding.swNotification
+        imageView.setImageResource(if (granted) R.drawable.ic_sw_on else R.drawable.ic_sw_off)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        val granted = grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }
+        val permType = if (requestCode == RequestKey.STORAGE_PERMISSION_CODE) "Storage" else "Notification"
+
+        android.util.Log.d("PermissionActivity", "onRequestPermissionsResult: $permType result = $granted")
+        android.util.Log.d("PermissionActivity", "onRequestPermissionsResult: Before update - Storage counter = ${sharePreference.getStoragePermission()}, Notification counter = ${sharePreference.getNotificationPermission()}")
+
+        when (requestCode) {
+            RequestKey.STORAGE_PERMISSION_CODE -> viewModel.updateStorageGranted(sharePreference, granted)
+            RequestKey.NOTIFICATION_PERMISSION_CODE -> viewModel.updateNotificationGranted(sharePreference, granted)
+        }
+
+        android.util.Log.d("PermissionActivity", "onRequestPermissionsResult: After update - Storage counter = ${sharePreference.getStoragePermission()}, Notification counter = ${sharePreference.getNotificationPermission()}")
+
+        if (granted) {
+            showToast(if (requestCode == RequestKey.STORAGE_PERMISSION_CODE) R.string.granted_storage else R.string.granted_notification)
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        android.util.Log.d("PermissionActivity", "onStart: Before check - Storage counter = ${sharePreference.getStoragePermission()}, Notification counter = ${sharePreference.getNotificationPermission()}")
+
+        // Just update UI state without incrementing counter
+        val storageGranted = checkPermissions(viewModel.getStoragePermissions())
+        val notificationGranted = checkPermissions(viewModel.getNotificationPermissions())
+        android.util.Log.d("PermissionActivity", "onStart: Storage granted = $storageGranted, Notification granted = $notificationGranted")
+
+        viewModel.checkAndUpdatePermissionState(storageGranted, isStorage = true)
+        viewModel.checkAndUpdatePermissionState(notificationGranted, isStorage = false)
+
+        android.util.Log.d("PermissionActivity", "onStart: After check - Storage counter = ${sharePreference.getStoragePermission()}, Notification counter = ${sharePreference.getNotificationPermission()}")
+    }
+
+
+    override fun initActionBar() {
+        binding.actionBar.tvCenter.apply {
+            text = getString(R.string.permission)
+            visible()
+        }
+    }
+
+    private fun createColoredText(
+        @androidx.annotation.StringRes textRes: Int,
+        @androidx.annotation.ColorRes colorRes: Int,
+        font: Int = R.font.josefinsans_medium
+    ) = StringHelper.changeColor(this, getString(textRes), colorRes, font)
+
+    private fun handleContinue() {
+        Admob.getInstance().showInterAds(this@PermissionActivity, inter, object : InterCallback() {
+            override fun onNextAction() {
+                super.onNextAction()
+                sharePreference.setIsFirstPermission(false)
+                startIntentRightToLeft(HomeActivity::class.java)
+                finishAffinity()
+            }
+        })
+    }
+
+
+    override fun initAds() {
+        Admob.getInstance().loadInterAds(
+            this@PermissionActivity, getString(R.string.inter_per), object : InterCallback() {
                 override fun onAdLoadSuccess(interstitialAd: InterstitialAd?) {
                     super.onAdLoadSuccess(interstitialAd)
                     inter = interstitialAd
                 }
             })
 
-            txtContinue.onSingleClick(1500) {
-                Admob.getInstance().showInterAds(this@PermissionActivity, inter, object: InterCallback(){
-                    override fun onNextAction() {
-                        super.onNextAction()
-                        startIntentAnim(HomeActivity::class.java)
-                        SystemUtils.setFirstPermission(this@PermissionActivity, false)
-                        finishAffinity()
-                    }
-                })
-            }
-            btnBack.hide()
-            btnSettings.hide()
-        }
-    }
-
-    override fun initText() {
-        binding.apply {
-            if (true) {
-                txtPer.text = TextUtils.concat(
-                    changeColor(
-                        this@PermissionActivity, resources.getString(R.string.allow), R.color.pink, R.font.josefin_sans_medium
-                    ), " ", changeColor(
-                        this@PermissionActivity, resources.getString(R.string.app_name), R.color.pink, R.font.josefin_sans_medium
-                    ), " ",
-
-                    changeColor(
-                        this@PermissionActivity, resources.getString(R.string.to_access_13), R.color.pink, R.font.josefin_sans_medium
-                    )
-                )
-            } else {
-                txtPer.text = TextUtils.concat(
-                    changeColor(
-                        this@PermissionActivity, resources.getString(R.string.allow), R.color.brown, R.font.londrina_solid_regular
-                    ), " ", changeColor(
-                        this@PermissionActivity, resources.getString(R.string.app_name), R.color.brown, R.font.londrina_solid_regular
-                    ), " ", changeColor(
-                        this@PermissionActivity, resources.getString(R.string.to_access), R.color.brown, R.font.londrina_solid_regular
-                    )
-                )
-            }
-        }
-    }
-    private fun initData() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            binding.layoutNotifi.show()
-            binding.layoutStorage.gone()
-        } else {
-            binding.layoutStorage.show()
-            binding.layoutNotifi.gone()
-        }
-    }
-
-    private fun changeColor(
-            context: Context,
-            text: String,
-            color: Int,
-            fontfamily: Int,
-    ): SpannableString {
-        val spannableString = SpannableString(text)
-        spannableString.setSpan(
-            ForegroundColorSpan(context.getColor(color)), 0, text.length, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        Admob.getInstance().loadNativeAd(
+            this@PermissionActivity,
+            getString(R.string.native_per),
+            binding.nativeAds,
+            R.layout.ads_native_big_btn_top
         )
-        val font = ResourcesCompat.getFont(context, fontfamily)
-        val typefaceSpan = CustomTypefaceSpan("", font)
-        spannableString.setSpan(
-            typefaceSpan, 0, text.length, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
-        )
-        return spannableString
     }
-
-    class CustomTypefaceSpan(private val family: String, private val typeface: Typeface?) : TypefaceSpan(family) {
-
-        override fun updateDrawState(ds: TextPaint) {
-            applyCustomTypeFace(ds, typeface)
-        }
-
-        override fun updateMeasureState(paint: TextPaint) {
-            applyCustomTypeFace(paint, typeface)
-        }
-
-        private fun applyCustomTypeFace(paint: Paint, tf: Typeface?) {
-            if (tf != null) {
-                paint.typeface = tf
-            } else {
-                paint.typeface = Typeface.DEFAULT
-            }
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int, permissions: Array<String>, grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == STORAGE_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                binding.switchPermission.setImageResource(R.drawable.sw_on)
-                Toast.makeText(this, R.string.granted_storage, Toast.LENGTH_SHORT).show()
-            } else {
-                binding.switchPermission.setImageResource(R.drawable.sw_off)
-                setStoragePermission(this, (isStoragePermission(this) + 1))
-            }
-        } else if (requestCode == NOTIFICATION_PERMISSION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                binding.switchNotification.setImageResource(R.drawable.sw_on)
-                Toast.makeText(this, R.string.granted_notification, Toast.LENGTH_SHORT).show()
-            } else {
-                R.drawable.sw_off
-                setNotificationPermission(this, (isNotificationPermission(this) + 1))
-            }
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun onStart() {
-        super.onStart()
-        if (checkPermissions(storagePermission)) {
-            binding.switchPermission.setImageResource(R.drawable.sw_on)
-            setStoragePermission(this, 0)
-        } else {
-            binding.switchPermission.setImageResource(R.drawable.sw_off)
-        }
-        if (checkPermissions(notificationPermission)) {
-            binding.switchNotification.setImageResource(R.drawable.sw_on)
-            setNotificationPermission(this, 0)
-        } else {
-            binding.switchNotification.setImageResource(R.drawable.sw_off)
-        }
-    }
-
-    //quyen
-    override fun initAds() {
-        Admob.getInstance().loadNativeAd(this, getString(R.string.native_per), binding.nativeAds, R.layout.ads_native_big)
-    }
-    //quyen
-
 }

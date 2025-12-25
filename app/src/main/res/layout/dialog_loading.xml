@@ -1,92 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <LinearLayout
+    <!--    flOutSide-->
+    <FrameLayout
+        android:id="@+id/flOutSide"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#80545454"
-        android:gravity="center">
+        android:layout_height="match_parent">
 
-        <FrameLayout
+        <!--        layoutMain-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/layoutMain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="40dp">
+            android:layout_gravity="center"
+            android:layout_marginHorizontal="16dp"
+            app:cardBackgroundColor="@color/color_app"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp">
 
-            <FrameLayout
-                android:id="@+id/bg"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_loading_cus"
-                android:layout_margin="2dp">
-                <FrameLayout
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <!--            ConstraintLayout bọc tvTitle (Top)-->
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="160dp">
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+                    android:layout_height="wrap_content">
 
-                        <TextView
+                    <!--            tvTitle (Top)-->
+                    <TextView
+                        android:id="@+id/tvTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="41dp"
+                        android:background="#FF7396"
+                        android:fontFamily="@font/josefinsans_medium"
+                        android:gravity="center"
+                        android:paddingVertical="5dp"
+                        android:text="@string/loading"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                            android:id="@+id/txtDescription"
-                            style="@style/custom_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="41dp"
-                            android:fontFamily="@font/josefin_sans_medium"
-                            android:gravity="center"
-                            android:layout_marginTop="0dp"
-                            android:layout_marginBottom="-30dp"
-                            android:text="@string/loading"
-                            android:textColor="@color/white"
-                            android:textSize="18sp"
-                            android:background="@drawable/bg_loading"
-                           app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-                        <TextView
-                            android:id="@+id/txtDescription2"
-                            style="@style/custom_text"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="16dp"
-                            android:fontFamily="@font/josefin_sans_regular"
-                            android:gravity="center"
-                            android:text="@string/it_only_takes_a_few_seconds"
-                            android:textColor="#FF7396"
-                            android:textSize="16sp"
-                            android:layout_marginBottom="15dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/txtDescription"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
+                    <ImageView
+                        android:id="@+id/icDotLoading"
+                        android:layout_width="35dp"
+                        android:layout_height="9dp"
+                        android:layout_marginStart="9dp"
+                        android:visibility="invisible"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:src="@drawable/dot_ic"/>
 
-                        <FrameLayout
-                            android:id="@+id/layoutLoading"
-                            android:layout_width="250dp"
-                            android:layout_height="100dp"
-                            android:layout_marginTop="10dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent">
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-<!--                            <com.airbnb.lottie.LottieAnimationView-->
-<!--                                android:id="@+id/lottie_typing"-->
-<!--                                android:layout_width="match_parent"-->
-<!--                                android:layout_height="match_parent"-->
-<!--                                android:background="@color/tranf"-->
-<!--                                app:lottie_autoPlay="true"-->
-<!--                                app:lottie_loop="true"-->
-<!--                                app:lottie_rawRes="@raw/lottie"-->
-<!--                                app:lottie_repeatMode="restart" />-->
-                        </FrameLayout>
+                <!--            tvDescription-->
+                <TextView
+                    android:id="@+id/tvDescription"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:fontFamily="@font/josefinsans_regular"
+                    android:gravity="center"
+                    android:paddingHorizontal="24dp"
+                    android:text="@string/wait_a_minute"
+                    android:background="#FFFFFF"
+                    android:textColor="#FF7396"
+                    android:paddingVertical="45dp"
+                    android:textSize="16sp" />
 
 
 
+                <!--            ConstraintLayout bọc tvTitle (Bottom)-->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </FrameLayout>
-            </FrameLayout>
+                    <!--            tvTitle (Bottom)-->
+                    <TextView
+                        android:id="@+id/tvTitleBottom"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:fontFamily="@font/pixelifysans_medium"
+                        android:gravity="center"
+                        android:paddingVertical="5dp"
+                        android:textColor="#FFFFFF"
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent" />
 
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </FrameLayout>
-    </LinearLayout>
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+    </FrameLayout>
 </layout>

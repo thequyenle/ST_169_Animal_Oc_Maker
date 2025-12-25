@@ -5,66 +5,65 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.Gravity
-import android.view.LayoutInflater
-import android.view.View
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.viewbinding.ViewBinding
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils
-
+import com.animal.avatar.charactor.maker.core.helper.LanguageHelper
+import androidx.core.graphics.drawable.toDrawable
 
 abstract class BaseDialog<VB : ViewBinding>(
-        private val context: Context,
-        private val gravity: Int = Gravity.CENTER,
-        private val maxWidth: Boolean = false,
-        private val maxHeight: Boolean = false,
+    context: Context,
+    private val gravity: Int = Gravity.CENTER,
+    private val maxWidth: Boolean = false,
+    private val maxHeight: Boolean = false
 ) : Dialog(context) {
+
     lateinit var binding: VB
     abstract val layoutId: Int
-    abstract val isCancel: Boolean
-    abstract val isBack: Boolean
-
+    abstract val isCancelOnTouchOutside: Boolean
+    abstract val isCancelableByBack: Boolean
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SystemUtils.setLocale(context)
+        LanguageHelper.setLocale(context)
         requestWindowFeature(Window.FEATURE_NO_TITLE)
+
         binding = DataBindingUtil.inflate(LayoutInflater.from(context), layoutId, null, false)
         setContentView(binding.root)
-        setCancelable(isBack)
-        this.setCanceledOnTouchOutside(isCancel)
-        val window = this.window!!
-        window.setGravity(gravity)
-        if (maxWidth && maxHeight) {
-            window.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.MATCH_PARENT
-            )
-        } else if (maxWidth && !maxHeight) {
-            window.setLayout(
-                WindowManager.LayoutParams.MATCH_PARENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-        } else if (!maxWidth && !maxHeight) {
-            window.setLayout(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT
-            )
-        }
-        window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        window.decorView.systemUiVisibility =
-                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
-                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+
+        setCancelable(isCancelableByBack)
+        setCanceledOnTouchOutside(isCancelOnTouchOutside)
+
+        setupWindow()
         initView()
         initAction()
+    }
 
+    private fun setupWindow() {
+        window?.apply {
+            setGravity(gravity)
+
+            val width = if (maxWidth) WindowManager.LayoutParams.MATCH_PARENT
+            else WindowManager.LayoutParams.WRAP_CONTENT
+            val height = if (maxHeight) WindowManager.LayoutParams.MATCH_PARENT
+            else WindowManager.LayoutParams.WRAP_CONTENT
+            setLayout(width, height)
+
+            setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
+            decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                        View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+    }
+
+    override fun dismiss() {
+        super.dismiss()
+        onDismissListener()
     }
 
     abstract fun initView()
     abstract fun initAction()
     abstract fun onDismissListener()
-
 }

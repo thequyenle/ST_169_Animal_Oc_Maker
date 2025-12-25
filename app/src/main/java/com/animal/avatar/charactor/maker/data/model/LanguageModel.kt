@@ -1,6 +1,8 @@
-package com.girlmaker.create.avatar.creator.model
+package com.animal.avatar.charactor.maker.data.model
 
-data class LanguageModel(val code: String,
-                         val name: String,
-                         val flag: Int,
-                         var activate: Boolean = false)
+data class LanguageModel(
+    val code: String,
+    val name: String,
+    val flag: Int,
+    var activate: Boolean = false
+)

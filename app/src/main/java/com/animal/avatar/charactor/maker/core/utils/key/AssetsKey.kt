@@ -3,9 +3,11 @@ package com.animal.avatar.charactor.maker.core.utils.key
 object AssetsKey {
     const val ASSET_MANAGER = "file:///android_asset"
     const val DATA_ASSET = "file:///android_asset/data/"
-
+    const val AVATAR_ASSET = "avatar"
     const val DATA = "data"
     const val BACKGROUND_ASSET = "background"
+    const val SPEECH_ASSET = "speech"
+    const val STICKER_ASSET = "sticker"
     const val RANDOM_LAYER = "RANDOM_LAYER"
     const val NONE_LAYER = "NONE_LAYER"
     const val SPLIT_LAYER = "-"
@@ -24,5 +26,5 @@ object AssetsKey {
     const val AVATAR_CHARACTER_WEBP = "avatar.webp"
 
     val FIRST_IMAGE = arrayListOf(FIRST_PNG, FIRST_JPG, FIRST_WEBP)
-    val AVATAR_CHARACTER_IMAGE = arrayListOf(AVATAR_CHARACTER_PNG, AVATAR_CHARACTER_JPG, AVATAR_CHARACTER_WEBP)
+
 }

@@ -1,153 +1,159 @@
 package com.animal.avatar.charactor.maker.ui.home
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.util.Log
 import android.view.LayoutInflater
-import com.animal.avatar.charactor.maker.R
-import com.animal.avatar.charactor.maker.SettingsActivity
-import com.animal.avatar.charactor.maker.core.base.BaseActivity
-import com.animal.avatar.charactor.maker.core.extensions.onSingleClick
-import com.animal.avatar.charactor.maker.core.extensions.showInterAll
-import com.animal.avatar.charactor.maker.core.extensions.startIntentAnim
-import com.animal.avatar.charactor.maker.core.utils.RatingPreferences
-import com.animal.avatar.charactor.maker.databinding.ActivityHomeBinding
-import com.animal.avatar.charactor.maker.dialog.RatingDialog
-import com.animal.avatar.charactor.maker.ui.category.CategoryActivity
-import com.animal.avatar.charactor.maker.ui.mycreation.MycreationActivity
-import com.animal.avatar.charactor.maker.ui.suggestion.SuggestionActivity
-import com.google.android.gms.tasks.Task
-import com.google.android.play.core.review.ReviewManagerFactory
+import android.view.animation.AnimationUtils
+import androidx.lifecycle.lifecycleScope
 import com.lvt.ads.util.Admob
-import java.lang.Void
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.base.BaseActivity
+import com.animal.avatar.charactor.maker.core.extensions.hideNavigation
+import com.animal.avatar.charactor.maker.core.extensions.loadNativeCollabAds
+import com.animal.avatar.charactor.maker.core.extensions.rateApp
+import com.animal.avatar.charactor.maker.core.extensions.select
+import com.animal.avatar.charactor.maker.core.extensions.setImageActionBar
+import com.animal.avatar.charactor.maker.core.extensions.showInterAll
+import com.animal.avatar.charactor.maker.core.extensions.startIntentRightToLeft
+import com.animal.avatar.charactor.maker.core.helper.LanguageHelper
+import com.animal.avatar.charactor.maker.core.helper.MediaHelper
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.core.utils.state.RateState
+import com.animal.avatar.charactor.maker.databinding.ActivityHomeBinding
+import com.animal.avatar.charactor.maker.ui.SettingsActivity
+import com.animal.avatar.charactor.maker.ui.my_creation.MyCreationActivity
+import com.animal.avatar.charactor.maker.ui.choose_character.ChooseCharacterActivity
+import com.animal.avatar.charactor.maker.core.extensions.tap
+import com.animal.avatar.charactor.maker.core.extensions.strings
+import com.animal.avatar.charactor.maker.ui.random_character.RandomCharacterActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.system.exitProcess
 
 class HomeActivity : BaseActivity<ActivityHomeBinding>() {
-
-    private val ratingPrefs by lazy {
-        RatingPreferences(this)
-    }
 
     override fun setViewBinding(): ActivityHomeBinding {
         return ActivityHomeBinding.inflate(LayoutInflater.from(this))
     }
 
     override fun initView() {
-        // No need to setup callback, we override onBackPressed directly
+        sharePreference.setCountBack(sharePreference.getCountBack() + 1)
+        deleteTempFolder()
+        binding.tv1.isSelected = true
+        binding.tv3.isSelected = true
+        binding.tv2.isSelected = true
+
+        // Apply elastic bounce animation to app name
+        val elasticBounce = AnimationUtils.loadAnimation(this, R.anim.elastic_bounce)
+        binding.imvAppName.startAnimation(elasticBounce)
     }
 
     override fun viewListener() {
         binding.apply {
-            btnCreate.onSingleClick {
-
-                    startIntentAnim(CategoryActivity::class.java)
-
-
-            }
-            btnSetting.onSingleClick {
-                startIntentAnim(SettingsActivity::class.java)
-            }
-            btnMyCreation.onSingleClick {
-                //quyen
-                showInterAll {
-                    startIntentAnim(MycreationActivity::class.java)
-                }
-                //quyen
-            }
-            btnSuggestion.onSingleClick {
-                startIntentAnim(SuggestionActivity::class.java)
-            }
+            actionBar.btnActionBarRight.tap(2000) { startIntentRightToLeft(SettingsActivity::class.java) }
+            btnCreate.tap(2000) { startIntentRightToLeft(ChooseCharacterActivity::class.java) }
+            btnMyAlbum.tap(2000) { showInterAll { startIntentRightToLeft(MyCreationActivity::class.java) } }
+            btnQuickMaker.tap(2000) { showInterAll{startIntentRightToLeft(RandomCharacterActivity::class.java)} }
         }
     }
 
     override fun initText() {
-
+        super.initText()
+        binding.actionBar.tvCenter.select()
     }
 
-    @SuppressLint("MissingSuperCall")
-    @Deprecated("Deprecated in Java")
+    override fun initActionBar() {
+        binding.actionBar.apply {
+            setImageActionBar(btnActionBarRight, R.drawable.ic_settings)
+        }
+    }
+
+    @SuppressLint("MissingSuperCall", "GestureBackNavigation")
     override fun onBackPressed() {
-        Log.d("HomeActivity", "onBackPressed() called")
-
-        // Check if user has already rated
-        val hasRated = ratingPrefs.isRated()
-        Log.d("HomeActivity", "Has user rated: $hasRated")
-
-        if (hasRated) {
-            Log.d("HomeActivity", "User already rated, exiting app")
-            finishAffinity()
-            return
-        }
-
-        // Increment back press count
-        val currentCount = ratingPrefs.incrementBackPressCount()
-        Log.d("HomeActivity", "Back press count: $currentCount")
-
-        // Show rating dialog on even numbered back presses (2, 4, 6, 8...)
-        if (currentCount % 2 == 0) {
-            Log.d("HomeActivity", "Even number ($currentCount) - Showing rating dialog")
-            showRatingDialog()
-        } else {
-            Log.d("HomeActivity", "Odd number ($currentCount) - Exiting app")
-            // Odd number - just exit the app
-            finishAffinity()
-        }
-    }
-
-    private fun showRatingDialog() {
-        Log.d("HomeActivity", "showRatingDialog() called")
-        RatingDialog.show(
-            context = this,
-            onRatingSubmitted = { rating ->
-                Log.d("HomeActivity", "User submitted rating: $rating")
-                // Save that user has rated
-                ratingPrefs.setRated(true)
-                Log.d("HomeActivity", "Rating saved, exiting app")
-                finishAffinity()
-                if (rating >= 4) {
-                    reviewApp(this, true)
+        if (!sharePreference.getIsRate(this) && sharePreference.getCountBack() % 2 == 0) {
+            rateApp(sharePreference) { state ->
+                if (state != RateState.CANCEL) {
+                    showToast(R.string.have_rated)
                 }
-
-            },
-            onDismiss = {
-                Log.d("HomeActivity", "Rating dialog dismissed, exiting app")
-                // Close app when dialog is dismissed
-                finishAffinity()
-            }
-        )
-    }
-
-    fun reviewApp(context: Activity, isBackPress: Boolean) {
-        val manager = ReviewManagerFactory.create(context)
-        val request = manager.requestReviewFlow()
-        request.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val reviewInfo = task.result
-                val flow = (context as Activity?)?.let { manager.launchReviewFlow(it, reviewInfo) }
-                flow?.addOnCompleteListener { task2: Task<Void> ->
-                    if (isBackPress) {
+                lifecycleScope.launch {
+                    withContext(Dispatchers.Main) {
+                        delay(1000)
                         exitProcess(0)
                     }
                 }
-            } else {
-                if (isBackPress) {
-                    exitProcess(0)
+            }
+        } else {
+            exitProcess(0)
+        }
+    }
+
+    private fun deleteTempFolder() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val dataTemp = MediaHelper.getImageInternal(this@HomeActivity, ValueKey.RANDOM_TEMP_ALBUM)
+            if (dataTemp.isNotEmpty()) {
+                dataTemp.forEach {
+                    val file = File(it)
+                    file.delete()
                 }
             }
         }
     }
-    override fun initAds() {
-        Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
-        Admob.getInstance().loadNativeAll(this, getString(R.string.native_all))
-        //quyen
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds2)
-        //quyen
+
+    private fun updateText() {
+        binding.apply {
+            tv1.text = strings(R.string.character_maker)
+            tv2.text = strings(R.string.my_character)
+            tv3.text = strings(R.string.quick_maker)
+        }
     }
 
-    //quyen
     override fun onRestart() {
         super.onRestart()
-        Admob.getInstance().loadNativeCollap(this, getString(R.string.native_cl_home), binding.nativeAds2)
+        deleteTempFolder()
+        LanguageHelper.setLocale(this)
+        updateText()
+        initNativeCollab()
     }
-    //quyen
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+        startStaggeredAnimations()
+
+        }
+    }
+
+    private fun startStaggeredAnimations() {
+        // Card 1: Slide from right (no delay)
+        val slideFromRight1 = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_home)
+        binding.btnCreate.startAnimation(slideFromRight1)
+        binding.tv1.startAnimation(slideFromRight1)
+
+
+        // Card 2: Slide from left (200ms delay)
+        val slideFromLeft = AnimationUtils.loadAnimation(this, R.anim.slide_in_left_home)
+        binding.btnQuickMaker.postDelayed({
+            binding.btnQuickMaker.startAnimation(slideFromLeft)
+            binding.tv2.startAnimation(slideFromLeft)
+        }, 200)
+
+        // Card 3: Slide from right (400ms delay)
+        val slideFromRight2 = AnimationUtils.loadAnimation(this, R.anim.slide_in_right_home)
+        binding.btnMyAlbum.postDelayed({
+            binding.btnMyAlbum.startAnimation(slideFromRight2)
+            binding.tv3.startAnimation(slideFromRight2)
+        }, 400)
+    }
+
+    fun initNativeCollab() {
+        loadNativeCollabAds(R.string.native_cl_home, binding.flNativeCollab, binding.scvMain)
+    }
+
+    override fun initAds() {
+        initNativeCollab()
+        Admob.getInstance().loadInterAll(this, getString(R.string.inter_all))
+        Admob.getInstance().loadNativeAll(this, getString(R.string.native_all))
+    }
 }

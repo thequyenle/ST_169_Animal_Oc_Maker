@@ -9,7 +9,7 @@ import androidx.viewbinding.ViewBinding
 abstract class BaseAdapter<T, VB : ViewBinding>(private val bindingInflater: (LayoutInflater, ViewGroup, Boolean) -> VB) :
     RecyclerView.Adapter<BaseAdapter<T, VB>.BaseViewHolder>() {
 
-    protected val items = kotlin.collections.ArrayList<T>()
+    val items = ArrayList<T>()
 
     inner class BaseViewHolder(val binding: VB) : RecyclerView.ViewHolder(binding.root) {
         fun bindItem(item: T, position: Int) {
@@ -29,7 +29,7 @@ abstract class BaseAdapter<T, VB : ViewBinding>(private val bindingInflater: (La
     override fun getItemCount() = items.size
 
     @SuppressLint("NotifyDataSetChanged")
-    fun submitList(list: List<T>) {
+    open fun submitList(list: List<T>) {
         items.clear()
         items.addAll(list)
         notifyDataSetChanged()

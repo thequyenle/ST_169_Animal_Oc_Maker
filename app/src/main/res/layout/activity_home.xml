@@ -5,206 +5,190 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/img_bg_app"
     tools:context=".ui.home.HomeActivity">
 
     <ImageView
-        android:id="@+id/btnSetting"
-        android:layout_width="39dp"
-        android:layout_height="39dp"
-        android:layout_marginTop="52dp"
-        android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_settings"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="@drawable/img_splash_bg" />
 
+    <!--    layoutActionBar-->
+    <FrameLayout
+        android:id="@+id/layoutActionBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include
+            android:id="@+id/actionBar"
+            layout="@layout/layout_actionbar" />
+    </FrameLayout>
+
+    <!--    imvAppName-->
     <ImageView
-        android:id="@+id/txtTitleHome"
+        android:id="@+id/imvAppName"
         android:layout_width="0dp"
+        android:layout_height="250dp"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:src="@drawable/img_app_name"
+        android:layout_marginTop="-50dp"
+
+        app:layout_constraintDimensionRatio="361:255"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutActionBar" />
+
+    <!--    scvMain-->
+    <ScrollView
+        android:id="@+id/scvMain"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginTop="-60dp"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        android:src="@drawable/img_title_app"
-        app:layout_constraintDimensionRatio="360:266"
-        app:layout_constraintWidth_percent="0.9"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnSetting" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_begin="245dp" />
-
-    <ScrollView
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_marginBottom="82dp"
         android:scrollbars="none"
-        android:layout_marginTop="-40dp"
-        app:layout_constraintTop_toBottomOf="@id/txtTitleHome"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/imvAppName">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="10dp"
-            android:paddingBottom="120dp"
-            >
+            android:layout_height="wrap_content">
 
-            <FrameLayout
+            <!--            gl05-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl05"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.08" />
+
+            <!--            gl063-->
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/gl063"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintGuide_percent="0.91" />
+
+            <!--            btnCreate-->
+            <ImageView
                 android:id="@+id/btnCreate"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/img_home_1"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/img_frame_home_1" />
+            <!--            tv1-->
 
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtCreate"
-                    android:layout_width="320dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/coiny_regular"
-                    android:gravity="end"
-                    app:strokeWidth="4dp"
-                    android:ellipsize="end"
-                    android:maxLines="1"
-                    app:strokeColor="#FFA600"
-                    android:text="@string/create_maker"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
 
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtCreate1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/coiny_regular"
-                    android:gravity="center"
-                    android:text="@string/create_maker"
-                    app:strokeWidth="2dp"
-                    app:strokeColor="#FFA600"
-                    android:textColor="@color/tranf"
-                    android:textSize="20sp"
-                    android:visibility="gone" />
+            <!--            btnMyAlbum-->
+            <com.animal.avatar.charactor.maker.core.custom.text.DoubleStrokeTextView
+                android:id="@+id/tv1"
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/cherry_bomb_regular"
+                android:gravity="center|end"
+                android:text="@string/character_maker"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/btnCreate"
+                app:layout_constraintEnd_toEndOf="@+id/gl063"
+                app:layout_constraintStart_toStartOf="@id/glCenterRight"
+                app:layout_constraintTop_toTopOf="@+id/btnCreate"
+                app:layout_constraintVertical_bias="0.0"
 
-            </FrameLayout>
+                app:outerStrokeColor="#F44336"
+                app:outerStrokeWidth="4.5dp" />
 
-            <FrameLayout
-                android:id="@+id/btnMyCreation"
+            <ImageView
+                android:id="@+id/btnMyAlbum"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/img_home_2"
+                app:layout_constraintTop_toBottomOf="@+id/btnCreate" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/img_frame_home_2" />
+            <!--            tv2-->
+            <com.animal.avatar.charactor.maker.core.custom.text.DoubleStrokeTextView
+                android:id="@+id/tv2"
+                style="@style/single_marquee"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:fontFamily="@font/cherry_bomb_regular"
+                android:gravity="center"
+                android:paddingEnd="26dp"
+                android:text="@string/my_character"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/btnMyAlbum"
+                app:layout_constraintEnd_toEndOf="@+id/glCenterLeft"
+                app:layout_constraintStart_toEndOf="@id/gl05"
+                app:layout_constraintTop_toTopOf="@+id/btnMyAlbum"
+                app:outerStrokeColor="#F44336"
+                app:outerStrokeWidth="4.5dp" />
 
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtSticker"
-                    android:layout_width="220dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="40dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/coiny_regular"
-                    android:gravity="start"
-                    android:text="@string/creation"
-                    app:strokeWidth="4dp"
-                    app:strokeColor="#FFA600"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtSticker1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/creepstercaps_regular"
-                    android:gravity="center"
-                    android:text="@string/suggestion"
-                    android:textColor="@color/tranf"
-                    android:textSize="48sp"
-                    android:visibility="gone" />
-
-            </FrameLayout>
-
-            <FrameLayout
-                android:id="@+id/btnSuggestion"
+            <!--            btnQuickMaker-->
+            <ImageView
+                android:id="@+id/btnQuickMaker"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                android:adjustViewBounds="true"
+                android:src="@drawable/img_home_3"
+                app:layout_constraintTop_toBottomOf="@+id/btnMyAlbum" />
+
+            <!--            tv3-->
+            <com.animal.avatar.charactor.maker.core.custom.text.DoubleStrokeTextView
+                android:id="@+id/tv3"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                style="@style/single_marquee"
+                android:fontFamily="@font/cherry_bomb_regular"
+                android:gravity="center"
+                android:text="@string/quick_maker"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                app:layout_constraintBottom_toBottomOf="@+id/btnQuickMaker"
+                app:layout_constraintEnd_toEndOf="@id/gl063"
+                app:layout_constraintStart_toStartOf="@+id/gl05"
+                app:layout_constraintTop_toTopOf="@+id/btnQuickMaker"
+                app:outerStrokeColor="#F44336"
+                app:outerStrokeWidth="4.5dp"
+
+               />
+
+            <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp">
+                android:orientation="vertical"
+                android:id="@+id/glCenterLeft"
+                app:layout_constraintGuide_percent="0.65"
+                />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/img_frame_home_3" />
+            <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:id="@+id/glCenterRight"
+                app:layout_constraintGuide_percent="0.35"
+                />
 
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtCreation"
-                    android:layout_width="250dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="30dp"
-                    android:fontFamily="@font/coiny_regular"
-                    android:gravity="end"
-                    android:text="@string/suggestion"
-                    android:textColor="@color/white"
-                    app:strokeWidth="4dp"
-                    app:strokeColor="#FFA600"
-                    android:textSize="20sp" />
-
-                <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-                    android:id="@+id/txtCreation1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|start"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:fontFamily="@font/londrina_solid_regular"
-                    android:gravity="center"
-                    android:text="@string/creation"
-                    android:textColor="@color/tranf"
-                    android:textSize="48sp"
-                    android:visibility="gone" />
-            </FrameLayout>
-
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
 
-    <!-- quyen -->
+    <!--    flNativeCollab-->
     <FrameLayout
-        android:id="@+id/native_ads_2"
+        android:id="@+id/flNativeCollab"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
-
         <include layout="@layout/ads_shimmer_collap_native" />
     </FrameLayout>
-    <!-- quyen -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

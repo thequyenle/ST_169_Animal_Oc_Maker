@@ -13,6 +13,9 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import androidx.core.net.toUri
+import com.animal.avatar.charactor.maker.R
+import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.core.utils.state.HandleState
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
@@ -26,10 +29,7 @@ import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.net.URL
 import androidx.core.graphics.scale
-import com.animal.avatar.charactor.maker.R
-import com.animal.avatar.charactor.maker.core.utils.HandleState
-import com.animal.avatar.charactor.maker.core.utils.SaveState
-import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
+import com.animal.avatar.charactor.maker.core.utils.state.SaveState
 import kotlinx.coroutines.flow.flowOn
 
 object MediaHelper {
@@ -44,16 +44,33 @@ object MediaHelper {
 
     // Get file from internal
     fun getImageInternal(context: Context, album: String): ArrayList<String> {
+        android.util.Log.d("MediaHelper", "📁 getImageInternal() called")
+        android.util.Log.d("MediaHelper", "  Album name: $album")
+        android.util.Log.d("MediaHelper", "  filesDir: ${context.filesDir.absolutePath}")
+
         val imagePaths = ArrayList<String>()
         val targetDir = File(context.filesDir, album)
 
+        android.util.Log.d("MediaHelper", "  Target directory: ${targetDir.absolutePath}")
+        android.util.Log.d("MediaHelper", "  Directory exists: ${targetDir.exists()}")
+        android.util.Log.d("MediaHelper", "  Is directory: ${targetDir.isDirectory}")
+
         if (targetDir.exists() && targetDir.isDirectory) {
-            targetDir.listFiles()?.filter { isImageFile(it) }
-                ?.sortedByDescending { it.lastModified() }
-                ?.forEach { file ->
-                    imagePaths.add(file.absolutePath)
-                }
+            val allFiles = targetDir.listFiles()
+            android.util.Log.d("MediaHelper", "  Total files in directory: ${allFiles?.size ?: 0}")
+
+            val imageFiles = allFiles?.filter { isImageFile(it) }?.sortedByDescending { it.lastModified() }
+            android.util.Log.d("MediaHelper", "  Image files found: ${imageFiles?.size ?: 0}")
+
+            imageFiles?.forEach { file ->
+                imagePaths.add(file.absolutePath)
+                android.util.Log.d("MediaHelper", "    - ${file.name} (${file.length()} bytes)")
+            }
+        } else {
+            android.util.Log.w("MediaHelper", "  ⚠️ Target directory does not exist or is not a directory!")
         }
+
+        android.util.Log.d("MediaHelper", "  Returning ${imagePaths.size} image paths")
         return imagePaths
     }
 
@@ -79,6 +96,18 @@ object MediaHelper {
         }
     }.flowOn(Dispatchers.IO)
 
+    fun deleteFileByPathNotFlow(pathList: ArrayList<String>) {
+        try {
+            for (i in 0 until pathList.size) {
+                val file = File(pathList[i])
+                if (file.exists()) {
+                    file.delete()
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("nbhieu", "deleteFileByPathNotFlow: $e")
+        }
+    }
 
     suspend fun downloadVideoCompat(context: Context, videoUrl: String): HandleState {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -98,15 +127,13 @@ object MediaHelper {
                 put(MediaStore.Video.Media.DISPLAY_NAME, fileName)
                 put(MediaStore.Video.Media.MIME_TYPE, "video/mp4")
                 put(
-                    MediaStore.Video.Media.RELATIVE_PATH,
-                    Environment.DIRECTORY_MOVIES + "/" + ValueKey.DOWNLOAD_ALBUM
+                    MediaStore.Video.Media.RELATIVE_PATH, Environment.DIRECTORY_MOVIES + "/" + ValueKey.DOWNLOAD_ALBUM
                 )
                 put(MediaStore.Video.Media.IS_PENDING, 1)
             }
 
             val videoUri =
-                resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues)
-                    ?: return HandleState.FAIL
+                resolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues) ?: return HandleState.FAIL
 
             URL(videoUrl).openStream().use { input ->
                 resolver.openOutputStream(videoUri)?.use { output ->
@@ -140,8 +167,7 @@ object MediaHelper {
                 setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
             }
 
-            val downloadManager =
-                context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
             downloadManager.enqueue(request)
             HandleState.SUCCESS
         } catch (e: Exception) {
@@ -173,39 +199,61 @@ object MediaHelper {
         }
     }
 
-    fun checkFileInternal(context: Context, fileName: String): Boolean {
-        val file = File(context.filesDir, fileName)
-        return file.exists() && file.length() > 0
+    inline fun <reified T> writeModelToFile(context: Context, fileName: String, model: T) {
+        try {
+            val json = Gson().toJson(model)
+            context.openFileOutput(fileName, Context.MODE_PRIVATE).use { output ->
+                output.write(json.toByteArray())
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
-    suspend fun downloadVideoToCache(context: Context, videoUrl: String): File? =
-        withContext(Dispatchers.IO) {
-            try {
-                val cacheDir = context.cacheDir
-
-
-                cacheDir.listFiles()?.forEach { file ->
-                    if (file.isFile && file.name.endsWith(".mp4")) {
-                        file.delete()
-                    }
-                }
-
-                val fileName = "wallpaper_${System.currentTimeMillis()}.mp4"
-                val file = File(cacheDir, fileName)
-
-                val url = URL(videoUrl)
-                url.openStream().use { input ->
-                    FileOutputStream(file).use { output ->
-                        input.copyTo(output)
-                    }
-                }
-
-                file
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
+    inline fun <reified T> readModelFromFile(context: Context, fileName: String): T? {
+        return try {
+            context.openFileInput(fileName).use { input ->
+                val json = input.bufferedReader().readText()
+                Gson().fromJson(json, T::class.java)
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
+    }
+
+    fun checkFileInternal(context: Context, fileName: String): Boolean {
+        val file = File(context.filesDir, fileName)
+        return file.exists() || file.length() > 0
+    }
+
+    suspend fun downloadVideoToCache(context: Context, videoUrl: String): File? = withContext(Dispatchers.IO) {
+        try {
+            val cacheDir = context.cacheDir
+
+
+            cacheDir.listFiles()?.forEach { file ->
+                if (file.isFile && file.name.endsWith(".mp4")) {
+                    file.delete()
+                }
+            }
+
+            val fileName = "wallpaper_${System.currentTimeMillis()}.mp4"
+            val file = File(cacheDir, fileName)
+
+            val url = URL(videoUrl)
+            url.openStream().use { input ->
+                FileOutputStream(file).use { output ->
+                    input.copyTo(output)
+                }
+            }
+
+            file
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 
     suspend fun Activity.saveVideoToInternalStorage(album: String, videoUrl: String): String? {
         val fileName = StringHelper.generateRandomVideoFileName()
@@ -242,11 +290,7 @@ object MediaHelper {
         return file
     }
 
-    fun saveBitmapToInternalStorage(
-        context: Context,
-        album: String,
-        bitmap: Bitmap
-    ): Flow<SaveState> = flow {
+    fun saveBitmapToInternalStorage(context: Context, album: String, bitmap: Bitmap): Flow<SaveState> = flow {
         emit(SaveState.Loading)
 
         try {
@@ -272,16 +316,13 @@ object MediaHelper {
         }
     }.flowOn(Dispatchers.IO)
 
+    fun saveBitmapToInternalStorageZip(context: Context, album: String, bitmap: Bitmap): Flow<SaveState> = flow {
+        emit(SaveState.Loading)
+        val name = StringHelper.generateRandomImageFileName()
+        val resizedBitmap = bitmap.scale(512, 512)
+        try {
+            val directory = File(context.filesDir, album)
 
-    fun Activity.saveBitmapToInternalStorage(
-        album: String,
-        bitmap: Bitmap,
-        nameInput: Int
-    ): String? {
-        val name = "$nameInput.png"
-
-        return try {
-            val directory = File(filesDir, album)
             if (!directory.exists()) {
                 directory.mkdir()
             }
@@ -290,19 +331,23 @@ object MediaHelper {
 
             val fileOutputStream = FileOutputStream(file)
 
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
+            var quality = 100
+            do {
+                fileOutputStream.flush()
+                resizedBitmap.compress(Bitmap.CompressFormat.PNG, quality, fileOutputStream)
+                quality -= 5 // Giảm chất lượng sau mỗi lần nén
+            } while (file.length() > 512 * 1024 && quality > 5) // 512 KB và chất lượng không dưới 5%
 
             fileOutputStream.flush()
             fileOutputStream.close()
 
-            bitmap.recycle()
-            file.absolutePath
+            resizedBitmap.recycle()
 
+            emit(SaveState.Success(file.absolutePath))
         } catch (e: Exception) {
-            e.printStackTrace()
-            null
+            emit(SaveState.Error(e))
         }
-    }
+    }.flowOn(Dispatchers.IO)
 
     fun Activity.saveBitmapToInternalStorageZip(bitmap: Bitmap): String? {
         val name = StringHelper.generateRandomImageFileName()
@@ -339,31 +384,30 @@ object MediaHelper {
         }
     }
 
-    fun downloadPartsToExternal(activity: Activity, pathList: List<String>): Flow<HandleState> =
-        flow {
-            emit(HandleState.LOADING)
+    fun downloadPartsToExternal(activity: Activity, pathList: List<String>): Flow<HandleState> = flow {
+        emit(HandleState.LOADING)
 
-            if (pathList.isEmpty()) {
-                emit(HandleState.FAIL)
-                return@flow
-            }
-
-            val bitmapList = BitmapHelper.convertPathsToBitmaps(activity, pathList)
-
-            if (bitmapList.size == 1) {
-                emitAll(saveBitmapToExternal(activity, bitmapList.first()))
-            } else {
-                var allSuccess = true
-                for (bitmap in bitmapList) {
-                    val state = saveBitmapToExternal(activity, bitmap).last()
-                    if (state == HandleState.FAIL) {
-                        allSuccess = false
-                        break
-                    }
-                }
-                emit(if (allSuccess) HandleState.SUCCESS else HandleState.FAIL)
-            }
+        if (pathList.isEmpty()) {
+            emit(HandleState.FAIL)
+            return@flow
         }
+
+        val bitmapList = BitmapHelper.convertPathsToBitmaps(activity, pathList)
+
+        if (bitmapList.size == 1) {
+            emitAll(saveBitmapToExternal(activity, bitmapList.first()))
+        } else {
+            var allSuccess = true
+            for (bitmap in bitmapList) {
+                val state = saveBitmapToExternal(activity, bitmap).last()
+                if (state == HandleState.FAIL) {
+                    allSuccess = false
+                    break
+                }
+            }
+            emit(if (allSuccess) HandleState.SUCCESS else HandleState.FAIL)
+        }
+    }
 
     // bitmap -> external storage
     fun saveBitmapToExternal(activity: Activity, bitmap: Bitmap): Flow<HandleState> = flow {
@@ -371,77 +415,49 @@ object MediaHelper {
 
         val state = withContext(Dispatchers.IO) {
             try {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    // Android 10+ (API 29+): Use MediaStore with RELATIVE_PATH
-                    saveBitmapUsingMediaStore(activity, bitmap)
+                val resolver = activity.contentResolver
+                val imageCollection = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
                 } else {
-                    // Android 8-9 (API 26-28): Use legacy method with File
-                    saveBitmapLegacy(activity, bitmap)
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 }
+
+                val contentValues = ContentValues().apply {
+                    put(
+                        MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.png"
+                    )
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/png")
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        put(
+                            MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${ValueKey.DOWNLOAD_ALBUM}"
+                        )
+                    } else {
+                        val directory = File(
+                            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                            ValueKey.DOWNLOAD_ALBUM
+                        )
+                        if (!directory.exists()) {
+                            directory.mkdirs()
+                        }
+                        val filePath = File(directory, "image_${System.currentTimeMillis()}.png").absolutePath
+                        put(MediaStore.Images.Media.DATA, filePath)
+                    }
+                }
+
+                val imageUri = resolver.insert(imageCollection, contentValues) ?: return@withContext HandleState.FAIL
+
+                resolver.openOutputStream(imageUri)?.use { outputStream ->
+                    val isSaved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    if (isSaved) HandleState.SUCCESS else HandleState.FAIL
+                } ?: HandleState.FAIL
+
             } catch (e: Exception) {
                 e.printStackTrace()
-                Log.d("nbhieu", "download fail: ${e.message}")
                 HandleState.FAIL
             }
         }
 
         emit(state)
-    }
-
-    private fun saveBitmapUsingMediaStore(activity: Activity, bitmap: Bitmap): HandleState {
-        val resolver = activity.contentResolver
-        val imageCollection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY)
-
-        val contentValues = ContentValues().apply {
-            put(MediaStore.Images.Media.DISPLAY_NAME, "image_${System.currentTimeMillis()}.png")
-            put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/${ValueKey.DOWNLOAD_ALBUM}")
-        }
-
-        val imageUri = resolver.insert(imageCollection, contentValues) ?: return HandleState.FAIL
-
-        return resolver.openOutputStream(imageUri)?.use { outputStream ->
-            val isSaved = bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            if (isSaved) HandleState.SUCCESS else HandleState.FAIL
-        } ?: HandleState.FAIL
-    }
-
-    private fun saveBitmapLegacy(activity: Activity, bitmap: Bitmap): HandleState {
-        // Create directory in Pictures
-        val picturesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val albumDir = File(picturesDir, ValueKey.DOWNLOAD_ALBUM)
-
-        if (!albumDir.exists()) {
-            albumDir.mkdirs()
-        }
-
-        // Create image file
-        val fileName = "image_${System.currentTimeMillis()}.png"
-        val imageFile = File(albumDir, fileName)
-
-        return try {
-            // Save bitmap to file
-            FileOutputStream(imageFile).use { outputStream ->
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-            }
-
-            // Add to MediaStore so it appears in gallery
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Images.Media.DISPLAY_NAME, fileName)
-                put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-                put(MediaStore.Images.Media.DATA, imageFile.absolutePath)
-            }
-
-            activity.contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-
-            HandleState.SUCCESS
-        } catch (e: Exception) {
-            e.printStackTrace()
-            HandleState.FAIL
-        }
     }
 
     // get image external storage
@@ -450,18 +466,13 @@ object MediaHelper {
         val images = mutableListOf<Uri>()
 
         val projection = arrayOf(
-            MediaStore.Images.Media._ID,
-            MediaStore.Images.Media.DATE_ADDED
+            MediaStore.Images.Media._ID, MediaStore.Images.Media.DATE_ADDED
         )
 
         val sortOrder = "${MediaStore.Images.Media.DATE_ADDED} DESC"
 
         val query = context.contentResolver.query(
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            null,
-            null,
-            sortOrder
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, null, null, sortOrder
         )
 
         query?.use { cursor ->
@@ -470,8 +481,7 @@ object MediaHelper {
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val contentUri = ContentUris.withAppendedId(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    id
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id
                 )
                 images.add(contentUri)
             }

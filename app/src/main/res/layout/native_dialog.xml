@@ -14,7 +14,6 @@
         <TextView
             style="@style/AppTheme.Ads"
             android:backgroundTint="@color/native_btn_bg" />
-
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
@@ -101,10 +100,10 @@
                 android:layout_width="fill_parent"
                 android:layout_height="50dp"
                 android:layout_marginHorizontal="20dp"
-                android:layout_marginVertical="100dp"
-                android:background="@drawable/bg_btn_ads_native"
+                android:background="@color/dark"
                 android:gravity="center"
                 android:text="Install"
+                android:layout_marginBottom="60dp"
                 android:textColor="@color/native_btn_text_dialog_color"
                 android:textSize="@dimen/_12sdp"
                 android:textStyle="bold" />

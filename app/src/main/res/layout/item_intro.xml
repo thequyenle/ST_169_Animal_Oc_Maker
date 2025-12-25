@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <com.animal.avatar.charactor.maker.core.custom.StrokeTextView
-        android:id="@+id/txtContent"
-        style="@style/custom_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/creepstercaps_regular"
-        android:gravity="center"
-        android:layout_marginBottom="40dp"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        app:strokeColor="#FF7396"
-        app:strokeWidth="4dp"
-        app:strokeJoinStyle="round"
-        app:layout_constraintBottom_toBottomOf="parent" />
+    android:layout_height="match_parent">
 
     <ImageView
         android:id="@+id/imvImage"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="-30dp"
-        android:adjustViewBounds="true"
-        app:layout_constraintBottom_toTopOf="@id/txtContent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toTopOf="@+id/tvContent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:scaleType="fitXY"
+        android:src="@drawable/img_intro_1" />
+
+    <com.animal.avatar.charactor.maker.core.custom.text.DoubleStrokeTextView
+        android:id="@+id/tvContent"
+        style="@style/single_marquee"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:fontFamily="@font/cherry_bomb_regular"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        app:outerStrokeWidth="2dp"
+        app:outerStrokeColor="#FF7396"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

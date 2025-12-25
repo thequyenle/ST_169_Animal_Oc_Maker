@@ -1,5 +1,10 @@
 package com.animal.avatar.charactor.maker.core.helper
 
+import android.content.Context
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
+import androidx.core.content.res.ResourcesCompat
+import com.animal.avatar.charactor.maker.core.custom.text.CustomTypefaceSpan
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Locale
@@ -39,4 +44,24 @@ object StringHelper {
         return decimalFormat.format(number)
     }
 
+    fun changeColor(
+        context: Context,
+        text: String,
+        color: Int,
+        fontfamily: Int,
+    ): SpannableString {
+        val spannableString = SpannableString(text)
+        spannableString.setSpan(
+            ForegroundColorSpan(context.getColor(color)),
+            0,
+            text.length,
+            SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        val font = ResourcesCompat.getFont(context, fontfamily)
+        val typefaceSpan = CustomTypefaceSpan("", font)
+        spannableString.setSpan(
+            typefaceSpan, 0, text.length, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        return spannableString
+    }
 }

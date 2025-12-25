@@ -11,17 +11,17 @@ import com.animal.avatar.charactor.maker.core.helper.InternetHelper
 import com.animal.avatar.charactor.maker.core.helper.MediaHelper
 import com.animal.avatar.charactor.maker.core.service.RetrofitClient
 import com.animal.avatar.charactor.maker.core.service.RetrofitPreventive
-import com.animal.avatar.charactor.maker.core.utils.HandleState
-import com.animal.avatar.charactor.maker.core.utils.SystemUtils.isFailBaseURL
+import com.animal.avatar.charactor.maker.core.utils.DataLocal.isFailBaseURL
 import com.animal.avatar.charactor.maker.core.utils.key.AssetsKey
 import com.animal.avatar.charactor.maker.core.utils.key.DomainKey
 import com.animal.avatar.charactor.maker.core.utils.key.ValueKey
-import com.animal.avatar.charactor.maker.data.custom.ColorModel
-import com.animal.avatar.charactor.maker.data.custom.CustomizeModel
-import com.animal.avatar.charactor.maker.data.custom.LayerListModel
-import com.animal.avatar.charactor.maker.data.custom.LayerModel
+import com.animal.avatar.charactor.maker.core.utils.state.HandleState
 import com.animal.avatar.charactor.maker.data.model.DataAPI
 import com.animal.avatar.charactor.maker.data.model.PartAPI
+import com.animal.avatar.charactor.maker.data.model.custom.ColorModel
+import com.animal.avatar.charactor.maker.data.model.custom.CustomizeModel
+import com.animal.avatar.charactor.maker.data.model.custom.LayerListModel
+import com.animal.avatar.charactor.maker.data.model.custom.LayerModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,20 +32,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
+import kotlin.collections.forEachIndexed
 
-class DataViewModel : ViewModel() {
+class DataViewModel() : ViewModel() {
     private val _allData = MutableStateFlow<ArrayList<CustomizeModel>>(arrayListOf())
     val allData: StateFlow<ArrayList<CustomizeModel>> = _allData.asStateFlow()
     private val _getDataAPI = MutableLiveData<List<PartAPI>>()
     val getDataAPI: LiveData<List<PartAPI>> get() = _getDataAPI
-
-    // ✅ Loading state for UI
-    private val _isLoadingData = MutableStateFlow(false)
-    val isLoadingData: StateFlow<Boolean> = _isLoadingData.asStateFlow()
-
-    // ✅ Error state for UI
-    private val _loadingError = MutableStateFlow<String?>(null)
-    val loadingError: StateFlow<String?> = _loadingError.asStateFlow()
 
     fun saveAndReadData(context: Context) {
         viewModelScope.launch {
@@ -53,37 +46,11 @@ class DataViewModel : ViewModel() {
             val list = withContext(Dispatchers.IO) {
                 // Lần đầu vào app -> Load data Asset -> Lưu file internal
                 if (!MediaHelper.checkFileInternal(context, ValueKey.DATA_FILE_INTERNAL)) {
-                    val assetData = AssetHelper.getDataFromAsset(context)
-
-                    // ✅ Check if asset data loaded successfully
-                    if (assetData.isEmpty()) {
-                        Log.e("nbhieu", "❌ CRITICAL ERROR: Asset data is empty! Cannot load app data.")
-                        Log.e("nbhieu", "Please check asset folder structure and logcat for detailed errors.")
-                        return@withContext arrayListOf<CustomizeModel>()
-                    }
+                    AssetHelper.getDataFromAsset(context)
                 }
 
                 val totalData = MediaHelper.readListFromFile<CustomizeModel>(context, ValueKey.DATA_FILE_INTERNAL)
                     .toCollection(ArrayList())
-
-                // ✅ Double-check totalData is not empty
-                if (totalData.isEmpty()) {
-                    Log.e("nbhieu", "❌ CRITICAL ERROR: totalData is empty after reading from internal file!")
-                    Log.e("nbhieu", "Deleting corrupted file and retrying asset load...")
-
-                    // Delete corrupted file
-                    val file = File(context.filesDir, ValueKey.DATA_FILE_INTERNAL)
-                    if (file.exists()) file.delete()
-
-                    // Retry loading from assets
-                    val retryData = AssetHelper.getDataFromAsset(context)
-                    if (retryData.isEmpty()) {
-                        Log.e("nbhieu", "❌ CRITICAL ERROR: Retry failed! Asset data is still empty!")
-                        return@withContext arrayListOf<CustomizeModel>()
-                    }
-                    totalData.addAll(retryData)
-                }
-
                 var dataApi = MediaHelper.readListFromFile<CustomizeModel>(context, ValueKey.DATA_FILE_API_INTERNAL)
                     ?: arrayListOf()
                 if (dataApi.isEmpty() && InternetHelper.checkInternet(context)) {
@@ -99,6 +66,8 @@ class DataViewModel : ViewModel() {
                     }
                 }
                 totalData.addAll(dataApi)
+                // Sort all data by level (ascending order)
+                totalData.sortBy { it.level }
                 totalData
             }
             _allData.value = list
@@ -158,8 +127,16 @@ class DataViewModel : ViewModel() {
             val avatarCharacter = "$baseDomain${DomainKey.SUB_DOMAIN}/${data.name}/${DomainKey.AVATAR_CHARACTER_API}"
             val layerList = ArrayList<LayerListModel>(data.parts.size)
 
-            data.parts.forEachIndexed { indexLayer, dataLayer ->
-                val layerName = dataLayer.parts.split(AssetsKey.SPLIT_LAYER)
+            // Sort parts by level in ascending order
+            val sortedParts = data.parts.sortedBy { it.level }
+
+            sortedParts.forEachIndexed { indexLayer, dataLayer ->
+                // Handle both "-" and "_" delimiters, similar to local asset loading
+                val layerName = if (dataLayer.parts.contains("-")) {
+                    dataLayer.parts.split("-")
+                } else {
+                    dataLayer.parts.split("_")
+                }
                 val positionCustom = layerName.first().toInt() - 1
                 val positionNavigation = layerName.last().toInt() - 1
                 val imageNavigation = "${baseDomain}${DomainKey.SUB_DOMAIN}/${data.name}/${dataLayer.parts}/${DomainKey.IMAGE_NAVIGATION}"
@@ -175,10 +152,15 @@ class DataViewModel : ViewModel() {
             }
             layerList.sortBy { it.positionNavigation }
 
+            // Use the minimum level from all parts as the character level
+            val characterLevel = sortedParts.minOfOrNull { it.level } ?: 100
+
             val dataApi = CustomizeModel(
                 dataName = data.name,
                 avatar = avatarCharacter,
-                layerList = layerList
+                layerList = layerList,
+                level = characterLevel,
+                isFromAPI = true
             )
             allDataAPI.add(dataApi)
         }
